@@ -7,7 +7,7 @@ const font = Poppins({
 })
 
 import { Sparkles } from "lucide-react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../lib/utils"
 // import { UserButton } from "@clerk/nextjs"
 import { MobileSidebar } from './mobile-sidebar'
 
