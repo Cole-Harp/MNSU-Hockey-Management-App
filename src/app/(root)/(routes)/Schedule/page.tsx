@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
 import { FormEvent } from "react";
+/* it imporsts FormEvent from react*/
 
 
 export const getServerSideProps=(async() => {
