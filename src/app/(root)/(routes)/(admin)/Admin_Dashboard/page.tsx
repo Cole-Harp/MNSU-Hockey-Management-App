@@ -1,15 +1,30 @@
-import CalendarComponent from "@/Components/Schedule/ScheduleComponent";
+import { isAdmin } from "@/lib/db_actions/Auth";
+import Calendar from "@/Components/Schedule/ScheduleComponent";
 
+export default async function Page() {
 
-const Organization = () => {
-    return (
+  // Chec
+  const { isAdmin: adminStatus, user } = await isAdmin()
+
+  //TODO add options for querying based on user
+
+  return (
+    <div>
       <div>
-        <h2>Organization and User Management</h2>
-        <div>
-      <CalendarComponent/>
-    </div>
+        <Calendar options={null} />
       </div>
-    );
-  };
-  
-  export default Organization;
+      {adminStatus &&
+        <div>
+
+          <h1>Admin Tools</h1>
+          - Add Filtering
+          - Role
+          - Specific User
+          - All of the same Role
+          <button className="bg-primary">this should be a link route to AdminCalendar</button>
+
+        </div>
+      }
+    </div>
+  );
+}
