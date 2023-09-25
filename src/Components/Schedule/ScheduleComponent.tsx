@@ -1,137 +1,146 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
-import { EventInput, formatDate } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Event } from '@prisma/client';
-import { revalidatePath } from 'next/cache';
-import { createEvent } from '@/lib/db_actions/createEvent';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { EventInput } from '@fullcalendar/core';
+import { createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
+import { UserRole } from '@prisma/client';
 
-type DemoAppProps = {
-  events: Event[]
+type CalendarProps = {
+  options: any
 };
 
 
+const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
-const Calendar: React.FC<DemoAppProps> = ({ events }) => {
-  const [weekendsVisible, setWeekendsVisible] = useState(true);
-  const [currentEvents, setCurrentEvents] = useState([]);
+  const handleDatesSet = async (dateInfo: { view: { calendar: any; }; startStr: any; endStr: any; }) => {
 
+    const calendarApi = dateInfo.view.calendar;
+    const start = dateInfo.startStr;
+    const end = dateInfo.endStr;
+    const newEvents = await userGetEvents(start, end);
+  
+    // TODO: Filter Options Here
 
-  const renderSidebar = () => {
-    return (
-      <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
-          <h2>Instructions</h2>
-          <ul>
-            <li>Select dates and you will be prompted to create a new event</li>
-            <li>Drag, drop, and resize events</li>
-            <li>Click an event to delete it</li>
-          </ul>
-        </div>
-        <div className='demo-app-sidebar-section'>
-          <label>
-            <input
-              type='checkbox'
-              checked={weekendsVisible}
-              onChange={handleWeekendsToggle}
-            ></input>
-            toggle weekends
-          </label>
-        </div>
-        <div className='demo-app-sidebar-section'>
-          <h2>All Events ({currentEvents.length})</h2>
-          <ul>
-            {currentEvents.map(renderSidebarEvent)}
-          </ul>
-        </div>
-      </div>
-    );
+    newEvents.forEach((event) => {
+      const existingEvent = calendarApi.getEventById(event.id);
+      if (!existingEvent) {
+        calendarApi.addEvent(event);
+      }
+    });
   };
 
-  const handleWeekendsToggle = () => {
-    setWeekendsVisible(!weekendsVisible);
+  const handleEventResize = async (info: any) => {
+    const eventId = info.event.id;
+    const updatedEvent = {
+      id: info.event.id,
+      title: info.event.title,
+      description: info.event.description,
+      start: info.event.start,
+      end: info.event.end,
+      allDay: info.event.allDay,
+      role: UserRole.Player
+    };
+
+    await updateEvent(eventId, updatedEvent);
+    info.event.setProp('title', updatedEvent.title);
+    info.event.setStart(updatedEvent.start);
+    info.event.setEnd(updatedEvent.end);
   };
 
-  const handleDateSelect = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
-    let title = prompt('Please enter a new title for your event');
-    let content = prompt('Please enter a description for your event');
-    let date = new Date(selectInfo.startStr);
-    let start = new Date(selectInfo.startStr);
-    let end = new Date(selectInfo.endStr);
-    let role = "Player"; //Somehow add role selection
-    let calendarApi = selectInfo.view.calendar;
+  const handleEventDrop = async (info: any) => {
+    const eventId = info.event.id;
+    const updatedEvent = {
+      id: info.event.id,
+      title: info.event.title,
+      description: info.event.description,
+      start: info.event.start,
+      end: info.event.end,
+      allDay: info.event.allDay,
+      role: UserRole.Player
+    };
+
+    await updateEvent(eventId, updatedEvent);
+    info.event.setProp('title', updatedEvent.title);
+    info.event.setStart(updatedEvent.start);
+    info.event.setEnd(updatedEvent.end);
+  };
+
+  const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
+    const title = prompt('Please enter a new title for your event');
+    const desc = prompt('Please enter a description for your event');
+    const start = new Date(selectInfo.startStr);
+    var end = new Date(selectInfo.endStr);
+    const role = UserRole.Player;
+    var allDay = false;
+  
+    // Ask the user if they want to create an all-day event
+    if (confirm('Do you want to create an all-day event?')) {
+      allDay = true;
+      end = start;
+    }
+  
+    const calendarApi = selectInfo.view.calendar;
     calendarApi.unselect();
+    const newEvent = {
+      title: title,
+      description: desc,
+      start: start,
+      end: end,
+      allDay: allDay,
+      role: role
+    };
   
     if (title) {
-      createEvent(title, content, date, start, end, role);
-  
-      calendarApi.addEvent({
-        id: "FILLER",
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay,
-      });
+      const calEvent = await createEvent(newEvent);
+      calendarApi.addEvent(calEvent);
     }
   };
 
-  const handleEventClick = (clickInfo) => {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+  const handleEventClick = async (clickInfo: any) => {
+    if (confirm(`Are you sure you want to deconste the event '${clickInfo.event.title}'`)) {
       clickInfo.event.remove();
+      const eventId = clickInfo.event.id;
+      await deleteEvent(eventId);
     }
   };
 
-  const handleEvents = (events) => {
-    setCurrentEvents(events);
-  };
+
+  function renderEventContent(eventInfo: { timeText: string | number | null | undefined; event: { title: string | number | null | undefined; }; }) {
+    return (
+      <>
+        <b>{eventInfo.timeText}</b>
+        <i>{eventInfo.event.title}</i>
+      </>
+    );
+  }
 
   return (
-    <div className='demo-app'>
-      {renderSidebar()}
-      <div className='demo-app-main'>
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay',
-          }}
-          initialView='dayGridMonth'
-          editable={true}
-          selectable={true}
-          selectMirror={true}
-          dayMaxEvents={true}
-          weekends={weekendsVisible}
-          initialEvents={events}
-          select={handleDateSelect}
-          eventContent={renderEventContent}
-          eventClick={handleEventClick}
-          eventsSet={handleEvents}
-        />
-      </div>
-    </div>
+    <div className='m-3'>
+    <FullCalendar
+      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+      headerToolbar={{
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+      }}
+      initialView="dayGridMonth"
+      editable={true}
+      selectable={true}
+      selectMirror={true}
+      dayMaxEvents={true}
+      select={handleDateClick}
+      eventContent={renderEventContent}
+      eventClick={handleEventClick}
+      eventResize={handleEventResize}
+      eventDrop={handleEventDrop}
+      datesSet={handleDatesSet}
+      
+    />
+  </div>
   );
 };
 
-function renderEventContent(eventInfo: { timeText: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; event: { title: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | React.PromiseLikeOfReactNode | null | undefined; }; }) {
-  return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
-  );
-}
-
-function renderSidebarEvent(event) {
-  return (
-    <li key={event.id}>
-      <b>{formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
-      <i>{event.title}</i>
-    </li>
-  );
-}
-
-export default Calendar;
+export default CalendarComponent;

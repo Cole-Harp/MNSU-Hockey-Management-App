@@ -9,16 +9,6 @@ const Announcements = () => {
       content: '7pm-9pm',
       date: 'September 1, 2023'
     },
-    {
-      title: 'Dinner Orders',
-      content: 'Link to order dinners?',
-      date: 'August 15, 2023'
-    },
-    {
-      title: 'W',
-      content: 'We win',
-      date: 'July 1, 2023'
-    }
   ]);
 
   return (
