@@ -1,48 +1,31 @@
 import Calendar from "@/Components/Schedule/ScheduleComponent";
-import prisma_db from "../../../../../prisma/db";
-import { Event } from "@prisma/client";
-import { useUser } from '@clerk/nextjs';
+import { userGetEvents } from "@/lib/db_actions/Event";
+import {isAdmin } from "@/lib/db_actions/Auth";
 
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next'
-import { FormEvent } from "react";
-/* it imporsts FormEvent from react*/
+export default async function Page() {
 
+  // Chec
+  const { isAdmin: adminStatus, user } = await isAdmin()
 
-export const getServerSideProps=(async() => {
-  const id = useUser().user?.id
-
-  const user = await prisma_db.user.findUnique({
-    where: {
-      clerkUserId: id,
-    },
-  });
-
-  const events = await prisma_db.event.findMany({
-    where: {
-      role: user?.role,
-    },
-  });
-
-  return { props: { events } };
-}) satisfies GetServerSideProps<{
-  events: Event[]
-}>
- 
-export default function Page({
-  events,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-
-
-
+  //TODO add options for querying based on user
 
   return (
     <div>
       <div>
-      <Calendar events={events}/>
-    </div>
-      <div>
-          <h1>Next Two Weeks</h1>
+        <Calendar options={null} />
       </div>
+      {adminStatus &&
+        <div className = "m-2">
+
+          <h1>Admin Tools</h1>
+          - Add Filtering
+          - Role
+          - Specific User
+          - All of the same Role
+          <button className="bg-primary">this should be a component that updates options variable that will change the settings in the calendar</button>
+
+        </div>
+      }
     </div>
   );
 }

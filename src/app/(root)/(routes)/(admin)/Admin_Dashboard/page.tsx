@@ -1,10 +1,13 @@
-// pages/organization/index.tsx
+import CalendarComponent from "@/Components/Schedule/ScheduleComponent";
+
 
 const Organization = () => {
     return (
       <div>
         <h2>Organization and User Management</h2>
-        {/* Add your organization and user management components here */}
+        <div>
+      <CalendarComponent/>
+    </div>
       </div>
     );
   };

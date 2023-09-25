@@ -16,12 +16,11 @@ enum UserRole {
 }
 
 model User {
-  id            Int            @unique @default(autoincrement())
-  clerkUserId   String         @id @unique
+  id   String         @id @unique
   email String  @unique
   name  String?
-  role UserRole
-  posts Post[]
+  role UserRole @default(Player)
+  events    Event[]
 }
 
 model Post {
@@ -31,22 +30,23 @@ model Post {
   date      DateTime
   time      DateTime
   published Boolean @default(false)
-  author    User    @relation(fields: [id], references: [clerkUserId])
   authorId  String
 
   @@index([authorId])
 }
 
 model Event {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  date      DateTime
-  start     DateTime
-  end       DateTime
-  published Boolean @default(false)
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  start       DateTime?
+  end         DateTime?
+  allDay      Boolean?
   role UserRole
-  authorId  String
+  authorEmail    String
+  author      User     @relation(fields: [authorEmail], references: [email])
 
-  @@index([authorId])
+
+
+  @@index([authorEmail])
 }
