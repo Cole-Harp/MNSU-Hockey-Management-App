@@ -15,7 +15,7 @@ export default async function Page() {
         <Calendar options={null} />
       </div>
       {adminStatus &&
-        <div>
+        <div className = "m-2">
 
           <h1>Admin Tools</h1>
           - Add Filtering
