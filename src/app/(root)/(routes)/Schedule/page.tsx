@@ -22,7 +22,7 @@ export default async function Page() {
           - Role
           - Specific User
           - All of the same Role
-          <button className="bg-primary">this should be a component that updates options variable that will change the settings in the calendar</button>
+          <button className="bg-primary">this should be a link route to AdminCalendar That only admin can see, It could also be a component</button>
 
         </div>
       }
