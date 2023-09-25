@@ -13,22 +13,19 @@ export const Sidebar = () => {
             icon: Home,
             href: "/",
             label: "Home",
-            pro: false,
         },
         {
             icon: LayoutDashboard,
             href: "/Messages",
             label: "Messages",
-            pro: false
         }, {
             icon: LayoutDashboard,
-            href: "/Drills",
-            label: "Drills",
-            pro: false
+            href: "/Schedule",
+            label: "Schedule",
         }
     ]
 
-    const onNavigate = (url: string, pro: boolean) => {
+    const onNavigate = (url: string) => {
 
         return router.push(url)
     }
@@ -40,10 +37,10 @@ export const Sidebar = () => {
                 <div className="space-y-2">
                     {routes.map((route) => (
                         <div
-                            onClick={() => onNavigate(route.href, route.pro)}
+                            onClick={() => onNavigate(route.href)}
                             key={route.href}
                             className={cn("text-muted-foreground text-xs text-black group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
-                                pathName === route.href && "bg-primary/10 text-primary"
+                                pathName === route.href && "text-black"
                             )}
                         >
                             <div className="flex flex-col gap-y-2 items-center flex-1">
