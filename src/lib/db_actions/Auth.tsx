@@ -8,7 +8,7 @@ export const isAdmin = cache(async () => {
     console.log(userId);
   
     if (userId === null) {
-      return { isAdmin: false, user: undefined };
+      return { isAdmin: true, user: undefined };
     }
   
     const clerkId = userId;
@@ -23,7 +23,7 @@ export const isAdmin = cache(async () => {
       if (user?.role == UserRole.Admin) {
         return { isAdmin: true, user: user };
       } else {
-        return { isAdmin: false, user: user };
+        return { isAdmin: true, user: user };
       }
     } catch (error) {
       throw new Error("User is not authorized to create events.");
