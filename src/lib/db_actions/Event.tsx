@@ -5,30 +5,6 @@ import { EventInput } from '@fullcalendar/core';
 import { isAdmin } from './Auth';
 
 
-function toEventList(events: any[]): EventInput[] {
-    return events.map((event) => ({
-        id: event.id,
-        title: event.title,
-        description: event.description ?? '',
-        start: event.start ?? new Date(),
-        end: event.end ?? new Date(),
-        allDay: event.allDay ?? false,
-        role: event.role,
-        bubbles: true,
-        cancelBubble: false,
-        cancelable: true,
-        composed: true,
-        currentTarget: null,
-        defaultPrevented: false,
-        eventPhase: 0,
-        isTrusted: true,
-        returnValue: true,
-        srcElement: null,
-        target: null,
-        timeStamp: 0,
-        type: '',
-    }));
-}
 
 export const userGetEvents = async (currViewStart: string, currViewEnd: string, options?: any): Promise<EventInput[]> => {
     const { isAdmin: adminStatus, user } = await isAdmin();
@@ -101,9 +77,8 @@ export const userGetEvents = async (currViewStart: string, currViewEnd: string, 
             });
         }
 
-        const eventList = toEventList(events);
 
-        return eventList;
+        return events;
     } catch (error) {
         console.error(error);
         throw new Error("An error occurred while getting the events.");

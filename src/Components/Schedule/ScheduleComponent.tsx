@@ -15,19 +15,45 @@ type CalendarProps = {
 
 const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
+  function toEventList(events: any[]): EventInput[] {
+    return events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description ?? '',
+        start: event.start ?? new Date(),
+        end: event.end ?? new Date(),
+        allDay: event.allDay ?? false,
+        role: event.role,
+        bubbles: true,
+        cancelBubble: false,
+        cancelable: true,
+        composed: true,
+        currentTarget: null,
+        defaultPrevented: false,
+        eventPhase: 0,
+        isTrusted: true,
+        returnValue: true,
+        srcElement: null,
+        target: null,
+        timeStamp: 0,
+        type: '',
+    }));
+  }
+
   const handleDatesSet = async (dateInfo: { view: { calendar: any; }; startStr: any; endStr: any; }) => {
 
-    const calendarApi = dateInfo.view.calendar;
+    const calendar = dateInfo.view.calendar;
     const start = dateInfo.startStr;
     const end = dateInfo.endStr;
-    const newEvents = await userGetEvents(start, end);
+    const events = toEventList(await userGetEvents(start, end));
+
   
     // TODO: Filter Options Here
 
-    newEvents.forEach((event) => {
-      const existingEvent = calendarApi.getEventById(event.id);
+    events.forEach((event) => {
+      const existingEvent = calendar.getEventById(event.id);
       if (!existingEvent) {
-        calendarApi.addEvent(event);
+        calendar.addEvent(event);
       }
     });
   };
@@ -82,8 +108,8 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       end = start;
     }
   
-    const calendarApi = selectInfo.view.calendar;
-    calendarApi.unselect();
+    const calendar = selectInfo.view.calendar;
+    calendar.unselect();
     const newEvent = {
       title: title,
       description: desc,
@@ -95,7 +121,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
   
     if (title) {
       const calEvent = await createEvent(newEvent);
-      calendarApi.addEvent(calEvent);
+      calendar.addEvent(calEvent);
     }
   };
 
