@@ -56,7 +56,7 @@ export const isAdmin = cache(async () => {
         },
       });
   
-      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: false, user: user };
+      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
       
     } catch (error) {
       throw new Error("Something went wrong authenticating");
