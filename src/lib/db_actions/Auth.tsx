@@ -3,6 +3,42 @@ import prisma_db from "../../../prisma/db";
 import { UserRole } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
+export async function getOrCreateUser() {
+
+  const { userId }: { userId: string | null } = auth();
+  console.log(userId);
+
+  if (userId === null) {
+    throw new Error("Something went wrong authenticating");
+  }
+
+  const clerkId = userId;
+
+  const existingUser = await prisma_db.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (existingUser) {
+    return existingUser;
+  } else {
+    const user = auth().user
+    const userEmail = user?.emailAddresses[0].toString() ?? "";
+    const userName = user?.username ?? "";
+    const newUser = await prisma_db.user.create({
+      data: {
+        id: userId,
+        email: userEmail,
+        name: userName,
+        role: UserRole.Player,
+      },
+    });
+    return newUser;
+  }
+}
+
+
 export const isAdmin = cache(async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
@@ -20,12 +56,9 @@ export const isAdmin = cache(async () => {
         },
       });
   
-      if (user?.role == UserRole.Admin) {
-        return { isAdmin: true, user: user };
-      } else {
-        return { isAdmin: true, user: user };
-      }
+      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: false, user: user };
+      
     } catch (error) {
-      throw new Error("User is not authorized to create events.");
+      throw new Error("Something went wrong authenticating");
     }
   });
