@@ -1,6 +1,9 @@
 import Link from 'next/link';
+import { getOrCreateUser } from "../../../lib/db_actions/Auth"
 
-const Home = () => {
+const Home = async () => {
+  const user = await getOrCreateUser()
+  const email = user.email;
   return (
     <div className=''>
       <h1>Hockey Team Management</h1>
