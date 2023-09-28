@@ -1,9 +1,11 @@
+"use server"
+
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
-export async function getOrCreateUser() {
+export const getOrCreateUser = async () => {
 
   const { userId }: { userId: string | null } = auth();
   console.log(userId);
@@ -11,8 +13,6 @@ export async function getOrCreateUser() {
   if (userId === null) {
     throw new Error("Something went wrong authenticating");
   }
-
-  const clerkId = userId;
 
   const existingUser = await prisma_db.user.findUnique({
     where: {
@@ -25,7 +25,7 @@ export async function getOrCreateUser() {
   } else {
     const user = auth().user
     const userEmail = user?.emailAddresses[0].toString() ?? "";
-    const userName = user?.username ?? "";
+    const userName = user?.lastName ?? "";
     const newUser = await prisma_db.user.create({
       data: {
         id: userId,
