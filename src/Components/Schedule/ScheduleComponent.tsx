@@ -59,6 +59,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
   };
 
   const handleEventResize = async (info: any) => {
+    const calendar = info.view.calendar;
     const eventId = info.event.id;
     const updatedEvent = {
       id: info.event.id,
@@ -71,12 +72,11 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     };
 
     await updateEvent(eventId, updatedEvent);
-    info.event.setProp('title', updatedEvent.title);
-    info.event.setStart(updatedEvent.start);
-    info.event.setEnd(updatedEvent.end);
+    calendar.addvent(updatedEvent)
   };
 
   const handleEventDrop = async (info: any) => {
+    const calendar = info.view.calendar;
     const eventId = info.event.id;
     const updatedEvent = {
       id: info.event.id,
@@ -89,9 +89,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     };
 
     await updateEvent(eventId, updatedEvent);
-    info.event.setProp('title', updatedEvent.title);
-    info.event.setStart(updatedEvent.start);
-    info.event.setEnd(updatedEvent.end);
+    calendar.addEvent( updatedEvent)
   };
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {

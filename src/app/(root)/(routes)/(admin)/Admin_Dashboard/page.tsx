@@ -1,15 +1,18 @@
 import { isAdmin } from "@/lib/db_actions/Auth";
 import Calendar from "@/Components/Schedule/ScheduleComponent";
+import { useUserContext } from "@/lib/userContext";
 
 export default async function Page() {
 
-  // Chec
-  // const { isAdmin: adminStatus, user } = await isAdmin()
+  const { isAdmin: adminStatus } = await isAdmin()
 
   //TODO add options for querying based on user
 
   return (
     <div>
+      <div>
+        <h1>Welcome, {user?.name || 'Guest'}! You are an {user?.role}</h1>
+      </div>
       <div>
         <Calendar options={null} />
       </div>
