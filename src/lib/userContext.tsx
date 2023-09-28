@@ -9,9 +9,7 @@ import { getOrCreateUser } from './db_actions/Auth'
 
 interface UserContextValue {
   user: any
-  userData: any
   setUser: (user: any) => void
-  setUserData: (user: any) => void
 }
 
 const UserContext = createContext<UserContextValue | null>(null)
