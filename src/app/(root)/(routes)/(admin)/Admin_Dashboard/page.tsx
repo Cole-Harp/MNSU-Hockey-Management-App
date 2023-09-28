@@ -4,11 +4,7 @@ import { useUserContext } from "@/lib/userContext";
 
 export default async function Page() {
 
-  // Chec
   const { isAdmin: adminStatus } = await isAdmin()
-  const { user } = useUserContext()
-
-
 
   //TODO add options for querying based on user
 
