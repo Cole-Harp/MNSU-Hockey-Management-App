@@ -3,9 +3,10 @@ import { getOrCreateUser } from "../../../lib/db_actions/Auth"
 
 const Home = async () => {
   const user = await getOrCreateUser()
-  const email = user.email;
+  const email = user?.email;
   return (
     <div className=''>
+      {email}
       <h1>Hockey Team Management</h1>
       <ul>
         <li>

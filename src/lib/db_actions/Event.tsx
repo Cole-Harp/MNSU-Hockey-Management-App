@@ -14,39 +14,7 @@ export const userGetEvents = async (currViewStart: string, currViewEnd: string, 
     let events: any[];
     //TODO Break Down to functions
     try {
-        if (adminStatus) {
-            // TODO: Filter for Admin based on user or role using options?.
-            // role: UserRole.Admin,
-            events = await prisma_db.event.findMany({
-                where: {
-                    author: {
-                        name: options,
-                    },
-                    AND: [
-                        {
-                            start: {
-                                lte: currViewEnd,
-                            },
-                        },
-                        {
-                            end: {
-                                gte: currViewStart,
-                            },
-                        },
-                    ],
-                },
-                select: {
-                    id: true,
-                    title: true,
-                    description: true,
-                    start: true,
-                    end: true,
-                    allDay: true,
-                    author: false,
-                    role: true,
-                },
-            });
-        } else {
+
             events = await prisma_db.event.findMany({
                 where: {
                     author: { id: userId },
@@ -74,8 +42,7 @@ export const userGetEvents = async (currViewStart: string, currViewEnd: string, 
                     author: false,
                     role: true,
                 },
-            });
-        }
+            })
 
 
         return events;
@@ -93,13 +60,8 @@ export const createEvent = cache(async (data: any) => {
                 data: {
                     ...data,
                     author: {
-                        connectOrCreate: {
-                            where: { email: user?.email },
-                            create: {
-                                email: user?.email,
-                                name: user?.name,
-                                id: user?.id,
-                            },
+                        connect: {
+                             id: user?.id,
                         },
                     },
                 },
