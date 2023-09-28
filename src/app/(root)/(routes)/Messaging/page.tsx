@@ -1,5 +1,4 @@
 import getUsers from "@/lib/db_actions/getUsers";
-import prisma_db from "../../../prisma/db";
 import UserList from "@/Components/Messaging/UserList";
 
 
