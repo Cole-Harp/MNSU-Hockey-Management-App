@@ -6,6 +6,5 @@ import { currentUser } from '@clerk/nextjs';
 export default async function getCurrentUser()
 {
     const thisUser = await currentUser();
-    console.log(thisUser.id);
     return thisUser;
 }

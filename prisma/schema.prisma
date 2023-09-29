@@ -14,6 +14,43 @@ model User {
   name   String?
   role   UserRole @default(Player)
   events Event[]
+
+  conversations Conversation[]
+  messages Message[]
+  
+
+}
+
+model Conversation{
+  id String @id 
+  name String?
+  content String?
+  isGroup Boolean?
+
+  userId String
+  author User @relation(fields: [userId], references: [id])
+
+  messages Message[]
+  
+  
+  @@index([userId])
+ 
+
+}
+
+model Message{
+  id String @id 
+  body String
+  createdAt DateTime @default(now())
+  
+  authorId String
+  author User @relation(fields: [authorId], references: [id])
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId], references: [id]) 
+  
+  @@index([authorId])
+  @@index([conversationId])
+
 }
 
 model Post {

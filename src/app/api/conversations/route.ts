@@ -25,40 +25,40 @@ export async function POST(
             return new NextResponse('Invalid Data', {status: 400});
         }
 
-        if (isGroup) {
-            const newConversation = await prisma_db.conversation.create({
-                data: {
-                    name, 
-                    isGroup,
-                    users: {
-                        connect: [
-                            ...members.map((member: { value: string }) => ({
-                                id: member.value
-                            })),
-                            {
-                                id: currentUser.id
-                            }
-                        ]
-                    }
-                },
-                include: {
-                    users: true
-                }
-            })
-            return NextResponse.json(newConversation);
-        }
+        //if (isGroup) {
+          //  const newConversation = await prisma_db.conversation.create({
+               // data: {
+                   // name, 
+                    //isGroup,
+                   // user: {
+                       // connect: [
+                        //    ...members.map((member: { value: string }) => ({
+                        //        id: member.value
+                        //    })),
+                        //    {
+                        //        id: currentUser.id
+                         //   }
+                       // ]
+                  //  }
+               // },
+               // include: {
+               //     user: true
+               // }
+           // })
+           // return NextResponse.json(newConversation);
+        //}
 
         const existingConversations = await prisma_db.conversation.findMany({
             where: { 
                 OR: [
                     {
-                        userIds: {
-                            equals: [currentUser.id, userId]
+                        userId: {
+                            in: [currentUser.id, userId]
                         }
                     },
                     {
-                        userIds: {
-                            equals: [userId, currentUser.id]
+                        userId: {
+                            in: [userId, currentUser.id]
                         }
                     }
                 ]
@@ -73,7 +73,7 @@ export async function POST(
 
         const newConversation = await prisma_db.conversation.create({
             data: { 
-                users: {
+                author: {
                     connect: [
                     {
                         id: currentUser.id
@@ -85,7 +85,7 @@ export async function POST(
             }
         },
         include: {
-            users: true
+            messages: true
         }
         });
 

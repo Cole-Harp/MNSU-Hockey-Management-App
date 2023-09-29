@@ -2,12 +2,14 @@
   "name": "hockey_management",
   "version": "0.1.0",
   "private": true,
+  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "devStart": "nodemon test.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.23.5",
