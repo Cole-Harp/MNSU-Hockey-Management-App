@@ -20,8 +20,8 @@ model Post {
   id        String   @id @unique
   title     String
   content   String?
-  date      DateTime
-  time      DateTime
+  date      String
+  time      String
   published Boolean  @default(false)
   authorId  String
 
