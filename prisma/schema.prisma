@@ -9,79 +9,29 @@ datasource db {
 }
 
 model User {
-  id     String   @id @unique
-  email  String   @unique
-  name   String?
-  role   UserRole @default(Player)
-  events Event[]
-
-  conversations Conversation[]
+  id    String   @id 
+  email String   @unique
+  name  String?
+  role UserRole @default(Player)
   messages Message[]
-  
 
 }
 
-model Conversation{
-  id String @id 
-  name String?
-  content String?
-  isGroup Boolean?
 
-  userId String
-  author User @relation(fields: [userId], references: [id])
-
-  messages Message[]
-  
-  
-  @@index([userId])
- 
-
-}
-
-model Message{
-  id String @id 
+model Message {
+  id String @id @default(uuid())
   body String
   createdAt DateTime @default(now())
   
-  authorId String
-  author User @relation(fields: [authorId], references: [id])
-  conversationId String
-  conversation Conversation @relation(fields: [conversationId], references: [id]) 
-  
-  @@index([authorId])
-  @@index([conversationId])
-
+  userId String
+  users User? @relation(fields: [userId], references: [id])
+  @@index([userId])
+ 
 }
 
-model Post {
-  id        String   @id @unique
-  title     String
-  content   String?
-  date      DateTime
-  time      DateTime
-  published Boolean  @default(false)
-  authorId  String
-
-  @@index([authorId])
-}
-
-model Event {
-  id          String    @id @default(uuid())
-  title       String
-  description String?
-  start       DateTime?
-  end         DateTime?
-  role        UserRole
-  authorEmail String
-  allDay      Boolean?
-  author      User      @relation(fields: [authorEmail], references: [email])
-
-  @@index([authorEmail])
-}
-
-enum UserRole {
-  Admin
-  Coach
-  Faculty
-  Player
+enum UserRole {   
+Admin   
+Coach   
+Faculty   
+Player 
 }
