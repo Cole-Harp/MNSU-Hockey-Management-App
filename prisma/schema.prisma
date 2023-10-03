@@ -14,9 +14,35 @@ model User {
   name  String?
   role UserRole @default(Player)
   messages Message[]
+  events Event[]
 
 }
 
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  start       DateTime?
+  end         DateTime?
+  role        UserRole
+  authorEmail String
+  allDay      Boolean?
+  author      User      @relation(fields: [authorEmail], references: [email])
+
+  @@index([authorEmail])
+}
+
+model Post {
+  id        String   @id @unique
+  title     String
+  content   String?
+  date      String
+  time      String
+  published Boolean  @default(false)
+  authorId  String
+
+  @@index([authorId])
+}
 
 model Message {
   id String @id @default(uuid())
