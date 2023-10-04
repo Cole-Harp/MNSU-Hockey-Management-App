@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
-import { UserRole } from "@prisma/client";
+import { User_role } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
 export const getOrCreateUser = async () => {
@@ -31,7 +31,7 @@ export const getOrCreateUser = async () => {
         id: userId,
         email: userEmail,
         name: userName,
-        role: UserRole.Player,
+        role: User_role.Player,
       },
     });
     return newUser;
@@ -56,7 +56,7 @@ export const isAdmin = cache(async () => {
         },
       });
   
-      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
+      return user?.role === User_role.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
       
     } catch (error) {
       throw new Error("Something went wrong authenticating");

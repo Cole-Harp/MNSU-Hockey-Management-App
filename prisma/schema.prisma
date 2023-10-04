@@ -8,56 +8,57 @@ datasource db {
   relationMode = "prisma"
 }
 
-model User {
-  id    String   @id 
-  email String   @unique
-  name  String?
-  role UserRole @default(Player)
-  messages Message[]
-  events Event[]
-
-}
-
 model Event {
-  id          String    @id @default(uuid())
+  id          String     @id
   title       String
   description String?
   start       DateTime?
   end         DateTime?
-  role        UserRole
-  authorEmail String
+  role        Event_role
+  authorId    String
   allDay      Boolean?
-  author      User      @relation(fields: [authorEmail], references: [email])
-
-  @@index([authorEmail])
-}
-
-model Post {
-  id        String   @id @unique
-  title     String
-  content   String?
-  date      String
-  time      String
-  published Boolean  @default(false)
-  authorId  String
 
   @@index([authorId])
 }
 
 model Message {
-  id String @id @default(uuid())
-  body String
+  id        String   @id @default(uuid())
+  body      String
   createdAt DateTime @default(now())
-  
-  userId String
-  users User? @relation(fields: [userId], references: [id])
+  userId    String
+
   @@index([userId])
- 
 }
 
-enum UserRole {   
-Admin   
-Coach   
-Faculty   
-Player 
+model Post {
+  id        String  @id @unique
+  title     String
+  content   String?
+  date      String
+  time      String
+  published Boolean @default(false)
+  authorId  String
+
+  @@index([authorId])
+}
+
+model User {
+  id    String    @id
+  email String    @unique
+  name  String?
+  role  User_role @default(Player)
+}
+
+enum User_role {
+  Admin
+  Coach
+  Faculty
+  Player
+}
+
+enum Event_role {
+  Admin
+  Coach
+  Faculty
+  Player
 }
