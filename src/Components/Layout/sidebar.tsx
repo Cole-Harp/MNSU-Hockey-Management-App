@@ -16,7 +16,7 @@ export const Sidebar = () => {
         },
         {
             icon: LayoutDashboard,
-            href: "/Messages",
+            href: "/Messaging",
             label: "Messages",
         }, {
             icon: LayoutDashboard,
@@ -31,7 +31,7 @@ export const Sidebar = () => {
     }
 
     return (
-        <div className="space-y-4 flex flex-col h-full text-primary bg-primary">
+        <div className="space-y-4 flex flex-col h-full text-primary bg-mnsu_purple">
 
             <div className="p-3 flex flex-1 justify-center">
                 <div className="space-y-2">
@@ -39,8 +39,8 @@ export const Sidebar = () => {
                         <div
                             onClick={() => onNavigate(route.href)}
                             key={route.href}
-                            className={cn("text-muted-foreground text-xs text-black group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
-                                pathName === route.href && "text-black"
+                            className={cn("text-muted-foreground text-xs text-mnsu_gold group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
+                                pathName === route.href && "text-mnsu_gold"
                             )}
                         >
                             <div className="flex flex-col gap-y-2 items-center flex-1">
