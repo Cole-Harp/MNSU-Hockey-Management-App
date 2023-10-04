@@ -15,6 +15,7 @@ model User {
   role UserRole @default(Player)
   messages Message[]
   events Event[]
+}
 
 }
 
@@ -25,21 +26,9 @@ model Event {
   start       DateTime?
   end         DateTime?
   role        UserRole
-  authorEmail String
+  authorId String
   allDay      Boolean?
-  author      User      @relation(fields: [authorEmail], references: [email])
-
-  @@index([authorEmail])
-}
-
-model Post {
-  id        String   @id @unique
-  title     String
-  content   String?
-  date      String
-  time      String
-  published Boolean  @default(false)
-  authorId  String
+  author      User      @relation(fields: [authorId], references: [id])
 
   @@index([authorId])
 }
