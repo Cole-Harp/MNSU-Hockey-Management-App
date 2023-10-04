@@ -10,7 +10,7 @@ export const userGetEvents = cache(async (start: string, end: string): Promise<E
         const user = await getOrCreateUser();
         const events : any[] = await prisma_db.event.findMany({
           where: {
-              author: { id: user.id },
+              authorId: user.id ,
               AND: [
                 {
                   OR: [
@@ -45,11 +45,7 @@ export const createEvent = cache(async (data: any) => {
       const newEvent = await prisma_db.event.create({
         data: {
           ...data,
-          author: {
-            connect: {
-              id: user?.id,
-            },
-          },
+          authorId: user?.id
         },
       });
 
@@ -71,10 +67,9 @@ export const deleteEvent = cache(async (id: string) => {
     } else {
       const event = await prisma_db.event.delete({
         where: { id: id },
-        select: { author: { select: { id: true } } },
       });
 
-      if (event?.author.id === user?.id) {
+      if (event?.authorId === user?.id) {
         return await prisma_db.event.delete({ where: { id: id } });
       } else {
         throw new Error("User is not authorized to delete this event.");
@@ -94,11 +89,6 @@ export const updateEvent = cache(async (id: string, data: any) => {
         where: { id },
         data: {
           ...data,
-          author: {
-            connect: {
-              id: user?.id,
-            },
-          },
         },
       });
     } else {

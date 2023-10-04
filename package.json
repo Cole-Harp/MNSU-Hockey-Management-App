@@ -15,6 +15,7 @@
     "@fullcalendar/interaction": "^6.1.8",
     "@fullcalendar/react": "^6.1.8",
     "@fullcalendar/timegrid": "^6.1.8",
+    "@iconscout/react-unicons": "^2.0.2",
     "@prisma/client": "^5.3.1",
     "@radix-ui/react-dialog": "^1.0.4",
     "@types/node": "20.5.3",

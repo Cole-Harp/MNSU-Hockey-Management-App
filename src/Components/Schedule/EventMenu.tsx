@@ -1,106 +1,117 @@
-"use client";
+import { useState, MouseEventHandler, SetStateAction } from 'react';
+import { UilTrash } from '@iconscout/react-unicons/'
 
-import { useState, MouseEventHandler } from 'react';
-import { EventInput } from '@fullcalendar/core';
-import { UserRole } from '@prisma/client';
-import { deleteEvent, updateEvent } from '@/lib/db_actions/Event';
 
-interface EventMenuProps  {
-    title: string;
+interface EventMenuProps {
     onDelete: () => void;
     onSave: (newTitle: string) => void;
     onCreate: (event: any) => void;
     onClose: () => void;
-    start?: string;
-    end?: string;
-    allDay?: boolean;
+    event: any
     isNewEvent?: boolean;
 };
 
-export default function EventMenu({ title, onDelete, onSave, onClose, onCreate, start, end, allDay, isNewEvent = false }: EventMenuProps) {
-  const [newTitle, setNewTitle] = useState<string>(title);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, isNewEvent = false }: EventMenuProps) {
+    
+    const [newTitle, setNewTitle] = useState<string>(event && event.title ? event.title : "");
+    const [isEditing, setIsEditing] = useState<boolean>(false)
+    const [selectedRole, setSelectedRole] = useState('All');
+    const [newEvent, setNewEvent] = useState(isNewEvent)
 
-  const handleSave = () => {
-    isNewEvent ? (onCreate(newTitle), onClose()) : (onSave(newTitle), onClose());
-  };
+    const handleSave = () => {
+        newEvent ? (onCreate(newTitle), setNewEvent(false)) : (onSave(newTitle));
+    };
 
-  const handleDelete = () => {
-    onDelete();
-    onClose()
-  };
+    const handleDeleteClick = () => {
+        onDelete();
+        onClose();
+    };
 
-  const handleClose = () => {
-    setIsOpen(false)
-    onClose() 
-  }
+    const handleClose = () => {
+        onClose()
+    }
 
-  return (
-    <>
-     
-     
-     
-     
-          <button
-        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
-        onClick={() => setIsOpen(true)}
-      >
-        <span>...</span>
-      </button>
-      {isOpen && (
-        <div className="flex inset-0 overflow-y-auto bg-white">
-          <div className=" flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    const handleTitleDoubleClick = () => {
+        setIsEditing(true);
+        setNewEvent(false)
+    }
 
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
-            &#8203;
-            <div
-              className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="modal-headline"
-            >
-              <div className="bg-primary px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <h2 className='text-lg font-medium'>{isNewEvent ? 'Add Event' : 'Edit Event'}</h2>
-                <div className="mt-3 sm:mt-4">
-                  <label
-                    htmlFor="title"
-                    className="block text-white font-bold mb-2"
-                  >
-                    Title:
-                  </label>
-                  <input
-                    type="text"
-                    id="title"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:shadow-outline"
-                  />
-                </div>
-              </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+    const handleTitleBlur = () => {
+        setIsEditing(false);
+        handleSave();
+    }
+
+    const handleKeyDown = (e: { key: string; preventDefault: () => void; }) => {
+        if (e.key === 'Enter') {
+            setIsEditing(false);
+            handleSave();
+
+        }
+    };
+
+    const handleRoleSelect = (role: SetStateAction<string>) => {
+        setSelectedRole(role);
+    };
+
+    //TODO ADD RECURRING EVENTS
+    //TODO ADD Location
+
+
+    return (
+        <div className="flex-inline">
+            <div className="relative bg-gray-100 border-8 rounded">
+            <div className="relative ">
                 <button
-                  onClick={handleSave}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    className="absolute top-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded ml-2 right-1"
+                    onClick={() => {
+                        handleClose();
+                    }}
                 >
-                  Save
+                    <div className="flex items-center justify-center">x</div>
                 </button>
-                {!isNewEvent && <button
-                  onClick={handleDelete}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Delete
-                </button>}
-                <button
-                  onClick={handleClose}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
+                <select className="absolute top-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 right-14">
+                    <option>Coaches</option>
+                    <option>Faculty</option>
+                    <option>Player</option>
+                    <option>All</option>
+                </select>
             </div>
-          </div>
+                <div className="flex p-4 text-2xl font-bold">
+                    {isEditing || isNewEvent ? (
+                        <input
+                            type="text"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onBlur={handleTitleBlur}
+                            className="flex shadow appearance-none rounded w-4/6 py-1 px-3 text-gray-700 leading-tight"
+                            autoFocus
+                        />
+                    ) : (
+                        <span onDoubleClick={handleTitleDoubleClick}>{newTitle} </span>
+
+                    )}
+                </div>
+                <div className="bg-gray-100 rounded-lg shadow-lg p-4 w-full grid grid-cols-3 gap-4">
+                    <div className="text-sm font-medium text-gray-500">When</div>
+                    <div className="col-span-2">{event && event.start ? event.start.toLocaleString() : "All Day"}</div>
+
+                    <div className="text-sm font-medium text-gray-500">Where</div>
+                    <div className="col-span-2">{"The Rink"}</div>
+                    <div className="text-sm font-medium text-gray-500">Agenda</div>
+                    <div className="col-span-2">{"We will start off in meeting, 30 min walk through, then warm up and practice"}</div>
+
+                    <div className="flex justify-left">
+                        <button
+                            className=" hover:bg-red-700 text-white font-bold py-2 px-2 rounded mx-1"
+                            onClick={handleDeleteClick}
+                        >
+                            <div className="flex items-center justify-center"><UilTrash></UilTrash></div>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
-      )}
-    </>
-  );
+    );
 }

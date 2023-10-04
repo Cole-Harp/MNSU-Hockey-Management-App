@@ -35,11 +35,11 @@ model Event {
   start       DateTime?
   end         DateTime?
   role        UserRole
-  authorEmail String
+  authorId String
   allDay      Boolean?
-  author      User      @relation(fields: [authorEmail], references: [email])
+  author      User      @relation(fields: [authorId], references: [id])
 
-  @@index([authorEmail])
+  @@index([authorId])
 }
 
 enum UserRole {
