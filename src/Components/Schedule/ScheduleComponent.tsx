@@ -1,57 +1,72 @@
 "use client";
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { EventInput } from '@fullcalendar/core';
-import { createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
+import { adminGetEvents, createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
 import { UserRole } from '@prisma/client';
 import EventMenu from './EventMenu';
 import { FilterComponent } from './AdminFilter';
+import { clerkClient } from '@clerk/nextjs';
+import { getAllUsers } from '@/lib/db_actions/Auth';
 
 type CalendarProps = {
   options: any;
 };
 
 const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
+  const calendarRef = useRef<FullCalendar>(null);
+  const [calendar, setCalendar] = useState<any>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [clickInfo, setClickInfo] = useState<any>(null);
   const [newEvent, setNewEvent] = useState<boolean>(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>();
+  const [users, setUsers] = useState<any>([]);
+  const [selectedPerson, setSelectedPerson] = useState<any>();
+
+  useEffect(() => {
+    if (calendarRef.current && calendarRef.current.getApi) {
+      const calendarApi = calendarRef.current.getApi()
+      setCalendar(calendarApi)
+      handleDatesSet();
+    }
+  }, [selectedRole, calendarRef]);
 
   function toEventList(events: any[]): EventInput[] {
     if (!events) {
       return [];
     }
-    return events.map((event) => {
-      const backgroundColor = event.role === UserRole.Admin ? 'red' : 'blue';
-      return {
-        id: event.id,
-        title: event.title,
-        description: event.description ?? '',
-        start: event.start,
-        end: event.end,
-        allDay: event.allDay ?? true,
-        role: event.role,
-        backgroundColor: "purple",
-      };
-    });
+    return events
+      .filter((event) => !selectedRole || event.role === selectedRole)
+      .map((event) => {
+        const backgroundColor = event.role === UserRole.Admin ? 'red' : 'blue';
+        return {
+          id: event.id,
+          title: event.title,
+          description: event.description ?? '',
+          start: event.start,
+          end: event.end,
+          allDay: event.allDay ?? true,
+          role: event.role,
+          backgroundColor: "purple",
+          authorId: event.authorId,
+        };
+      });
   };
 
-  const handleDatesSet = async (dateInfo: { view: { calendar: any; }; startStr: any; endStr: any; }) => {
-    const calendar = dateInfo.view.calendar;
-    const start = dateInfo.startStr;
-    const end = dateInfo.endStr;
-    const events = toEventList(await userGetEvents(start, end));
-
-    events.forEach((event) => {
-      const existingEvent = calendar.getEventById(event.id);
-      if (!existingEvent) {
+  const handleDatesSet = async () => {
+    if (calendar) {
+      const start = calendar.view.activeStart;
+      const end = calendar.view.activeEnd;
+      const events = toEventList(await adminGetEvents(start, end, selectedPerson, selectedRole));
+      calendar.removeAllEvents();
+      events.forEach((event) => {
         calendar.addEvent(event);
-      }
-    });
+      });
+    }
   };
 
   const handleEventResize = async (info: any) => {
@@ -160,21 +175,24 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     setIsEditing(false);
   }
 
-  const handleCustomButtonClick = () => {
+  const handleCustomButtonClick = async () => {
+    setUsers(await getAllUsers())
     setShowFilter(!showFilter);
   };
 
-  const handleFilter = (role: any) => {
-    console.log('Filter by role:', role);
-    // TODO Implement your filtering logic
+  const handleFilter = async (role: any, selectedPerson: any) => {
+    setSelectedRole(role);
+    setSelectedPerson(selectedPerson);
+
+
   };
 
   return (
     <div className='m-3'>
 
       <div>
-        {showFilter && <FilterComponent onFilter={handleFilter} />}
-        <FullCalendar
+        {showFilter && <FilterComponent onFilter={handleFilter} users={users}/>}
+        <FullCalendar           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           customButtons={{
             myCustomButton: {
@@ -187,6 +205,8 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
+
+
           initialView="dayGridMonth"
           editable={true}
           selectable={true}
@@ -199,6 +219,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           eventDrop={handleEventDrop}
           datesSet={handleDatesSet}
           selectOverlap={true}
+          
         />
       </div>
       <div style={{ zIndex: 9999 }} className='fixed z-500 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
@@ -209,6 +230,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           onCreate={handleCreate}
           event={clickInfo?.event}
           isNewEvent={newEvent}
+          
         />}
       </div>
     </div>
@@ -216,4 +238,3 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 };
 
 export default CalendarComponent;
-

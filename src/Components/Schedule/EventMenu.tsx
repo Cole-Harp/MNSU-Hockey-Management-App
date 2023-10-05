@@ -49,10 +49,6 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
         }
     };
 
-    const handleRoleSelect = (role: SetStateAction<string>) => {
-        setSelectedRole(role);
-    };
-
     //TODO ADD RECURRING EVENTS
     //TODO ADD Location
 

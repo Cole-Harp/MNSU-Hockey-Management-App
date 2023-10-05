@@ -38,6 +38,11 @@ export const getOrCreateUser = async () => {
   }
 }
 
+export const getAllUsers = async () => {
+  const users = await prisma_db.user.findMany();
+  return users;
+};
+
 
 export const isAdmin = cache(async () => {
     const { userId }: { userId: string | null } = auth();
