@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -7,48 +8,43 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { EventInput } from '@fullcalendar/core';
 import { createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
 import { UserRole } from '@prisma/client';
+import EventMenu from './EventMenu';
+import { FilterComponent } from './AdminFilter';
 
 type CalendarProps = {
-  options: any
+  options: any;
 };
 
-
 const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [clickInfo, setClickInfo] = useState<any>(null);
+  const [newEvent, setNewEvent] = useState<boolean>(false);
+  const [showFilter, setShowFilter] = useState(false);
 
   function toEventList(events: any[]): EventInput[] {
-    return events.map((event) => ({
+    if (!events) {
+      return [];
+    }
+    return events.map((event) => {
+      const backgroundColor = event.role === UserRole.Admin ? 'red' : 'blue';
+      return {
         id: event.id,
         title: event.title,
         description: event.description ?? '',
-        start: event.start ?? new Date(),
-        end: event.end ?? new Date(),
-        allDay: event.allDay ?? false,
+        start: event.start,
+        end: event.end,
+        allDay: event.allDay ?? true,
         role: event.role,
-        bubbles: true,
-        cancelBubble: false,
-        cancelable: true,
-        composed: true,
-        currentTarget: null,
-        defaultPrevented: false,
-        eventPhase: 0,
-        isTrusted: true,
-        returnValue: true,
-        srcElement: null,
-        target: null,
-        timeStamp: 0,
-        type: '',
-    }));
-  }
+        backgroundColor: "purple",
+      };
+    });
+  };
 
   const handleDatesSet = async (dateInfo: { view: { calendar: any; }; startStr: any; endStr: any; }) => {
-
     const calendar = dateInfo.view.calendar;
     const start = dateInfo.startStr;
     const end = dateInfo.endStr;
     const events = toEventList(await userGetEvents(start, end));
-
-  
-    // TODO: Filter Options Here
 
     events.forEach((event) => {
       const existingEvent = calendar.getEventById(event.id);
@@ -59,7 +55,6 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
   };
 
   const handleEventResize = async (info: any) => {
-    const calendar = info.view.calendar;
     const eventId = info.event.id;
     const updatedEvent = {
       id: info.event.id,
@@ -68,103 +63,157 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       start: info.event.start,
       end: info.event.end,
       allDay: info.event.allDay,
-      role: UserRole.Player
+      role: UserRole.Player,
     };
-
     await updateEvent(eventId, updatedEvent);
-    calendar.addvent(updatedEvent)
   };
 
   const handleEventDrop = async (info: any) => {
-    const calendar = info.view.calendar;
     const eventId = info.event.id;
     const updatedEvent = {
       id: info.event.id,
       title: info.event.title,
       description: info.event.description,
       start: info.event.start,
-      end: info.event.end,
+      end: info.end,
       allDay: info.event.allDay,
-      role: UserRole.Player
+      role: UserRole.Player,
     };
-
     await updateEvent(eventId, updatedEvent);
-    calendar.addEvent( updatedEvent)
   };
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
-    const title = prompt('Please enter a new title for your event');
-    const desc = prompt('Please enter a description for your event');
-    const start = new Date(selectInfo.startStr);
-    var end = new Date(selectInfo.endStr);
+    setClickInfo(selectInfo);
+    setNewEvent(true);
+    setIsEditing(true);
+  };
+
+  const handleEventClick = async (clickInfo: any) => {
+    setClickInfo(clickInfo);
+    setNewEvent(false);
+    setIsEditing(true);
+  };
+
+  const handleDelete = async () => {
+
+    const eventId = clickInfo.event.id;
+    await deleteEvent(eventId);
+    clickInfo.event.remove();
+
+  };
+
+  const handleCreate = async (newTitle: string) => {
+    const title = newTitle;
+    const desc = "";
+    const start = new Date(clickInfo.startStr).toISOString();
+    const end = new Date(clickInfo.endStr).toISOString();
     const role = UserRole.Player;
-    var allDay = false;
-  
-    // Ask the user if they want to create an all-day event
-    if (confirm('Do you want to create an all-day event?')) {
-      allDay = true;
-      end = start;
-    }
-  
-    const calendar = selectInfo.view.calendar;
+    const allDay = clickInfo.allDay;
+    const calendar = clickInfo.view.calendar;
     calendar.unselect();
+
     const newEvent = {
       title: title,
       description: desc,
       start: start,
       end: end,
       allDay: allDay,
-      role: role
+      role: role,
     };
-  
+
     if (title) {
       const calEvent = await createEvent(newEvent);
       calendar.addEvent(calEvent);
     }
   };
 
-  const handleEventClick = async (clickInfo: any) => {
-    if (confirm(`Are you sure you want to deconste the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
+  const handleSave = async (newTitle: string) => {
+    if (clickInfo && clickInfo.event) {
       const eventId = clickInfo.event.id;
-      await deleteEvent(eventId);
+      const updatedEvent = {
+        id: eventId,
+        title: newTitle,
+        description: clickInfo.event.description,
+        start: clickInfo.event.start,
+        end: clickInfo.event.end,
+        allDay: clickInfo.event.allDay,
+        role: UserRole.Player,
+      };
+      await updateEvent(eventId, updatedEvent);
+      clickInfo.event.setProp('title', newTitle);
+      setIsEditing(false)
+      setIsEditing(true)
     }
   };
 
-
-  function renderEventContent(eventInfo: { timeText: string | number | null | undefined; event: { title: string | number | null | undefined; }; }) {
+  function renderEventContent(clickInfo: any) {
     return (
-      <>
-        <b>{eventInfo.timeText}</b>
-        <i>{eventInfo.event.title}</i>
-      </>
+      <div className="">
+        <div className="flex text-sm font-medium text">{clickInfo.timeText}</div>
+        <div className="flex text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
+
+      </div>
     );
   }
 
+  function handleClose(): any {
+    setIsEditing(false);
+  }
+
+  const handleCustomButtonClick = () => {
+    setShowFilter(!showFilter);
+  };
+
+  const handleFilter = (role: any) => {
+    console.log('Filter by role:', role);
+    // TODO Implement your filtering logic
+  };
+
   return (
     <div className='m-3'>
-    <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-      headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
-      }}
-      initialView="dayGridMonth"
-      editable={true}
-      selectable={true}
-      selectMirror={true}
-      dayMaxEvents={true}
-      select={handleDateClick}
-      eventContent={renderEventContent}
-      eventClick={handleEventClick}
-      eventResize={handleEventResize}
-      eventDrop={handleEventDrop}
-      datesSet={handleDatesSet}
-      
-    />
-  </div>
+
+      <div>
+        {showFilter && <FilterComponent onFilter={handleFilter} />}
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          customButtons={{
+            myCustomButton: {
+              text: 'Filter',
+              click: handleCustomButtonClick,
+            },
+          }}
+          headerToolbar={{
+            left: 'prev,next today myCustomButton',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          }}
+          initialView="dayGridMonth"
+          editable={true}
+          selectable={true}
+          selectMirror={true}
+          dayMaxEvents={true}
+          select={handleDateClick}
+          eventContent={renderEventContent}
+          eventClick={handleEventClick}
+          eventResize={handleEventResize}
+          eventDrop={handleEventDrop}
+          datesSet={handleDatesSet}
+          selectOverlap={true}
+        />
+      </div>
+      <div style={{ zIndex: 9999 }} className='fixed z-500 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+        {isEditing && <EventMenu
+          onDelete={handleDelete}
+          onSave={handleSave}
+          onClose={handleClose}
+          onCreate={handleCreate}
+          event={clickInfo?.event}
+          isNewEvent={newEvent}
+        />}
+      </div>
+    </div>
   );
 };
 
 export default CalendarComponent;
+

@@ -1,7 +1,7 @@
 import Calendar from "@/Components/Schedule/ScheduleComponent";
+import { useUserContext } from "@/lib/userContext";
 
-export default async function Page() {
-
+export default function Page() {
 
   //TODO add options for querying based on user
 
