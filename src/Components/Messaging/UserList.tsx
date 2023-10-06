@@ -1,18 +1,25 @@
 'use client'
 
-
-import { FC } from 'react'
 import UserBox from './UserBox'
-import { User } from '@prisma/client'
+import { Conversation, User } from '@prisma/client'
 
 
 
-interface UserListProps { items: User[]}
+interface UserListProps { items: User[], convos: any[]}
 
-const UserList: React.FC<UserListProps> = ({items}) => {
+const UserList: React.FC<UserListProps> = ({items, convos}) => {
 
+
+    const handleClick = (event: { preventDefault: () => void; }) => {
+        event.preventDefault();
+        const conversationId = '1234'
+        location.href =    `/Messaging/${conversationId}`
+    
+      };
+    
   return( 
-  <aside className = 'inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0'>
+  <aside onClick = {handleClick}
+         className = 'inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0'>
     <div className = 'px-5'>
         <div className = 'flex-col'>
             <div className = 'text-2xl font-bold text-neutral-800 py-4'>   
@@ -24,6 +31,10 @@ const UserList: React.FC<UserListProps> = ({items}) => {
             key = {item.email}
             data = {item} 
             />))}
+        {convos.map((convo) => (
+            <div key = {convo.id}>
+                {convo.id} + '329864594326598734'
+            </div>))}
         
     </div>
 </aside>

@@ -1,6 +1,8 @@
 'use client'
 
-import { createMessage } from "@/lib/route";
+
+import { createMessage } from "@/lib/Messages/createMessage";
+import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
 
 
@@ -8,12 +10,14 @@ import React, { useState } from "react";
 const MessageInput = () => {
   const [message, setMessage] = useState("");
 
+
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     if (message.trim() !== "") {
       createMessage(message);
       setMessage("");
     }
+
   };
 
   return (

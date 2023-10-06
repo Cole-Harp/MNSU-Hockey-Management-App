@@ -1,6 +1,8 @@
+"use server"
+
 import prisma_db from "../../../prisma/db";
 import { getOrCreateUser } from "./Auth";
-import getCurrentUser from "./getCurrentUser";
+
 
  
 const getUser = async (id: string) => {

@@ -1,14 +1,14 @@
 "use server"
 
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
-import { User_role } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
 export const getOrCreateUser = async () => {
 
   const { userId }: { userId: string | null } = auth();
-  console.log(userId);
+  
 
   if (userId === null) {
     throw new Error("Something went wrong authenticating");
@@ -25,13 +25,18 @@ export const getOrCreateUser = async () => {
   } else {
     const user = auth().user
     const userEmail = user?.emailAddresses[0].toString() ?? "";
+    console.log('Current user email is: ' + userEmail)
+    
+   // const user2 = await currentUser();
+   // const userEmail2 = JSON.stringify(user2?.emailAddresses[0].emailAddress) ?? "";
+   
     const userName = user?.lastName ?? "";
     const newUser = await prisma_db.user.create({
       data: {
         id: userId,
         email: userEmail,
         name: userName,
-        role: User_role.Player,
+        role: UserRole.Player,
       },
     });
     return newUser;
@@ -56,7 +61,7 @@ export const isAdmin = cache(async () => {
         },
       });
   
-      return user?.role === User_role.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
+      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
       
     } catch (error) {
       throw new Error("Something went wrong authenticating");

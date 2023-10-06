@@ -5,7 +5,7 @@ import { FC } from 'react'
 import UserBox from './UserBox'
 import { Message, User } from '@prisma/client'
 import { auth } from '@clerk/nextjs'
-import getCurrentUser from '@/lib/db_actions/getCurrentUser'
+import getCurrentUser from '@/lib/db_actions/getCurrentUserId'
 
 
 
