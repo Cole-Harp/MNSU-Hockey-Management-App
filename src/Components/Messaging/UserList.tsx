@@ -3,25 +3,23 @@
 import { Children } from 'react';
 import UserBox from './UserBox'
 import { Conversation, User } from '@prisma/client'
-import { Link, Router, Route } from "react-router-dom"
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { FullConversation } from '@/app/types';
 
 
 
-interface UserListProps { items: User[]}
+interface UserListProps { convos: FullConversation[]}
 
-const UserList: React.FC<UserListProps> = ({items}) => {
+const UserList: React.FC<UserListProps> = ({convos}) => {
 
 
-    const handleClick = (event: { preventDefault: () => void; }) => {
-        event.preventDefault();
-        const conversationId = '1267'
-        location.href =    `/Messaging/${conversationId}`
-    
+    const handleClick = (conversationId: string) => {
+        
       };
  
 
   return( 
-  <aside onClick = {handleClick}
+  <aside 
          className = 'inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0'>
     <div className = 'px-5'>
         <div className = 'flex-col'>
@@ -29,9 +27,9 @@ const UserList: React.FC<UserListProps> = ({items}) => {
             People
             </div>
         </div>
-        {items.map((item) => ( 
+        {convos.map((item) => ( 
             <UserBox 
-            key = {item.email}
+            key = {item.id}
             data = {item} 
             />))}
         

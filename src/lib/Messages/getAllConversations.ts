@@ -27,7 +27,8 @@ export async function getAllConversations() {
             }
         },
         include: {
-            messages: true
+            messages: true,
+            users: true
         }
        })
         

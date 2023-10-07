@@ -17,7 +17,8 @@ const getUsers = async () => {
             {
                 id: currentUserId?.toString()
             }
-        }
+        },
+        include: {conversations: true}
         });
         return users
     } catch (error : any) { return []; }

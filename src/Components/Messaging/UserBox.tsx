@@ -1,20 +1,27 @@
 'use client'
 
-import { User } from '@prisma/client'
+import { Conversation, User } from '@prisma/client'
 import { FC, useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
+import Link from 'next/link'
+import { getConversationByUserIds } from '@/lib/Messages/getConversationByUserIds'
+import { auth } from '@clerk/nextjs'
+import { FullConversation, FullUser } from '@/app/types'
 
 interface UserBoxProps{
-    data: User
+    data: FullConversation
+    
 }
 
-interface UserBoxProps {}
+
 
 const UserBox: React.FC<UserBoxProps> = ({data}) => {
 
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+  
+  const router = useRouter();
+ 
+  const [isLoading, setIsLoading] = useState(false);
 
 
   return (
@@ -25,9 +32,9 @@ const UserBox: React.FC<UserBoxProps> = ({data}) => {
     <div className = 'min-w-0 flex-1'>
       <div className = 'focus:outline-none'>
         <div className = 'flex justify-between items-center mb-1'>
-          <p className = 'text-sm font-medium text-gray-900'>
-            {data.name}
-          </p>
+          <Link href = {`/Messaging/${data.id}`} className = 'text-sm font-medium text-gray-900'>
+            {data.users[0].name}
+          </Link>
         </div>
       </div>
     </div>

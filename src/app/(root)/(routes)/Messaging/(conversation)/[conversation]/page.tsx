@@ -5,7 +5,7 @@ import { getAllMessages } from "@/lib/route";
 import MessageList from "@/Components/Messaging/MessageList";
 import MessageInput from "@/Components/Messaging/MessageInput";
 import { getAllConversations } from "@/lib/Messages/getAllConversations";
-import { getConversationByUsers } from "@/lib/Messages/getConversationByUserIds";
+
 
 
 
@@ -15,10 +15,11 @@ export default async function usersLayout({ children } :{ children : React.React
   const messages = await getAllMessages();
   const convos = await getAllConversations();
   
+  
 
     return (
         <div className = 'h-full flex flex-row'>
-          <UserList items = {users}  convos = {convos} />
+          <UserList convos = {convos}/>
           <div className = 'flex-column w-full'>
             <MessageList items = {messages} />
             <MessageInput/>

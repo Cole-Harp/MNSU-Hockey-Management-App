@@ -19,7 +19,7 @@ export default async function usersLayout({ children } :{ children : React.React
 
     return (
         <div className = 'h-full flex flex-row'>
-          <UserList items = {users}  convos = {convos}  />
+          <UserList convos = {convos} />
         </div>
     )
 }
