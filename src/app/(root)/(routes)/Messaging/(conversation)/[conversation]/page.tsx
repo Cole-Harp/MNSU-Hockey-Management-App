@@ -5,6 +5,7 @@ import { getAllMessages } from "@/lib/route";
 import MessageList from "@/Components/Messaging/MessageList";
 import MessageInput from "@/Components/Messaging/MessageInput";
 import { getAllConversations } from "@/lib/Messages/getAllConversations";
+import { getConversationByUsers } from "@/lib/Messages/getConversationByUserIds";
 
 
 
@@ -24,4 +25,8 @@ export default async function usersLayout({ children } :{ children : React.React
           </div>
         </div>
     )
+}
+
+function getConversationById() {
+  throw new Error("Function not implemented.");
 }

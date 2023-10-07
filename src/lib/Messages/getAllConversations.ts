@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { Conversation } from "@prisma/client";
+import getCurrentPrismaUser from "../db_actions/getCurrentPrismaUser";
 
 export async function getAllConversations() {
     try {
@@ -12,11 +13,24 @@ export async function getAllConversations() {
         if (userId === null) {
             throw new Error("Something went wrong authenticating");
         }
+        const currentUser = await getCurrentPrismaUser()
+        if (currentUser === undefined) {
+            throw new Error("Something went wrong authenticating");
+        }
 
 
-        const conversationsByUser: Conversation[] = await prisma_db.user.findUnique({where: {id: userId}}).conversations()
-        console.log('Number of conversations by this user: ' + conversationsByUser.length)
-       
+       // const conversationsByUser: Conversation[] = await prisma_db.user.findUnique({where: {id: userId}}).conversations()
+       const conversationsByUser = await prisma_db.conversation.findMany({
+        where: {
+            users: {
+                some: { id: userId }
+            }
+        },
+        include: {
+            messages: true
+        }
+       })
+        
         return conversationsByUser
     }
     catch (error: any) {
