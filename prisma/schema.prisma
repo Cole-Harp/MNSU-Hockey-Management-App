@@ -22,8 +22,6 @@ model Conversation {
   id String @id @default(uuid())
   users User []
   messages Message[]
-  
-
 
 }
 

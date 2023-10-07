@@ -1,11 +1,12 @@
 'use client'
 
+import { Children } from 'react';
 import UserBox from './UserBox'
 import { Conversation, User } from '@prisma/client'
 
 
 
-interface UserListProps { items: User[], convos: any[]}
+interface UserListProps { items: User[], convos: Conversation[]}
 
 const UserList: React.FC<UserListProps> = ({items, convos}) => {
 
@@ -33,7 +34,7 @@ const UserList: React.FC<UserListProps> = ({items, convos}) => {
             />))}
         {convos.map((convo) => (
             <div key = {convo.id}>
-                {convo.id} + '329864594326598734'
+                {convo.id}
             </div>))}
         
     </div>

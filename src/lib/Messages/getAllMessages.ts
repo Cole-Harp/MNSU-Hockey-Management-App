@@ -1,3 +1,5 @@
+"use server"
+
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 
@@ -11,9 +13,7 @@ export async function getAllMessages(conversationId: string) {
           }
 
           const newMessage = await prisma_db.message.findMany({
-            where: {
-                id: conversationId
-            },
+            
             orderBy: {
                 createdAt: 'asc'
             }
