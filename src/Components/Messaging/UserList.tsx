@@ -1,10 +1,9 @@
 'use client'
 
-import { Children } from 'react';
+import { useRouter } from 'next/navigation';
 import UserBox from './UserBox'
-import { Conversation, User } from '@prisma/client'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import { FullConversation } from '@/app/types';
+import useConversation from '@/app/hooks/useConversation';
 
 
 
@@ -12,11 +11,9 @@ interface UserListProps { convos: FullConversation[]}
 
 const UserList: React.FC<UserListProps> = ({convos}) => {
 
+    const router = useRouter();
 
-    const handleClick = (conversationId: string) => {
-        
-      };
- 
+    const { conversationId, isOpen } = useConversation()
 
   return( 
   <aside 
@@ -24,13 +21,14 @@ const UserList: React.FC<UserListProps> = ({convos}) => {
     <div className = 'px-5'>
         <div className = 'flex-col'>
             <div className = 'text-2xl font-bold text-neutral-800 py-4'>   
-            People
+            Messages
             </div>
         </div>
         {convos.map((item) => ( 
             <UserBox 
             key = {item.id}
             data = {item} 
+            selected = {conversationId === item.id}
             />))}
         
     </div>

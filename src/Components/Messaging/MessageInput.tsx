@@ -1,6 +1,7 @@
 'use client'
 
 
+import useConversation from "@/app/hooks/useConversation";
 import { createMessage } from "@/lib/Messages/createMessage";
 import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
@@ -9,7 +10,7 @@ import React, { useState } from "react";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
-
+  const { conversationId } = useConversation()
 
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
