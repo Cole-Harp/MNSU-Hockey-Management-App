@@ -1,3 +1,5 @@
+'use server'
+
 import prisma_db from "../../../prisma/db";
 import getCurrentPrismaUser from "../db_actions/getCurrentPrismaUser";
 
@@ -39,7 +41,7 @@ export async function POST( request: Request) {
                 messages: true
             }
         })
-
+        console.log(createNewMessage?.body)
         return createNewMessage
     }
     catch (error: any) {

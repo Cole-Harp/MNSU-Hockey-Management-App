@@ -15,7 +15,7 @@ const MessageInput = () => {
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     if (message.trim() !== "") {
-      createMessage(message);
+      createMessage(message, conversationId);
       setMessage("");
     }
 

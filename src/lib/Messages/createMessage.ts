@@ -8,11 +8,11 @@ import { getConversationId } from "./getConversationId";
 
 
 
-export async function createMessage(message: string) {
+export async function createMessage(message: string, conversationId: string) {
     try {
         
 
-        const router = useRouter()
+        
         
         console.log('createMessage: ' )
 
@@ -32,9 +32,30 @@ export async function createMessage(message: string) {
             data: {
                body: message,
                userId: userId,
-               conversationId: '1234'
+               conversation: {
+                connect: {
+                    id: conversationId
+                }
+               }
+               
             }
          })
+
+         const updatedConversation = await prisma_db.conversation.update({
+            where: {
+                id: conversationId
+            },
+            data: {
+                messages: {
+                    connect: {
+                        id: newMessage.id
+                    }
+                }
+            },
+            include: {
+                messages: true
+            }
+        })
          return newMessage
         }
     catch (error: any) {
