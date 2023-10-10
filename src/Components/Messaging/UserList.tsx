@@ -7,12 +7,13 @@ import useConversation from '@/app/hooks/useConversation';
 
 
 
-interface UserListProps { convos: FullConversation[]}
+interface UserListProps { convos: any[]}
 
 const UserList: React.FC<UserListProps> = ({convos}) => {
 
     const router = useRouter();
-
+    const users = convos[1]
+    console.log('UserList convos: ' + users)
     const { conversationId, isOpen } = useConversation()
 
   return( 

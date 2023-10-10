@@ -1,3 +1,4 @@
+'use server'
 
 import UserList from "@/Components/Messaging/UserList";
 import { getAllMessages } from "@/lib/route";
@@ -10,6 +11,9 @@ import EmptyState from "@/Components/Messaging/EmptyState";
 import Header from "@/Components/Messaging/Header";
 import Body from "@/Components/Messaging/Body";
 import Form from "@/Components/Messaging/Form";
+import { list } from "postcss";
+import { useLocation } from 'react-router-dom'
+import { withRouter } from "next/router";
 
 
 interface IParams { 
@@ -18,9 +22,12 @@ interface IParams {
 
 const ConversationId = async ({ params }: { params: IParams }) => {
 
+
   const conversation = await getConversationById(params.conversationId);
   const messages = await getMessagesByConvId(params.conversationId);
-  const convos2 = await getAllConversations();
+  console.log('params: ' + params.conversationId)
+
+ 
 
   if(!conversation) {
     return (
@@ -34,11 +41,10 @@ const ConversationId = async ({ params }: { params: IParams }) => {
 
   return (
     <div>
-      <UserList convos = {convos2}></UserList>
     <div className = 'lg:pl-80 h-full'>
         <div className = 'h-full flex flex-col'> 
           <Header conversation = {conversation} />
-          <Body />
+          <MessageList items = {messages}></MessageList>
           <Form />
         </div>
       </div>
