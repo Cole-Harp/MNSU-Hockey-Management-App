@@ -1,53 +1,71 @@
 "use client";
+
+import { UserRole } from '@prisma/client';
 import { getAllUsers } from "@/lib/db_actions/Auth";
-import { clerkClient } from "@clerk/nextjs";
-import { UserRole } from "@prisma/client";
-import { SetStateAction, useState } from "react";
+import { useState, useEffect } from "react";
+import Select from 'react-select';
 
 interface FilterProps {
-    onFilter: (selectedRole?: any, selectedPerson?: any) => void;
-    users: []
+  onFilter: (selectedRole?: any, selectedPerson?: any) => void;
 }
 
+export function FilterComponent({ onFilter }: FilterProps) {
+  const [selectedRole, setSelectedRole] = useState<string>();
+  const [selectedPerson, setSelectedPerson] = useState<string>();
+  const [users, setUsers] = useState<any[]>([]);
 
-
-export function FilterComponent({ onFilter, users }: FilterProps) {
-    const [selectedRole, setSelectedRole] = useState<string>("");
-    const [selectedPerson, setSelectedPerson] = useState()
-
-    
-  
-    const handleFilterChange = (e: { target: { value: SetStateAction<string>; }; }) => {
-      setSelectedRole(e.target.value);
-      onFilter(selectedRole, selectedPerson);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const fetchedUsers = await getAllUsers();
+      setUsers(fetchedUsers);
     };
+    fetchUsers();
+  }, []);
 
-    const handlePersonChange = (e: any) => {
-      setSelectedPerson(e.target.value);
-      onFilter(selectedRole, selectedPerson);
-    };
+
+
+  const userOptions = [
+    { value: undefined, label: 'All Users' },
+    { value: "me", label: 'Me' },
+    ...users.map((user) => ({
+      value: user.id,
+      label: user.name,
+    })),
+  ];
+
+  const roleOptions = [
+    { value: undefined, label: 'All Roles' },
+    { value: UserRole.Faculty, label: 'Faculty' },
+    { value: UserRole.Coach, label: 'Coaches' },
+    { value: UserRole.Admin, label: 'Admin' },
+    { value: UserRole.Player, label: 'Player' },
+  ];
   
-    return (
-      <div>
-        <select className="my-2" value={selectedRole} onChange={handleFilterChange}>
-          <option value={UserRole.Faculty}>Faculty</option>
-          <option value={UserRole.Coach}>Coaches</option>
-          <option value={UserRole.Player}>Faculty</option>
-          <option value={UserRole.Admin}>Player</option>
-        </select>
-        <div className="grid grid-cols-3 gap-4">
-        <select className="my-2" value={selectedPerson} onChange={handlePersonChange}>
-        <option value={undefined}>All</option>
-      {users.map((user: any) => (
-    <option value={user.id as string} >
-      {user.name}
-    </option>
-    
-  ))}
-          </select>
-    </div>
+
+  return (
+    <div className='my-2'>
+      <div className="flex items-center pointer-events-auto">
+      <Select
+          options={roleOptions}
+          value={roleOptions.find((option) => option.value === selectedRole)}
+          onChange={(option) => setSelectedRole(option?.value)}
+          placeholder="Select Role"
+          className="w-64"
+        />
       </div>
-      
-    );
-  }
-  
+      <Select
+          options={userOptions}
+          value={userOptions.find((userOptions) => userOptions.value === selectedPerson)}
+          onChange={(option) => setSelectedPerson(option?.value)}
+          placeholder={selectedPerson ? userOptions.find((userOptions) => userOptions.value === selectedPerson)?.label : 'Select User'}
+          className="w-64 pointer-events-auto mt-2"
+        />
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+        onClick={() => onFilter(selectedRole, selectedPerson)}
+      >
+        Apply filters
+      </button>
+    </div>
+  );
+}
