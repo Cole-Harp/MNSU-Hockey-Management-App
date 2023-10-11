@@ -19,10 +19,12 @@ model User {
 }
 
 model Conversation {
-  id String @id @default(uuid())
-  users User []
+  id    String   @id 
+  email String   @unique
+  name  String?
+  role UserRole @default(Player)
   messages Message[]
-
+  events Event[]
 }
 
 
