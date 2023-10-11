@@ -10,6 +10,8 @@ const config: Config = {
     extend: {
       colors: {
         white: "var(-white)",
+        'mnsu_purple': '#480059',
+        'mnsu_gold' : '#F7E400',
         stone: {
           100: "var(-stone-100)",
           200: "var(-stone-200)",

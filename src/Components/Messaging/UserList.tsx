@@ -1,28 +1,35 @@
 'use client'
 
-
-import { FC } from 'react'
+import { useRouter } from 'next/navigation';
 import UserBox from './UserBox'
-import { User } from '@prisma/client'
+import { FullConversation } from '@/app/types';
+import useConversation from '@/app/hooks/useConversation';
 
 
 
-interface UserListProps { items: User[]}
+interface UserListProps { convos: any[]}
 
-const UserList: React.FC<UserListProps> = ({items}) => {
+const UserList: React.FC<UserListProps> = ({convos}) => {
+
+    const router = useRouter();
+    const users = convos[1]
+    console.log('UserList convos: ' + users)
+    const { conversationId, isOpen } = useConversation()
 
   return( 
-  <aside className = 'inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0'>
+  <aside 
+         className = 'inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0'>
     <div className = 'px-5'>
         <div className = 'flex-col'>
             <div className = 'text-2xl font-bold text-neutral-800 py-4'>   
-            People
+            Messages
             </div>
         </div>
-        {items.map((item) => ( 
+        {convos.map((item) => ( 
             <UserBox 
-            key = {item.email}
+            key = {item.id}
             data = {item} 
+            selected = {conversationId === item.id}
             />))}
         
     </div>

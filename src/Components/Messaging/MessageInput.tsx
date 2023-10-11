@@ -1,23 +1,28 @@
 'use client'
 
-import { createMessage } from "@/lib/route";
+
+import useConversation from "@/app/hooks/useConversation";
+import { createMessage } from "@/lib/Messages/createMessage";
+import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
 
 
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
+  const { conversationId } = useConversation()
 
   const handleSubmit = (event: { preventDefault: () => void; }) => {
     event.preventDefault();
     if (message.trim() !== "") {
-      createMessage(message);
+      createMessage(message, conversationId);
       setMessage("");
     }
+
   };
 
   return (
-    <form onSubmit={handleSubmit} className = 'flex w-1/2 bottom-0'>
+    <form onSubmit={handleSubmit} className = 'flex absolute w-1/2 bottom-0'>
       <input
         className = 'w-full border-2 border-gray-900 rounded-full px-3'
         type="text"

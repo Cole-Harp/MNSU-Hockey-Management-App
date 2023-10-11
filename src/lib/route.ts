@@ -1,7 +1,7 @@
 "use server";
 
 import { NextResponse } from 'next/server'
-import getCurrentUser from '@/lib/db_actions/getCurrentUser';
+import getCurrentUser from '@/lib/db_actions/getCurrentUserId';
 import prisma_db from '../../prisma/db';
 import getUser from '@/lib/db_actions/getOtherUser';
 import { error } from 'console';
