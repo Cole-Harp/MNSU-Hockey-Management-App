@@ -14,7 +14,7 @@ export const getOrCreateUser = async () => {
     throw new Error("Something went wrong authenticating");
   }
 
-  const existingUser = await prisma_db.user.findUnique({
+  const existingUser = await prisma_db.user.findFirst({
     where: {
       id: userId,
     },
@@ -22,10 +22,10 @@ export const getOrCreateUser = async () => {
 
   if (existingUser) {
     return existingUser;
-  } else {
+  } else try {
     const user = auth().user
-    const userEmail = user?.emailAddresses[0].toString() ?? "";
-    const userName = user?.lastName ?? "";
+    const userEmail = user?.primaryEmailAddressId ?? Math.random.toString();
+    const userName = user?.lastName;
     const newUser = await prisma_db.user.create({
       data: {
         id: userId,
@@ -35,16 +35,23 @@ export const getOrCreateUser = async () => {
       },
     });
     return newUser;
+  }catch (error) {
+    throw new Error();
   }
 }
 
+export const getAllUsers = async () => {
+  const users = await prisma_db.user.findMany();
+  return users;
+};
 
-export const isAdmin = cache(async () => {
+
+export const getAdmin = cache(async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
   
     if (userId === null) {
-      return { isAdmin: true, user: undefined };
+      return { isAdmin: false, user: undefined };
     }
   
     const clerkId = userId;
@@ -56,7 +63,33 @@ export const isAdmin = cache(async () => {
         },
       });
   
-      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: true, user: user };
+      return user?.role === UserRole.Admin ? { isAdmin: true, user: user } : { isAdmin: false, user: user };
+      
+    } catch (error) {
+      throw new Error("Something went wrong authenticating");
+    }
+  });
+
+  
+
+  export const isAdmin = cache(async () => {
+    const { userId }: { userId: string | null } = auth();
+    console.log(userId);
+  
+    if (userId === null) {
+      return false;
+    }
+  
+    const clerkId = userId;
+  
+    try {
+      const user = await prisma_db.user.findUnique({
+        where: {
+          id: clerkId,
+        },
+      });
+  
+      return user?.role === UserRole.Admin ? true : false;
       
     } catch (error) {
       throw new Error("Something went wrong authenticating");
