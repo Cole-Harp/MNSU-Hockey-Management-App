@@ -1,6 +1,8 @@
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
+// This hook allows a component to get information from the conversation
+
 const useConversation = () => {
   const params = useParams();
 

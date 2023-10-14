@@ -7,6 +7,10 @@ import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
 
 
+// This component renders an input box at the bottom of the sceen for a user to input messages. 
+// TODO: Make the box stick to the bottom of the screen, and not cover up messages
+
+
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");

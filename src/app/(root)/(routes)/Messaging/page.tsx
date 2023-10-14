@@ -1,19 +1,16 @@
+'use server'
 
-
-import getUsers from "@/lib/db_actions/getUsers";
 import UserList from "@/Components/Messaging/UserList";
-import { getAllMessages } from "@/lib/route";
-import MessageList from "@/Components/Messaging/MessageList";
-import MessageInput from "@/Components/Messaging/MessageInput";
 import { getAllConversations } from "@/lib/Messages/getAllConversations";
 
 
-
+// This page should display a list of conversations for the user to select from
+// TODO: Make a button to create a conversation
+// TODO: Order Conversations by time last message was sent
 
 export default async function usersLayout({ children } :{ children : React.ReactNode })
 {
-  const users = await getUsers();
-  const messages = await getAllMessages();
+ 
   const convos = await getAllConversations();
  
 

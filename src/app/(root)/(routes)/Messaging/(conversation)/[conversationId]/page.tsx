@@ -1,20 +1,16 @@
 'use server'
 
-import UserList from "@/Components/Messaging/UserList";
-import { getAllMessages } from "@/lib/route";
+
 import MessageList from "@/Components/Messaging/MessageList";
 import MessageInput from "@/Components/Messaging/MessageInput";
 import { getConversationById } from "@/lib/Messages/getConversationById";
-import { getAllConversations } from "@/lib/Messages/getAllConversations";
 import { getMessagesByConvId } from "@/lib/Messages/getMessagesByConvId";
 import EmptyState from "@/Components/Messaging/EmptyState";
 import Header from "@/Components/Messaging/Header";
-import Body from "@/Components/Messaging/Body";
-import Form from "@/Components/Messaging/Form";
-import { list } from "postcss";
-import { useLocation } from 'react-router-dom'
-import { withRouter } from "next/router";
 
+
+// This page should display the conversation that was clicked on by the user from the messaging dashboard
+// IParams takes the conversationId from the URL for use in the query
 
 interface IParams { 
   conversationId: string
@@ -25,9 +21,7 @@ const ConversationId = async ({ params }: { params: IParams }) => {
 
   const conversation = await getConversationById(params.conversationId);
   const messages = await getMessagesByConvId(params.conversationId);
-  console.log('params: ' + params.conversationId)
-
- 
+  
 
   if(!conversation) {
     return (

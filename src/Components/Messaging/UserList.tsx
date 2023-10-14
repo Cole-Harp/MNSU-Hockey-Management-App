@@ -6,6 +6,9 @@ import { FullConversation } from '@/app/types';
 import useConversation from '@/app/hooks/useConversation';
 
 
+// This component renders a list of all conversations that the current user has, using the UserBox component
+// TODO: Add a way to create a new conversation 
+
 
 interface UserListProps { convos: any[]}
 

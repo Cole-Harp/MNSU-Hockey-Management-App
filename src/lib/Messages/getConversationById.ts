@@ -5,15 +5,17 @@ import prisma_db from "../../../prisma/db";
 import { Conversation } from "@prisma/client";
 import getCurrentPrismaUser from "../db_actions/getCurrentPrismaUser";
 
-export async function getConversationById(conversationId: string) {
+// This function returns an entire conversation object, given the conversationId. Useful for getting the connected users and messages
+// when you only have the ID of the conversation
 
-    console.log('getConversationById: ' + conversationId)
+
+export async function getConversationById(conversationId: string) {
 
     try {
 
        const conversationById = await prisma_db.conversation.findFirst({
         where: {
-            id: '7e74b268-0983-40c5-aee6-2dc7f7b23390'
+            id: conversationId
         },
         include: {
             users: true,

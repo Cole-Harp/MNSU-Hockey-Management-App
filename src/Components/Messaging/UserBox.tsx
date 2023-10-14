@@ -11,6 +11,12 @@ import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
 import { useSession } from '@clerk/nextjs'
 
+
+
+// This component will render a box that links to a conversation. It will show the avatar of the other user in a conversation, 
+// the last message sent in the conversation, the name of the other user in the conversation, and the time of the last message sent
+
+
 interface UserBoxProps{
     data: FullConversation
     selected?: boolean
@@ -23,6 +29,8 @@ const UserBox: React.FC<UserBoxProps> = ({data, selected}) => {
   const otherUser = useOtherUser(data);
   const session = useSession();
   const router = useRouter();
+
+  // When the box is clicked, the user is sent to the corresponding conversation
 
   const handleClick = useCallback(() => {
     router.push(`/Messaging/${data.id}`)

@@ -10,31 +10,32 @@ datasource db {
 
 model User {
   id            String         @id
-  email         String         @unique
+  email         String?         @unique
   name          String?
   role          UserRole       @default(Player)
   events        Event[]
   conversations Conversation[]
-  
 }
 
 model Conversation {
-  id String @id @default(uuid()) @unique
+   id String @id @default(uuid()) @unique
   users User []
   messages Message[]
-
 }
 
 model Event {
-  id          String    @id
-  title       String
-  description String?
-  start       DateTime?
-  end         DateTime?
-  role        UserRole
-  authorId    String
-  allDay      Boolean?
-  author      User      @relation(fields: [authorId], references: [id])
+  id              String    @id @default(uuid())
+  title           String
+  where           String?
+  description     String?
+  backgroundColor String?
+  start           DateTime?
+  end             DateTime?
+  role            UserRole
+  authorId        String
+  allDay          Boolean?
+  announcement    Boolean?
+  author          User      @relation(fields: [authorId], references: [id])
 
   @@index([authorId])
 }
@@ -46,9 +47,9 @@ model Message {
   userId    String
 
   conversationId String
-  conversation Conversation @relation(fields:[conversationId], references: [id])
-  @@index([conversationId])
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
 
+  @@index([conversationId])
 }
 
 model Post {
@@ -64,13 +65,6 @@ model Post {
 }
 
 enum UserRole {
-  Admin
-  Coach
-  Faculty
-  Player
-}
-
-enum EventRole {
   Admin
   Coach
   Faculty

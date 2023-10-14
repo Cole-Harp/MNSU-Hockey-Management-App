@@ -3,18 +3,14 @@
 import { useRouter } from "next/navigation";
 import prisma_db from "../../../prisma/db";
 import getCurrentUserId from "../db_actions/getCurrentUserId";
-import getConversation from "./getConversation";
-import { getConversationId } from "./getConversationId";
 
 
+// This function creates a new message given the body of the message, and the conversation to add it to. It then updates the
+// conversation by connecting the newly created message to the conversation
 
 export async function createMessage(message: string, conversationId: string) {
     try {
         
-
-        
-        
-        console.log('createMessage: ' )
 
         const userId = await getCurrentUserId()
         if(userId === undefined)
@@ -22,11 +18,6 @@ export async function createMessage(message: string, conversationId: string) {
             throw new Error('createMessage: invalid user')
         }
 
-        const currentConversation = await getConversation()
-        if(currentConversation === undefined || currentConversation === null)
-        {
-            throw new Error('createMessage: invalid conversation')
-        }
 
         const newMessage = await prisma_db.message.create({
             data: {
