@@ -31,6 +31,8 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
     when: formatEventDate(event, start),
     where: event && event.extendedProps.where ? event.extendedProps.where : "",
     desc: event && event.extendedProps.description ? event.extendedProps.description : "",
+    backgroundColor: event && event.backgroundColor ? event.backgroundColor : "",
+    // announcement: event.extendedProps.announcement ? event.extendedProps.announcement as boolean : true,
     ...event,
   });
   const [isEditing, setIsEditing] = useState<boolean>(isNewEvent ? true : false)
@@ -46,8 +48,8 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
   }
 
   const handleCreate = () => {
-    setNewEvent(false), onCreate(eventDetails), setIsEditing(false);
-  };
+    setNewEvent(false), onCreate(eventDetails), handleSave(); //Added handle save to avoid async error def a better way to this
+  };                                                          // Some type of useEffect
 
   const handleDeleteClick = () => {
     onDelete();
@@ -144,7 +146,8 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
           )}
 
           {(eventDetails.desc != "" || isEditing || newEvent) && (
-          <><div className="text-sm font-medium text-gray-500">Desc</div><div className="col-span-2">
+            <><div className="text-sm font-medium text-gray-500">Desc</div>
+            <div className="col-span-2">
 
               {isEditing || newEvent ? (
                 <input
@@ -158,23 +161,25 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
             </div></>)}
 
           <div className="flex justify-left">
-            {isEditing || newEvent ? (
+            {(!eventDetails.announcement && (isEditing || newEvent)) ? (
 
-<div><button
-                className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded"
-                onClick={handleEditClick}
-              >
-                Save
-              </button>
               <div>
+                <button
+                  className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded"
+                  onClick={handleEditClick}
+                >
+                  Save
+                </button>
+                <div>
                   <select
-                    className="p-1 absolute bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4"
+                    className="p-1 absolute bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4 bottom-3"
                     onChange={(e) =>
                       setEventDetails((event: any) => ({
                         ...event,
                         backgroundColor: e.target.value,
                       }))
                     }
+                    value={eventDetails.backgroundColor}
                   >
                     <optgroup className='' label="Colors">
                       <option value="Blue">Blue</option>
@@ -190,16 +195,18 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
                     )}
                   </select>
                   {admin && (
-                    <select className="absolute bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 mr-2 right-28">
+                    <select className="absolute bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 mr-2 right-28 bottom-3">
+                                          <optgroup className='' label="For:">
                       <option>Me</option>
                       <option>Coaches</option>
                       <option>Faculty</option>
                       <option>Player</option>
                       <option>All</option>
+                      </optgroup>
                     </select>
                   )}</div>
-                  </div>
-                  
+              </div>
+
 
             ) : (
               <button

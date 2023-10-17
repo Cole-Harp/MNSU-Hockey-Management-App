@@ -19,11 +19,13 @@ type CalendarProps = {
 const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
   const calendarRef = useRef<FullCalendar>(null);
   const [calendar, setCalendar] = useState<any>(null)
+  const [annoncments, setAnnoncments] = useState<boolean>(false)
+
   const [clickInfo, setClickInfo] = useState<any>(null);
   const [eventState, setEventState] = useState({ isEditing: false, isNewEvent: false });
   const [showFilter, setShowFilter] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>();
-  const [selectedPerson, setSelectedPerson] = useState<any>();
+  const [selectedPerson, setSelectedPerson] = useState<any>("me");
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
@@ -32,38 +34,61 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       setCalendar(calendarApi)
       handleDatesSet();
     }
-  }, [selectedRole, selectedPerson, calendarRef.current]);
+  }, [selectedRole, selectedPerson, calendarRef.current, admin]);
 
   const handleDatesSet = async () => {
     if (calendar) {
       const start = calendar.view.activeStart;
       const end = calendar.view.activeEnd;
+      setAdmin(await isAdmin());
 
-      if (!admin) {
-      const events = await userGetEvents(start, end);
-      const currentEvents = calendar.getEvents();
-  
-      events.forEach((event) => {
-        // Check if the event already exists in the calendar
-        const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-  
-        // If the event doesn't exist, add it to the calendar
-        if (!existingEvent) {
-          let inputEvent = toEvent(event);
-          calendar.addEvent(inputEvent);
-        }
-      });
-  
-      setAdmin(await isAdmin());}
-  
-      if (admin) {
-        const events = await adminGetEvents(start, end, selectedPerson, selectedRole);
+
+      // if (annoncments == true && calendar) {
+      //   const events = await userGetEvents(start, end);
+      //   const currentEvents = calendar.getEvents();
+      //   calendar.removeAllEvents();
+
+      //   events.forEach((event) => {
+      //     // Check if the event already exists in the calendar
+      //     const existingEvent = currentEvents.find((e: { id: string; backgroundColor: string; }) => e.backgroundColor === 'Purple');
+
+      //     // If the event doesn't exist and has a background color of 'purple', add it to the calendar
+      //     if (!existingEvent && event.backgroundColor === 'purple') {
+      //       let inputEvent = toEvent(event);
+      //       calendar.addEvent(inputEvent);
+      //     }
+      //   });
+
+      //   setAdmin(await isAdmin());
+      // }
+
+
+      if (calendar && !admin) {
+        const events = await userGetEvents(start, end);
         const currentEvents = calendar.getEvents();
-  
+
         events.forEach((event) => {
           // Check if the event already exists in the calendar
           const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-  
+
+          // If the event doesn't exist, add it to the calendar
+          if (!existingEvent) {
+            let inputEvent = toEvent(event);
+            calendar.addEvent(inputEvent);
+          }
+        });
+      }
+
+
+
+      if (admin) {
+        const events = await adminGetEvents(start, end, selectedPerson, selectedRole);
+        const currentEvents = calendar.getEvents();
+
+        events.forEach((event) => {
+          // Check if the event already exists in the calendar
+          const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
+
           // If the event doesn't exist, add it to the calendar
           if (!existingEvent) {
             let inputEvent = toEvent(event);
@@ -96,10 +121,11 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
         description: event.description,
         role: event.role,
         authorId: event.authorId,
+        announcement: event.announcement
       }
     };
   };
-  
+
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
     setClickInfo(selectInfo);
     setEventState({ isNewEvent: true, isEditing: true });
@@ -122,12 +148,12 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     if (allDay) {
       // Add 1 day to the start and end if its all day date not sure why
       start.setDate(start.getDate() + 1);
-      end.setDate(end.getDate() + 1);
+      end.setDate(end.getDate() + 1)
     }
 
     const newEvent = {
-      start: new Date(start),
-      end: new Date(end),
+      start: start.toISOString(),
+      end: allDay ? start.toISOString() : end,
       allDay: allDay,
     };
 
@@ -165,10 +191,10 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
   };
 
-  const handleCreate = async (data: { title: any; where: any; desc: any; bgColor: any }) => {
+  const handleCreate = async (data: { title: any; where: any; desc: any; backgroundColor: any }) => {
     const title = data.title;
     const where = data.where
-    const bgColor = data.bgColor
+    const bgColor = data.backgroundColor
     const description = data.desc;
     const start = new Date(clickInfo.startStr);
     const end = new Date(clickInfo.endStr);
@@ -206,22 +232,30 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     setShowFilter(!showFilter);
   };
 
-  const handleFilter = async (role: any, selectedPerson: any) => {
+  const handleAnnouncements = () => {
+    setAnnoncments(!annoncments)
+  };
+
+  const handleFilter = (role: any, selectedPerson: any) => {
     setSelectedRole(role);
     setSelectedPerson(selectedPerson);
   };
 
   function renderEventContent(clickInfo: any) {
+
     return (
-      <div className="">
-        <div className="flex text-sm font-medium text">{clickInfo.timeText}</div>
-        <div className="flex text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
-      </div>
+      <>
+        <div className="m-0 border-2 w-full h-full p-1">
+        <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
+          <div className="text-sm font-medium text">{clickInfo.timeText}</div>
+          
+        </div>
+      </>
     );
   }
 
   return (
-    <div className='m-3'>
+    <div className='m-3 w-full'>
 
       <div>
         {showFilter && <FilterComponent
@@ -232,15 +266,25 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           customButtons={{
             myCustomButton: admin ? {
               text: 'Filter',
-              click: handleFilterButtonClick,
+              click: handleFilterButtonClick
             } : {},
           }}
+          views={{
+            dayGridWeek: {
+              buttonText: 'Team Schedule only',
+              click: handleAnnouncements,
+
+              eventContent: renderEventContent,
+              datesSet: handleDatesSet,
+            },
+
+          }}
           headerToolbar={{
-            left: 'prev,next today myCustomButton',
+            left: 'prev,next today dayGridWeek myCustomButton',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
-          initialView="dayGridMonth"
+          initialView="timeGridWeek"
           editable={true}
           selectable={true}
           selectMirror={true}
@@ -251,9 +295,12 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           datesSet={handleDatesSet}
           selectOverlap={true}
           eventChange={handleMove}
+          rerenderDelay={50}
+
+          scrollTime="00:06:00"
         />
       </div>
-      <div className='fixed lg:w-1/3 w-2/3 z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+      <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
         {eventState.isEditing && <EventMenu
           onDelete={handleDelete}
           onSave={handleSave}
@@ -263,6 +310,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           event={clickInfo.event}
           isNewEvent={eventState.isNewEvent}
           admin={admin}
+
 
         />}
       </div>

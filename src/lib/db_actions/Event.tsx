@@ -22,7 +22,7 @@ export const userGetEvents = cache(async (start: string, end: string): Promise<E
           {
             AND: [
               { role: user.role },
-              //TODO ADD { anouncment: true }, schema wont update
+              { announcement: true },
 
             ]
           }
