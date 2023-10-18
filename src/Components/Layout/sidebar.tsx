@@ -3,6 +3,7 @@
 import { cn } from "../../lib/utils";
 import { Home, LayoutDashboard } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 
 export const Sidebar = () => {
@@ -24,6 +25,12 @@ export const Sidebar = () => {
             label: "Schedule",
         }
     ]
+
+    useEffect(() => {
+        // Prefetch the "Messages" and "Schedule" routes
+        router.prefetch('/Messaging');
+        router.prefetch('/Schedule');
+    }, [router]);
 
     const onNavigate = (url: string) => {
 
