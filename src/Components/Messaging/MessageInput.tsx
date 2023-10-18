@@ -26,7 +26,7 @@ const MessageInput = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className = 'flex absolute w-1/2 bottom-0'>
+    <form onSubmit={handleSubmit} className = 'flex absolute w-full bottom-0'>
       <input
         className = 'w-full border-2 border-gray-900 rounded-full px-3'
         type="text"

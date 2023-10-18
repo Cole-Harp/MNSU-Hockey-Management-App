@@ -39,7 +39,7 @@ const MessageList: React.FC<MessageListProps> = ({items}) => {
                         <div className = {item.userId === userId ? 'flex justify-end mb-4' : 'flex justify-start mb-4'}>
                             <div className = 'flex-row'>
                                 <div className = {item.userId === userId ? 'flex justify-end' : 'flex justify-start'}>
-                                    I'm a Name
+                                    {item.createdBy}
                                 </div>
                                 <div className = {item.userId === userId ? 'py-3 px-4 bg-blue-400 rounded-bl-xl rounded-tl-xl rounded-tr-xl text-white' : 'py-3 px-4 bg-gray-400 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white'}>
                                     {item.body}

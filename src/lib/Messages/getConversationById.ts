@@ -18,8 +18,12 @@ export async function getConversationById(conversationId: string) {
             id: conversationId
         },
         include: {
-            users: true,
-            messages: true
+            users:  true,
+            messages: {
+                orderBy: {
+                    createdAt: 'asc' 
+                }
+            } 
         }
        })
        

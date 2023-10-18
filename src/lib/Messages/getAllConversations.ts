@@ -29,7 +29,11 @@ export async function getAllConversations() {
             }
         },
         include: {
-            messages: true,
+            messages: {
+                orderBy: {
+                    createdAt: 'asc' 
+                }
+            },
             users: true
         }
        })

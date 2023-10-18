@@ -25,7 +25,7 @@ const ConversationId = async ({ params }: { params: IParams }) => {
 
   if(!conversation) {
     return (
-      <div className = 'lg:pl-80 h-full'>
+      <div className = 'lg:h-full'>
         <div className = 'h-full flex flex-col'> 
           <EmptyState/>
         </div>
@@ -35,8 +35,8 @@ const ConversationId = async ({ params }: { params: IParams }) => {
 
   return (
     <div>
-    <div className = 'lg:pl-80 h-full'>
-        <div className = 'h-full flex flex-col'> 
+    <div className = 'h-full'>
+        <div className = 'flex flex-col'> 
           <Header conversation = {conversation} />
           <MessageList items = {messages}></MessageList>
           <MessageInput></MessageInput>

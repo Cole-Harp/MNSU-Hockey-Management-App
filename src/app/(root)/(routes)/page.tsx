@@ -23,7 +23,7 @@ const Home = async () => {
             Drill Directory
           </Link>
         </li>
-        <li className = 'p-4  border-yellow-500 border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
+        <li className = 'p-4  border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
           <Link href="/Messaging">
             Messaging Board
           </Link>
