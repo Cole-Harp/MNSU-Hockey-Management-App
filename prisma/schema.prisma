@@ -24,19 +24,19 @@ model Conversation {
 }
 
 model Event {
-  id              String    @id @default(uuid())
-  title           String
-  where           String?
-  description     String?
+  id          String    @id @default(uuid())
+  title       String
+  where       String?
+  description String?
   backgroundColor String?
-  start           DateTime?
-  end             DateTime?
-  role            UserRole
-  authorId        String
-  allDay          Boolean?
-  announcement    Boolean?
-  author          User      @relation(fields: [authorId], references: [id])
-
+  start       DateTime?
+  end         DateTime?
+  role        UserRole
+  authorId    String
+  allDay      Boolean?
+  announcement Boolean?
+  author      User      @relation(fields: [authorId], references: [id])
+ 
   @@index([authorId])
 }
 
@@ -47,8 +47,6 @@ model Message {
   userId    String
 
   conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-
   @@index([conversationId])
 }
 

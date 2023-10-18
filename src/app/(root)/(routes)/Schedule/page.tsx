@@ -3,10 +3,10 @@ import { useUserContext } from "@/lib/userContext";
 
 export default function Page() {
 
-  //TODO add options for querying based on user
+
 
   return (
-    <div>
+    <div className="m-2 flex justify-center align-middle">
       <Calendar options={null} />
     </div>
   );
