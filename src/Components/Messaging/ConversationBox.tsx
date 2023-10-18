@@ -17,13 +17,13 @@ import { useSession } from '@clerk/nextjs'
 // the last message sent in the conversation, the name of the other user in the conversation, and the time of the last message sent
 
 
-interface UserBoxProps{
+interface ConversationBoxProps{
     data: FullConversation
     selected?: boolean
     
 }
 
-const UserBox: React.FC<UserBoxProps> = ({data, selected}) => {
+const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
 
   
   const otherUser = useOtherUser(data);
@@ -64,4 +64,4 @@ const UserBox: React.FC<UserBoxProps> = ({data, selected}) => {
   </div>)
 }
 
-export default UserBox
+export default ConversationBox

@@ -1,6 +1,6 @@
 'use server'
 
-import UserList from "@/Components/Messaging/UserList";
+import ConversationList from "@/Components/Messaging/ConversationList";
 import { getAllConversations } from "@/lib/Messages/getAllConversations";
 
 
@@ -16,7 +16,7 @@ export default async function usersLayout({ children } :{ children : React.React
 
     return (
         <div className = 'h-full flex flex-row'>
-          <UserList convos = {convos} />
+          <ConversationList convos = {convos} />
         </div>
     )
 }

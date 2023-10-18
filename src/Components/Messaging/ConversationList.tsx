@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import UserBox from './UserBox'
+import UserBox from './ConversationBox'
 import { FullConversation } from '@/app/types';
 import useConversation from '@/app/hooks/useConversation';
 
@@ -10,13 +10,12 @@ import useConversation from '@/app/hooks/useConversation';
 // TODO: Add a way to create a new conversation 
 
 
-interface UserListProps { convos: any[]}
+interface ConversationListProps { convos: any[]}
 
-const UserList: React.FC<UserListProps> = ({convos}) => {
+const ConversationList: React.FC<ConversationListProps> = ({convos}) => {
 
     const router = useRouter();
     const users = convos[1]
-    console.log('UserList convos: ' + users)
     const { conversationId, isOpen } = useConversation()
 
   return( 
@@ -41,4 +40,4 @@ const UserList: React.FC<UserListProps> = ({convos}) => {
     )
 }
 
-export default UserList
+export default ConversationList
