@@ -1,5 +1,4 @@
-import Calendar from "@/Components/Schedule/ScheduleComponent";
-import { useUserContext } from "@/lib/userContext";
+import Calendar from "@/Components/Schedule/CalendarComponent";
 
 export default function Page() {
 

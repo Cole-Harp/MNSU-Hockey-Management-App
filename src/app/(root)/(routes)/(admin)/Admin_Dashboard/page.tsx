@@ -1,31 +1,24 @@
-import { isAdmin } from "@/lib/db_actions/Auth";
-import Calendar from "@/Components/Schedule/ScheduleComponent";
-import { useUserContext } from "@/lib/userContext";
+import { getAdmin, isAdmin } from "@/lib/db_actions/Auth";
+import { AdminUserEditor } from "@/Components/Admin/AdminUserEditor";
+import AdminCalendarComponent from "@/Components/Admin/AdminCalendarComponent";
 
 export default async function Page() {
 
-  const { isAdmin: adminStatus, user } = await isAdmin()
-
-  //TODO add options for querying based on user
+  const { isAdmin: adminStatus, user } = await getAdmin()
 
   return (
     <div>
       <div>
-        <h1>Welcome, {user?.name || 'Guest'}! You are an {user?.role}</h1>
+        Welcome, {user?.name || 'Guest'}! You are an {user?.role}
       </div>
       <div>
-        <Calendar options={null} />
       </div>
       {adminStatus &&
         <div>
-
-          <h1>Admin Tools</h1>
-          - Add Filtering
-          - Role
-          - Specific User
-          - All of the same Role
-          <button className="bg-primary">this should be a link route to AdminCalendar</button>
-
+          <AdminUserEditor/>
+          <div className=" border-t-4 my-5">
+          <AdminCalendarComponent isAdmin={adminStatus}/>
+          </div>
         </div>
       }
     </div>

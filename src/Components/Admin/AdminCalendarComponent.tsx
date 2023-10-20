@@ -4,29 +4,25 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { EventInput } from '@fullcalendar/core';
 import { adminGetEvents, createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
 import { UserRole } from '@prisma/client';
-import EventMenu from './EventMenu';
-import { FilterComponent } from './AdminFilter';
-import { getAllUsers, isAdmin } from '@/lib/db_actions/Auth';
-import moment from 'moment';
+import EventMenu from '../Schedule/EventMenu';
+import { FilterComponent } from '../Schedule/AdminFilter';
 
 type CalendarProps = {
-  options: any;
+  isAdmin: boolean;
 };
 
-const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
+const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarProps) => {
+
   const calendarRef = useRef<FullCalendar>(null);
   const [calendar, setCalendar] = useState<any>(null)
   const [annoncments, setAnnoncments] = useState<boolean>(false)
-
   const [clickInfo, setClickInfo] = useState<any>(null);
   const [eventState, setEventState] = useState({ isEditing: false, isNewEvent: false });
-  const [showFilter, setShowFilter] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>();
   const [selectedPerson, setSelectedPerson] = useState<any>("me");
-  const [admin, setAdmin] = useState(false);
+  const [admin] = useState<boolean>(isAdmin);
 
   useEffect(() => {
     if (calendarRef.current && calendarRef.current.getApi) {
@@ -40,46 +36,6 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     if (calendar) {
       const start = calendar.view.activeStart;
       const end = calendar.view.activeEnd;
-      setAdmin(await isAdmin());
-
-
-      // if (annoncments == true && calendar) {
-      //   const events = await userGetEvents(start, end);
-      //   const currentEvents = calendar.getEvents();
-      //   calendar.removeAllEvents();
-
-      //   events.forEach((event) => {
-      //     // Check if the event already exists in the calendar
-      //     const existingEvent = currentEvents.find((e: { id: string; backgroundColor: string; }) => e.backgroundColor === 'Purple');
-
-      //     // If the event doesn't exist and has a background color of 'purple', add it to the calendar
-      //     if (!existingEvent && event.backgroundColor === 'purple') {
-      //       let inputEvent = toEvent(event);
-      //       calendar.addEvent(inputEvent);
-      //     }
-      //   });
-
-      //   setAdmin(await isAdmin());
-      // }
-
-
-      if (calendar && !admin) {
-        const events = await userGetEvents(start, end);
-        const currentEvents = calendar.getEvents();
-
-        events.forEach((event) => {
-          // Check if the event already exists in the calendar
-          const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-
-          // If the event doesn't exist, add it to the calendar
-          if (!existingEvent) {
-            let inputEvent = toEvent(event);
-            calendar.addEvent(inputEvent);
-          }
-        });
-      }
-
-
 
       if (admin) {
         const events = await adminGetEvents(start, end, selectedPerson, selectedRole);
@@ -223,14 +179,9 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     }
   };
 
-
   function handleClose(): any {
     setEventState({ ...eventState, isEditing: false });
   }
-
-  const handleFilterButtonClick = async () => {
-    setShowFilter(!showFilter);
-  };
 
   const handleAnnouncements = () => {
     setAnnoncments(!annoncments)
@@ -246,9 +197,9 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     return (
       <>
         <div className="m-0 border-2 w-full h-full p-1">
-        <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
+          <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
           <div className="text-sm font-medium text">{clickInfo.timeText}</div>
-          
+
         </div>
       </>
     );
@@ -258,26 +209,18 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     <div className='m-3 w-full'>
 
       <div>
-        {showFilter && <FilterComponent
-          onFilter={handleFilter} />}
+        <FilterComponent
+          onFilter={handleFilter} />
 
         <FullCalendar ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          customButtons={{
-            myCustomButton: admin ? {
-              text: 'Filter',
-              click: handleFilterButtonClick
-            } : {},
-          }}
           views={{
             dayGridWeek: {
               buttonText: 'Team Schedule only',
               click: handleAnnouncements,
-
               eventContent: renderEventContent,
               datesSet: handleDatesSet,
             },
-
           }}
           headerToolbar={{
             left: 'prev,next today dayGridWeek myCustomButton',
@@ -318,4 +261,4 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
   );
 };
 
-export default CalendarComponent;
+export default AdminCalendarComponent;
