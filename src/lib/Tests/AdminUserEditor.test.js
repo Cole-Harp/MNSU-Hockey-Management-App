@@ -12,16 +12,20 @@ jest.mock('react', () => {
     useEffect: jest.fn(),
   };
 });
+
 describe('AdminUserEditor', () => {
   beforeEach(() => {
     getAllUsers.mockClear();
   });
+  
   it('fetches users on mount', () => {
     render(<AdminUserEditor />);
     expect(getAllUsers).toHaveBeenCalledTimes(1);
   });
+
   it('updates selectedUser when selectedPerson changes', () => {
   });
+
   it('updates selectedUser when handleInputChange is called', () => {
     const { getByLabelText } = render(<AdminUserEditor />);
     const input = getByLabelText('input');

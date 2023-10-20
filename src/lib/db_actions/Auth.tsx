@@ -17,7 +17,7 @@ export const getUser = async () => {
   const { userId }: { userId: string | null } = auth();
   console.log(userId);
 
-  if (userId === null) {
+  if (!userId) {
     throw new Error("Something went wrong authenticating");
   }
 
@@ -26,7 +26,18 @@ export const getUser = async () => {
       id: userId,
     },
   });
+
+  if (!existingUser) {
+    throw new Error("Something went wrong authenticating");
+  }
+
   return existingUser;
+}
+
+
+
+export const createUser = async () => {
+  
 }
 
 export const updateUser = async (data: User) => {

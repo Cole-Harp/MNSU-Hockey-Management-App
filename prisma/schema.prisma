@@ -18,9 +18,22 @@ model User {
 }
 
 model Conversation {
-  id    String   @id 
+  id       String    @id @default(uuid())
+  name     String
   messages Message[]
   Users     User[]   
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  body           String
+  createdAt      DateTime     @default(now())
+  userId         String
+  userName       String
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@index([conversationId])
 }
 
 model Event {
@@ -39,18 +52,6 @@ model Event {
 
   @@index([authorId])
 }
-
-model Message {
-  id             String       @id @default(uuid())
-  body           String
-  createdAt      DateTime     @default(now())
-  userId         String
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-
-  @@index([conversationId])
-}
-
 
 enum UserRole {
   Admin
