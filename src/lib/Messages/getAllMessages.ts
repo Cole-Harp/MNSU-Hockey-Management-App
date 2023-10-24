@@ -3,6 +3,10 @@
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 
+
+// This function returns all messages from a given conversation
+
+
 export async function getAllMessages(conversationId: string) {
     try {
         

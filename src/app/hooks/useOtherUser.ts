@@ -5,6 +5,9 @@ import getCurrentUserId from '@/lib/db_actions/getCurrentUserId'
 import { Session } from '@clerk/nextjs/server'
 import { useSession } from '@clerk/nextjs'
 
+// This hook will enable a component to use information about the other user in a conversation
+
+
 const useOtherUser = (conversation: FullConversation | { users: User[]}) => {
     const session = useSession()
     const otherUser = useMemo(() => {

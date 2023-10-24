@@ -13,6 +13,7 @@ const SheetTrigger = SheetPrimitive.Trigger
 
 const SheetClose = SheetPrimitive.Close
 
+
 const SheetPortal = ({
   className,
   ...props
@@ -62,7 +63,9 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({side = "right", className, children, ...props }, ref) => (
+  
+  
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content

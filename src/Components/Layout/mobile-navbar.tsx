@@ -1,12 +1,21 @@
-"use client"
+'use client'
 
-import { cn } from "../../lib/utils";
+import Link from 'next/link'
+import { Poppins } from "next/font/google"
 import { CalendarDays, Home, LayoutDashboard, MessageSquare } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { UserButton } from '@clerk/nextjs'
 
+const font = Poppins({
+    weight: "600",
+    subsets: ["latin"]
+})
 
-export const Sidebar = () => {
+import { cn } from "../../lib/utils"
+import { MobileSidebar } from './mobile-sidebar'
+import { usePathname, useRouter } from 'next/navigation'
+
+export const MobileNavbar = () => {
+
     const pathName = usePathname();
     const router = useRouter();
     const routes = [
@@ -24,46 +33,39 @@ export const Sidebar = () => {
             href: "/Schedule",
             label: "Schedule",
         }
+        
     ]
-
-    useEffect(() => {
-        // Prefetch the "Messages" and "Schedule" routes
-        router.prefetch('/Messaging');
-        router.prefetch('/Schedule');
-    }, [router]);
 
     const onNavigate = (url: string) => {
 
         return router.push(url)
     }
 
+    
     return (
-        <div className="space-y-4 flex flex-col h-full text-primary bg-mnsu_purple">
-
-            <div className="p-3 flex flex-1 justify-center">
-                <div className="space-y-2">
+        <div className="sm:flex-col fixed bottom-0 w-full mt-2 rounded bg-mnsu_purple md:hidden">
+            <div className="flex justify-between">
                     {routes.map((route) => (
-                        <button
-                            type = 'submit'
+                        <div
                             onClick={() => onNavigate(route.href)}
                             key={route.href}
-                            className={cn("text-muted-foreground text-xs text-mnsu_gold group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
+                            className={cn("text-muted-foreground text-xs text-mnsu_gold w-1/4 justify-center flex p-3 font-medium transition",
                                 pathName === route.href && "text-mnsu_gold"
                             )}
                         >
-                            <div className="flex flex-col gap-y-2 items-center flex-1">
+                            <div className="flex flex-col items-center">
                                 <route.icon className="h-5 w-5" />
                                 {route.label}
 
                             </div>
 
 
-                        </button>
+                        </div>
 
                     ))}
+                    <MobileSidebar/>
                 </div>
-
-            </div>
+                
         </div>
-    );
+    )
 }

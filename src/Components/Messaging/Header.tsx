@@ -5,6 +5,9 @@ import { Conversation, User } from '@prisma/client'
 import Link from 'next/link'
 import { HiEllipsisHorizontal, HiEllipsisHorizontalCircle } from 'react-icons/hi2'
 
+// This component is a header for the conversation page
+
+
 interface HeaderProps {
     conversation: Conversation & {
         users: User[]

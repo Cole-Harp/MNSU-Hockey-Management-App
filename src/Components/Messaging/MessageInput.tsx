@@ -7,6 +7,10 @@ import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
 
 
+// This component renders an input box at the bottom of the sceen for a user to input messages. 
+// TODO: Make the box stick to the bottom of the screen, and not cover up messages
+
+
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");
@@ -22,7 +26,7 @@ const MessageInput = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className = 'flex absolute w-1/2 bottom-0'>
+    <form onSubmit={handleSubmit} className = 'flex absolute w-full bottom-0'>
       <input
         className = 'w-full border-2 border-gray-900 rounded-full px-3'
         type="text"

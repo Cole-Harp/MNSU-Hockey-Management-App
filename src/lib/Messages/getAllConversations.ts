@@ -5,6 +5,10 @@ import prisma_db from "../../../prisma/db";
 import { Conversation } from "@prisma/client";
 import getCurrentPrismaUser from "../db_actions/getCurrentPrismaUser";
 
+
+// This function returns all conversations that are associated with the current user
+
+
 export async function getAllConversations() {
     try {
 
@@ -18,8 +22,6 @@ export async function getAllConversations() {
             throw new Error("Something went wrong authenticating");
         }
 
-
-       // const conversationsByUser: Conversation[] = await prisma_db.user.findUnique({where: {id: userId}}).conversations()
        const conversationsByUser = await prisma_db.conversation.findMany({
         where: {
             users: {
@@ -27,7 +29,11 @@ export async function getAllConversations() {
             }
         },
         include: {
-            messages: true,
+            messages: {
+                orderBy: {
+                    createdAt: 'asc' 
+                }
+            },
             users: true
         }
        })
