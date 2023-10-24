@@ -8,11 +8,7 @@ import { HiEllipsisHorizontal, HiEllipsisHorizontalCircle } from 'react-icons/hi
 
 
 
-const Body = () => {
-
- 
-    
-
+const Body = () => {    
     return (
         <div className = 'flex-1 overflow-y-auto'>
             Body!

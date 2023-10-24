@@ -9,8 +9,7 @@ import React from "react";
 const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 export const MobileSidebar = () => {
-    const [open, setOpen] = React.useState(true);
-    console.log('Sidebar is: ' + setOpen.toString())
+    const [open, setOpen] = React.useState(false);
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger className="md:hidden m-4">

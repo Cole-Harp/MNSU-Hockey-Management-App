@@ -31,8 +31,8 @@ const Home = async () => {
           </Link>
         </li>
         <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple text-mnsu_gold font-bold rounded-md items-center justify-center'>
-          <Link className = 'text-center' href="/">
-            Example 1
+          <Link className = 'text-center' href="/Profile">
+            Profile
           </Link>
         </li>
         <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md items-center justify-center'>
