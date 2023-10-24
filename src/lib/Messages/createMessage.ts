@@ -29,7 +29,7 @@ export async function createMessage(message: string, conversationId: string) {
         const newMessage = await prisma_db.message.create({
             data: {
                body: message,
-               createdBy: testName!,
+               userName: testName!,
                userId: userId,
                conversation: {
                 connect: {

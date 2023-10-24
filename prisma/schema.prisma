@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id            String         @id
-  email         String?         @unique
+  email         String?        @unique
   name          String?
   role          UserRole       @default(Player)
   events        Event[]
@@ -18,49 +18,48 @@ model User {
 }
 
 model Conversation {
-   id String @id @default(uuid()) @unique
-  users User []
+  id       String    @id @default(uuid())
+  name     String
+  users    User[]
   messages Message[]
 }
 
 model Event {
-  id          String    @id @default(uuid())
-  title       String
-  where       String?
-  description String?
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  start           DateTime?
+  end             DateTime?
+  role            UserRole
+  authorId        String
+  allDay          Boolean?
   backgroundColor String?
-  start       DateTime?
-  end         DateTime?
-  role        UserRole
-  authorId    String
-  allDay      Boolean?
-  announcement Boolean?
-  author      User      @relation(fields: [authorId], references: [id])
- 
+  where           String?
+  announcement    Boolean?
+  author          User      @relation(fields: [authorId], references: [id])
+
   @@index([authorId])
 }
 
 model Message {
-  id        String   @id @default(uuid())
-  body      String
-  createdAt DateTime @default(now())
-  userId    String
-  createdBy String @default("")
-
+  id             String       @id @default(uuid())
+  body           String
+  createdAt      DateTime     @default(now())
+  userId         String
+  userName       String
   conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
   @@index([conversationId])
 }
 
-model Post {
-  id        String  @id @unique
-  title     String
-  content   String?
-  date      String
-  time      String
-  published Boolean @default(false)
-  authorId  String
+model ConversationToUser {
+  A String
+  B String
 
-  @@index([authorId])
+  @@unique([A, B], map: "_ConversationToUser_AB_unique")
+  @@index([B], map: "_ConversationToUser_B_index")
+  @@map("_ConversationToUser")
 }
 
 enum UserRole {

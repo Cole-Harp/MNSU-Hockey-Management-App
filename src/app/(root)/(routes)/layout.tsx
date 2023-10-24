@@ -1,6 +1,7 @@
 import { Navbar } from "@/Components/Layout/navbar";
 import { Sidebar } from "../../../Components/Layout/sidebar";
 import React from "react";
+import { MobileNavbar } from "@/Components/Layout/mobile-navbar";
 
 
 export const metadata = {
@@ -19,6 +20,7 @@ const RootLayout = ({
       <main className = "md:pl-0 pt-16 h-full">
         {children}
       </main>
+      <MobileNavbar />
     </div>
   )
 }
