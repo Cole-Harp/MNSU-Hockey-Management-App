@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { FullConversation } from '../types'
 import { User } from '@prisma/client'
 import getCurrentUserId from '@/lib/db_actions/getCurrentUserId'
-import { Session } from '@clerk/nextjs/server'
+import { Session, clerkClient } from '@clerk/nextjs/server'
 import { useSession } from '@clerk/nextjs'
 
 // This hook will enable a component to use information about the other user in a conversation

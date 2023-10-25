@@ -9,7 +9,8 @@ import { format } from 'date-fns'
 import clsx from 'clsx'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
-import { useSession } from '@clerk/nextjs'
+import { clerkClient, useSession, useUser} from '@clerk/nextjs'
+
 
 
 
@@ -29,6 +30,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
   const otherUser = useOtherUser(data);
   const session = useSession();
   const router = useRouter();
+  
+  
 
   // When the box is clicked, the user is sent to the corresponding conversation
 
@@ -41,19 +44,17 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
     return messages[messages.length - 1]
   }, [data.messages])
 
-  
-
-
   const userName = useMemo(() => {
     return session.session?.user?.firstName
   }, [session.session?.user?.firstName])
 
 
+
+
   return (
   <div   onClick = {handleClick}
          className = 'w-full relative flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer'> 
-    <div className = 'w-12 h-12 rounded-full flex items-center justify-center bg-red-500'> DLC </div>
-    <div className = 'min-w-0 flex-1'>
+    <img className = 'w-12 h-12 rounded-full' src = 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' />
       <div className = 'focus:outline-none'>
         <div className = 'flex justify-between items-center mb-1'>
           <p  className = 'text-sm font-medium text-gray-900'>{otherUser.name}</p>
@@ -61,8 +62,11 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
         </div>
         <p className = 'truncate text-sm text-black font-medium'> {lastMessage?.body}</p>
       </div>
-    </div>
   </div>)
 }
 
 export default ConversationBox
+
+function getUser() {
+  throw new Error('Function not implemented.')
+}

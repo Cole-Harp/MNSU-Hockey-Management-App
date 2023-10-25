@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "../../lib/utils";
-import { CalendarDays, Home, LayoutDashboard, MessageSquare } from "lucide-react";
+import { CalendarDays, Home, MessageSquare, User2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -23,6 +23,11 @@ export const Sidebar = () => {
             icon: CalendarDays,
             href: "/Schedule",
             label: "Schedule",
+        },
+        {
+            icon: User2,
+            href: "/Profile",
+            label: "Profile"
         }
     ]
 
@@ -54,12 +59,8 @@ export const Sidebar = () => {
                             <div className="flex flex-col gap-y-2 items-center flex-1">
                                 <route.icon className="h-5 w-5" />
                                 {route.label}
-
                             </div>
-
-
                         </button>
-
                     ))}
                 </div>
 
