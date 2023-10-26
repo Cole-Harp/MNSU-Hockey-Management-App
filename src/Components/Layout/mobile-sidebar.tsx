@@ -6,7 +6,7 @@ import { Sheet,
 import { Sidebar } from "./sidebar"
 import React from "react";
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 1000));
+const wait = () => new Promise((resolve) => setTimeout(resolve, 500));
 
 export const MobileSidebar = () => {
     const [open, setOpen] = React.useState(false);
@@ -15,7 +15,7 @@ export const MobileSidebar = () => {
             <SheetTrigger className="md:hidden m-4">
                 <Menu />
             </SheetTrigger>
-            <SheetContent side="right" className="p-0 bg-secondary pt-10 w-32">
+            <SheetContent side="right" className="p-0 bg-secondary border-black border-l-2 w-32">
             <form
             onSubmit={(event) => {
               wait().then(() => setOpen(false));
