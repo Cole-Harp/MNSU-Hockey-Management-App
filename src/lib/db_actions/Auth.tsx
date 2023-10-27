@@ -49,7 +49,7 @@ export const updateUser = async (data: User) => {
 }
 
 
-export const getAdmin = cache(async () => {
+export const getAdmin = async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
   
@@ -71,11 +71,11 @@ export const getAdmin = cache(async () => {
     } catch (error) {
       throw new Error("Something went wrong authenticating");
     }
-  });
+  };
 
   
 
-  export const isAdmin = cache(async () => {
+  export const isAdmin = async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
   
@@ -97,4 +97,4 @@ export const getAdmin = cache(async () => {
     } catch (error) {
       throw new Error("Something went wrong authenticating");
     }
-  });
+  };

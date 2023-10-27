@@ -24,7 +24,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     if (calendarRef.current && calendarRef.current.getApi) {
       const calendarApi = calendarRef.current.getApi()
       setCalendar(calendarApi)
-      handleDatesSet();
+      // handleDatesSet();
     }
   }, [calendarRef, calendarRef.current]);
 
@@ -38,16 +38,18 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       const events = await userGetEvents(start, end);
       const currentEvents = calendar.getEvents();
 
-      events.forEach((event: { id: string; }) => {
-        // Check if the event already exists in the calendar
-        const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
+      if (events) {
+        events.forEach((event: { id: string; }) => {
+          // Check if the event already exists in the calendar
+          const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
 
-        // If the event doesn't exist, add it to the calendar
-        if (!existingEvent) {
-          let inputEvent = toEvent(event);
-          calendar.addEvent(inputEvent);
-        }
-      });
+          // If the event doesn't exist, add it to the calendar
+          if (!existingEvent) {
+            let inputEvent = toEvent(event);
+            calendar.addEvent(inputEvent);
+          }
+        });
+      }
     }
   };
 
@@ -134,7 +136,11 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
   };
 
-  const handleCreate = async (data: { title: any; where: any; desc: any; backgroundColor: any }) => {
+  const handleCreate = async (data: {
+    startRecur: any;
+    endRecur: any;
+    daysOfWeek: any; title: any; where: any; desc: any; backgroundColor: any 
+}) => {
     const title = data.title;
     const where = data.where
     const bgColor = data.backgroundColor
@@ -143,7 +149,11 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     const end = new Date(clickInfo.endStr);
     const role = UserRole.Player;
     const allDay = clickInfo.allDay;
+    const daysOfWeek = data.daysOfWeek
+    const startRecur = data.startRecur
+    const endRecur = data.endRecur
     const calendar = clickInfo.view.calendar;
+    console.log(daysOfWeek, " HERE#")
 
     if (allDay) {
       start.setDate(start.getDate() + 1); // Add 1 day to the start date not sure why
@@ -155,14 +165,17 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       end: end,
       allDay: allDay,
       backgroundColor: bgColor,
+      daysOfWeek: daysOfWeek,
+      startRecur: startRecur,
+      endRecur: endRecur, 
       where: where,
       role: role,
       description: description,
     };
 
     if (title) {
-      const calEvent = await createEvent(newEvent);
-      calendar.addEvent(calEvent);
+      // const calEvent = await createEvent(newEvent);
+      calendar.addEvent(newEvent);
     }
   };
 
@@ -182,7 +195,6 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
         <div className="m-0 border-2 w-full h-full p-1">
           <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
           <div className="text-sm font-medium text">{clickInfo.timeText}</div>
-
         </div>
       </>
     );

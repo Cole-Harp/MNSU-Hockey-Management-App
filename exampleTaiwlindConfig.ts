@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        white: "var(--white)",
-        'mnsu_purple': '#480059',
-        'mnsu_gold' : '#F7E400',
+        white: "var(-white)",
+        'team-primary-color': "var(--primary-team-color)", //Mnsu Purple
+        'team-secondary-color' : "var(--secondary-team-color)", //Mnsu Gold
         stone: {
           100: "var(-stone-100)",
           200: "var(-stone-200)",
