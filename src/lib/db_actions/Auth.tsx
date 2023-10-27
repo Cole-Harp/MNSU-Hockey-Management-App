@@ -6,6 +6,7 @@ import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
 
+
 export const getAllUsers = async () => {
   const users = await prisma_db.user.findMany();
   return users;
@@ -97,4 +98,8 @@ export const getAdmin = async () => {
     } catch (error) {
       throw new Error("Something went wrong authenticating");
     }
+
   };
+
+  });
+
