@@ -20,24 +20,10 @@ model User {
 model Conversation {
   id       String    @id @default(uuid())
   name     String
-<<<<<<< HEAD
-=======
   users    User[]
->>>>>>> master
   messages Message[]
 }
 
-model Message {
-  id             String       @id @default(uuid())
-  body           String
-  createdAt      DateTime     @default(now())
-  userId         String
-  userName       String
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-
-  @@index([conversationId])
-}
 
 model Event {
   id              String    @id @default(uuid())
@@ -56,8 +42,7 @@ model Event {
   @@index([authorId])
 }
 
-<<<<<<< HEAD
-=======
+
 model Message {
   id             String       @id @default(uuid())
   body           String
@@ -70,7 +55,6 @@ model Message {
   @@index([conversationId])
 }
 
->>>>>>> master
 enum UserRole {
   Admin
   Coach
