@@ -53,15 +53,6 @@ model Message {
   @@index([conversationId])
 }
 
-model ConversationToUser {
-  A String
-  B String
-
-  @@unique([A, B], map: "_ConversationToUser_AB_unique")
-  @@index([B], map: "_ConversationToUser_B_index")
-  @@map("_ConversationToUser")
-}
-
 enum UserRole {
   Admin
   Coach

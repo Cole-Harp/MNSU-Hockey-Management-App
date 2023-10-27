@@ -2,10 +2,17 @@
 
 import { auth, currentUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
-import { UserRole } from "@prisma/client";
+import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
-export const getOrCreateUser = async () => {
+
+export const getAllUsers = async () => {
+  const users = await prisma_db.user.findMany();
+  return users;
+};
+
+
+export const getUser = async () => {
 
   const { userId }: { userId: string | null } = auth();
   
@@ -20,35 +27,14 @@ export const getOrCreateUser = async () => {
     },
   });
 
-  if (existingUser) {
-    return existingUser;
-  } else try {
-    const user = auth().user
-    const userEmail = user?.emailAddresses[0].toString() ?? "";
-    console.log('Current user email is: ' + userEmail)
-    
-   // const user2 = await currentUser();
-   // const userEmail2 = JSON.stringify(user2?.emailAddresses[0].emailAddress) ?? "";
-   
-    const userName = user?.lastName ?? "";
-    const newUser = await prisma_db.user.create({
-      data: {
-        id: userId,
-        email: userEmail,
-        name: userName,
-        role: UserRole.Player,
-      },
-    });
-    return newUser;
-  }catch (error) {
-    throw new Error();
-  }
-}
 
-export const getAllUsers = async () => {
-  const users = await prisma_db.user.findMany();
-  return users;
-};
+export const updateUser = async (data: User) => {
+  const { id, ...rest } = data;
+  return prisma_db.user.update({
+    where: { id },
+    data: rest,
+  });
+}
 
 
 export const getAdmin = cache(async () => {

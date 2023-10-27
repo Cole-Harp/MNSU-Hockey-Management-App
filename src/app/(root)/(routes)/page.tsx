@@ -1,10 +1,8 @@
 import Link from 'next/link';
-import { getOrCreateUser } from "../../../lib/db_actions/Auth"
-import { Navbar } from '@/Components/Layout/navbar';
-import { MobileNavbar } from '@/Components/Layout/mobile-navbar';
+
 
 const Home = async () => {
-  //const user = await getOrCreateUser()
+  //const user = await getUser()
   //const email = user.email;
   return (
     <div>
