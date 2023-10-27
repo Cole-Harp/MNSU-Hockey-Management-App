@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getOrCreateUser } from "../../../lib/db_actions/Auth"
+
 
 const Home = async () => {
   //const user = await getOrCreateUser()
@@ -19,8 +19,8 @@ const Home = async () => {
           </Link>
         </li>
         <li className = 'p-4  border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
-          <Link href="/Drills">
-            Drill Directory
+          <Link href="/AddUser">
+            Add User
           </Link>
         </li>
         <li className = 'p-4  border-yellow-500 border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
