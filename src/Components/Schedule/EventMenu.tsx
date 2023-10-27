@@ -1,7 +1,9 @@
-import { useState, MouseEventHandler, SetStateAction, useEffect } from 'react';
+import { useState, MouseEventHandler, SetStateAction, useEffect, useCallback, memo } from 'react';
 import { Icon } from '@iconify/react';
-
+import Select from 'react-select';
 import Link from 'next/link';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface EventMenuProps {
   onDelete: () => void;
@@ -32,14 +34,23 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
     where: event && event.extendedProps.where ? event.extendedProps.where : "",
     desc: event && event.extendedProps.description ? event.extendedProps.description : "",
     backgroundColor: event && event.backgroundColor ? event.backgroundColor : "",
+    daysOfWeek: event && event.daysOfWeek ? event.daysOfWeek as [] : [],
+    startRecur: event && event.startRecur ? event.startRecur : start,
+    endRecur: event && event.endRecur ? event.endRecur : "event.end",
     // announcement: event.extendedProps.announcement ? event.extendedProps.announcement as boolean : true,
     ...event,
   });
+
   const [isEditing, setIsEditing] = useState<boolean>(isNewEvent ? true : false)
-  const [selectedRole, setSelectedRole] = useState('All'); //TODO ANNOUNCMENT ROLE SELECTION
   const [newEvent, setNewEvent] = useState<boolean>(isNewEvent)
+
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isAndroid = /Android/.test(navigator.userAgent);
+
+  useEffect(() => {
+    console.log(eventDetails.daysOfWeek);
+    console.log(eventDetails.startDate)
+  }, [eventDetails.daysOfWeek]);
 
 
 
@@ -48,7 +59,7 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
   }
 
   const handleCreate = () => {
-    setNewEvent(false), onCreate(eventDetails), handleSave(); //Added handle save to avoid async error def a better way to this
+    setNewEvent(false), onCreate(eventDetails), handleSave(); // Added handle save to avoid async error def a better way to this
   };                                                          // Some type of useEffect
 
   const handleDeleteClick = () => {
@@ -73,32 +84,68 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
     }
   };
 
-  //TODO ADD RECURRING EVENTS
-  //TODO ADD Location
+  const days = [
+    { label: "M", value: 1 },
+    { label: "T", value: 2 },
+    { label: "W", value: 3 },
+    { label: "Th", value: 4 },
+    { label: "F", value: 5 },
+    { label: "S", value: 6 },
+    { label: "S", value: 0 },
+  ];
+
+  const handleCheckboxChange = useCallback((event: any, value: any) => {
+    setEventDetails((prevEventDetails: { daysOfWeek: any[]; }) => {
+      if (prevEventDetails.daysOfWeek.includes(value)) {
+        return { ...prevEventDetails, daysOfWeek: prevEventDetails.daysOfWeek.filter(day => day !== value) };
+      }
+      else {
+        return { ...prevEventDetails, daysOfWeek: [...prevEventDetails.daysOfWeek, value] };
+      }
+    });
+  }, [setEventDetails]);
+
+
+  const Checkbox = ({ day, handleCheckboxChange }: any) => {
+    return (
+      <button
+        onClick={(event) => handleCheckboxChange(event, day.value)}
+        value={day.value}
+        className={`rounded-full m-1 px-2 py-1 ${eventDetails.daysOfWeek.includes(day.value) ? "text-white bg-primary" : " text-gray-700"
+          }`}
+      >
+        {day.label}
+      </button>
+    );
+  };
 
   return (
     <div className="w-full">
       <div className="relative bg-gray-100 border-8 rounded">
-        <div className="relative ">
+        <div className="relative">
           <button
-            className="absolute top-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded ml-2 right-1"
+            className="absolute top-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded ml-1 right-1"
             onClick={handleClose}
           >
             <div className="flex items-center justify-center">x</div>
           </button>
-
         </div>
-        <div className="m-3 text-2xl font-bold">
-
+        <div className="m-2 text-2xl font-bold">
           {isEditing || newEvent ? (
-            <input
-              type="text"
-              value={eventDetails.title}
-              onChange={(e) => setEventDetails({ ...eventDetails, title: e.target.value })}
-              className=" p-1 shadow appearance-none rounded w-4/6 py-1 px-3 text-gray-700 leading-tight h-8"
-              autoFocus
-
-            />
+            <>
+              <input type="text" value={eventDetails.title} onChange={(e) => setEventDetails({ ...eventDetails, title: e.target.value })} className=" shadow appearance-none rounded w-5/6 py-1 px-2 text-gray-700 leading-tight h-8" autoFocus />
+              <div className="flex w-4/6">
+                {days.map((day) => (
+                  <Checkbox
+                    key={day.value}
+                    day={day}
+                    selectedDays={days}
+                    handleCheckboxChange={handleCheckboxChange}
+                  />
+                ))}
+              </div>
+              
+            </>
           ) : (
             <div className="flex items-center">
               <span>{eventDetails.title}</span>
@@ -110,14 +157,15 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
           <div className="text-sm font-medium text-gray-500">When</div>
           <div className="col-span-2">
             {isEditing || newEvent ? (
-              //TODO ADD DATE PICKER
-              <span>{eventDetails.when}</span>
-              // <input
-              //   type="text"
-              //   value={eventDetails.when}
-              //   onChange={(e) => setEventDetails({ ...eventDetails, when: e.target.value })}
-              //   className="flex shadow appearance-none rounded w-full py-1 px-3 text-gray-700 leading-tight"
-              // />
+              <>
+                  <div className='flex'>
+                    <MobileDatePicker value={eventDetails.startDate}
+                      onChange={(newValue) => setEventDetails({...eventDetails, startRecur: newValue.toISOString()})} />
+
+                    <MobileDatePicker value={eventDetails.endDate}
+                      onChange={(newValue) => setEventDetails({...eventDetails, endRecur: newValue.toISOString() })} />
+                  </div>
+                </>
             ) : (
               <span>{eventDetails.when}</span>
             )}
@@ -147,18 +195,18 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
 
           {(eventDetails.desc != "" || isEditing || newEvent) && (
             <><div className="text-sm font-medium text-gray-500">Desc</div>
-            <div className="col-span-2">
+              <div className="col-span-2">
 
-              {isEditing || newEvent ? (
-                <input
-                  type="text"
-                  value={eventDetails.desc}
-                  onChange={(e) => setEventDetails({ ...eventDetails, desc: e.target.value })}
-                  className="flex shadow appearance-none rounded w-full py-1 px-3 text-gray-700 leading-tight" />
-              ) : (
-                <span>{eventDetails.desc}</span>
-              )}
-            </div></>)}
+                {isEditing || newEvent ? (
+                  <input
+                    type="text"
+                    value={eventDetails.desc}
+                    onChange={(e) => setEventDetails({ ...eventDetails, desc: e.target.value })}
+                    className="flex shadow appearance-none rounded w-full py-1 px-3 text-gray-700 leading-tight" />
+                ) : (
+                  <span>{eventDetails.desc}</span>
+                )}
+              </div></>)}
 
           <div className="flex justify-left">
             {(!eventDetails.announcement && (isEditing || newEvent)) ? (
@@ -196,12 +244,12 @@ export default function EventMenu({ onDelete, onSave, onClose, onCreate, event, 
                   </select>
                   {admin && (
                     <select className="absolute bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-1 rounded ml-2 mr-2 right-28 bottom-3">
-                                          <optgroup className='' label="For:">
-                      <option>Me</option>
-                      <option>Coaches</option>
-                      <option>Faculty</option>
-                      <option>Player</option>
-                      <option>All</option>
+                      <optgroup className='' label="For:">
+                        <option>Me</option>
+                        <option>Coaches</option>
+                        <option>Faculty</option>
+                        <option>Player</option>
+                        <option>All</option>
                       </optgroup>
                     </select>
                   )}</div>

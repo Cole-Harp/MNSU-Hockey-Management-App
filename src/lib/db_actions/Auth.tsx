@@ -6,6 +6,7 @@ import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
 
 
+
 export const getAllUsers = async () => {
   const users = await prisma_db.user.findMany();
   return users;
@@ -17,7 +18,7 @@ export const getUser = async () => {
   const { userId }: { userId: string | null } = auth();
   
 
-  if (userId === null) {
+  if (!userId) {
     throw new Error("Something went wrong authenticating");
   }
 
@@ -26,7 +27,14 @@ export const getUser = async () => {
       id: userId,
     },
   });
+}
 
+
+
+
+export const createUser = async () => {
+  
+}
 
 export const updateUser = async (data: User) => {
   const { id, ...rest } = data;
@@ -37,7 +45,7 @@ export const updateUser = async (data: User) => {
 }
 
 
-export const getAdmin = cache(async () => {
+export const getAdmin = async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
   
@@ -59,11 +67,11 @@ export const getAdmin = cache(async () => {
     } catch (error) {
       throw new Error("Something went wrong authenticating");
     }
-  });
+  };
 
   
 
-  export const isAdmin = cache(async () => {
+  export const isAdmin = async () => {
     const { userId }: { userId: string | null } = auth();
     console.log(userId);
   
@@ -85,4 +93,7 @@ export const getAdmin = cache(async () => {
     } catch (error) {
       throw new Error("Something went wrong authenticating");
     }
-  });
+
+  };
+
+

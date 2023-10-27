@@ -24,6 +24,7 @@ model Conversation {
   messages Message[]
 }
 
+
 model Event {
   id              String    @id @default(uuid())
   title           String
@@ -40,6 +41,7 @@ model Event {
 
   @@index([authorId])
 }
+
 
 model Message {
   id             String       @id @default(uuid())
