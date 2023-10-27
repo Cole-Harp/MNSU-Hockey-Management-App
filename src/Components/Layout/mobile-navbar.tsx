@@ -14,7 +14,7 @@ import { cn } from "../../lib/utils"
 import { MobileSidebar } from './mobile-sidebar'
 import { usePathname, useRouter } from 'next/navigation'
 
-export const Navbar = () => {
+export const MobileNavbar = () => {
 
     const pathName = usePathname();
     const router = useRouter();
@@ -33,6 +33,7 @@ export const Navbar = () => {
             href: "/Schedule",
             label: "Schedule",
         }
+        
     ]
 
     const onNavigate = (url: string) => {
@@ -42,38 +43,29 @@ export const Navbar = () => {
 
     
     return (
-        <div className="fixed w-full z-50 flex justify-between items-center py-2 h-16 bg-mnsu_purple">
-            <div className="flex items-center pl-1">
-                <MobileSidebar />
-                <Link href="/">
-                    <h1 className={cn("pl-3 hidden md:block text-xl md:text-3xl font-bold text-mnsu_gold",
-                    font.className
-                    )}>
-                        MNSU Hockey
-                    </h1>
-                </Link>
-            </div>
-            <div className="hidden md:flex">
+        <div className="sm:flex-col sticky bottom-0 w-full rounded bg-mnsu_purple md:hidden">
+            <div className="flex justify-between">
                     {routes.map((route) => (
                         <div
                             onClick={() => onNavigate(route.href)}
                             key={route.href}
-                            className={cn("flex text-muted-foreground text-xs text-mnsu_gold group p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
+                            className={cn("text-muted-foreground text-xs text-mnsu_gold w-1/4 justify-center flex p-3 font-medium transition",
                                 pathName === route.href && "text-mnsu_gold"
                             )}
                         >
-                            <div className="flex flex-col px-10 items-center">
+                            <div className="flex flex-col items-center">
                                 <route.icon className="h-5 w-5" />
                                 {route.label}
 
                             </div>
+
+
                         </div>
 
                     ))}
+                    <MobileSidebar/>
                 </div>
-            <div className="flex items-center gap-x-3 pr-3">
-                <UserButton/>
-            </div>
+                
         </div>
     )
 }

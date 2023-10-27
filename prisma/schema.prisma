@@ -18,9 +18,10 @@ model User {
 }
 
 model Conversation {
-  id    String   @id 
+  id       String    @id @default(uuid())
+  name     String
+  users    User[]
   messages Message[]
-  Users     User[]   
 }
 
 model Event {
@@ -45,12 +46,12 @@ model Message {
   body           String
   createdAt      DateTime     @default(now())
   userId         String
+  userName       String
   conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
 }
-
 
 enum UserRole {
   Admin

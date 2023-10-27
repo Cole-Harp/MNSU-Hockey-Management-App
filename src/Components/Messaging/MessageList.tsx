@@ -2,12 +2,16 @@
 
 
 import { FC } from 'react'
-import UserBox from './UserBox'
+import UserBox from './ConversationBox'
 import { Message, User } from '@prisma/client'
 import { auth } from '@clerk/nextjs'
-import getCurrentUser from '@/lib/db_actions/getCurrentUser'
+import getCurrentUser from '@/lib/db_actions/getCurrentUserId'
 
 
+// This component renders messages. Messages from the current user will show on the right of the screen, all other messages
+// will render on the left side of the screen
+// TODO: Have user's name display by message
+// TODO: Format DateTime to show just time, not the date and the time
 
 interface MessageListProps { items: Message[]}
 
@@ -18,7 +22,7 @@ const MessageList: React.FC<MessageListProps> = ({items}) => {
             throw new Error("Something went wrong authenticating");
           }
    
-          // {item.userId === userId ? 'flex w-full justify-end' : 'flex w-full'}
+         
 
     
     return( 
@@ -35,7 +39,7 @@ const MessageList: React.FC<MessageListProps> = ({items}) => {
                         <div className = {item.userId === userId ? 'flex justify-end mb-4' : 'flex justify-start mb-4'}>
                             <div className = 'flex-row'>
                                 <div className = {item.userId === userId ? 'flex justify-end' : 'flex justify-start'}>
-                                    I'm a Name
+                                    {item.userName}
                                 </div>
                                 <div className = {item.userId === userId ? 'py-3 px-4 bg-blue-400 rounded-bl-xl rounded-tl-xl rounded-tr-xl text-white' : 'py-3 px-4 bg-gray-400 rounded-br-3xl rounded-tr-3xl rounded-tl-xl text-white'}>
                                     {item.body}
