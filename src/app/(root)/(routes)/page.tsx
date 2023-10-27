@@ -1,31 +1,41 @@
 import Link from 'next/link';
-import { getUser } from "../../../lib/db_actions/Auth"
+
 
 const Home = async () => {
   //const user = await getUser()
   //const email = user.email;
   return (
     <div>
-      <h1 className = 'h-1/6 flex items-center justify-center'>Hockey Team Management</h1>
-      <ul className = 'grid grid-cols-2 gap-4 mx-4 h-3/4'>
-        <li className = 'p-4  border-mnsu_gold border-4 bg-mnsu_purple text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
-          <Link href="/Admin_Dashboard">
-            Organization and User Management
+      <h1 className = 'h-14 flex items-center justify-center'>Hockey Team Management</h1>
+      <ul className = 'grid grid-cols-2 gap-4 px-4 h-3/4 overflow-y-visible'>
+        <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/Admin_Dashboard">
+            Organization
           </Link>
         </li>
-        <li className = 'p-4 border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
-          <Link href="/Schedule">
-            Calendar and Schedule
+        <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/Schedule">
+            Calendar
           </Link>
         </li>
-        <li className = 'p-4  border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
-          <Link href="/Drills">
-            Drill Directory
+        <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/Drills">
+            Drills
           </Link>
         </li>
-        <li className = 'p-4  border-yellow-500 border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md flex items-center justify-center'>
-          <Link href="/Messaging">
-            Messaging Board
+        <li className = 'grid p-4 h-full overflow-y-hidden border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/Messaging">
+            Messaging
+          </Link>
+        </li>
+        <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/Profile">
+            Profile
+          </Link>
+        </li>
+        <li className = 'grid p-4 border-mnsu_gold border-4 bg-mnsu_purple  text-mnsu_gold font-bold rounded-md items-center justify-center'>
+          <Link className = 'text-center' href="/">
+            Example 2
           </Link>
         </li>
       </ul>

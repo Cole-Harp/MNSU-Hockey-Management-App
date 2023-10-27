@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
@@ -16,7 +16,7 @@ export const getAllUsers = async () => {
 export const getUser = async () => {
 
   const { userId }: { userId: string | null } = auth();
-  console.log(userId);
+  
 
   if (!userId) {
     throw new Error("Something went wrong authenticating");
@@ -27,13 +27,8 @@ export const getUser = async () => {
       id: userId,
     },
   });
-
-  if (!existingUser) {
-    throw new Error("Something went wrong authenticating");
-  }
-
-  return existingUser;
 }
+
 
 
 
@@ -101,5 +96,4 @@ export const getAdmin = async () => {
 
   };
 
-  });
 

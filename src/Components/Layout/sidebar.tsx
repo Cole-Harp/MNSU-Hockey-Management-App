@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "../../lib/utils";
-import { Home, LayoutDashboard } from "lucide-react";
+import { CalendarDays, Home, MessageSquare, User2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -16,13 +16,18 @@ export const Sidebar = () => {
             label: "Home",
         },
         {
-            icon: LayoutDashboard,
+            icon: MessageSquare,
             href: "/Messaging",
             label: "Messages",
         }, {
-            icon: LayoutDashboard,
+            icon: CalendarDays,
             href: "/Schedule",
             label: "Schedule",
+        },
+        {
+            icon: User2,
+            href: "/Profile",
+            label: "Profile"
         }
     ]
 
@@ -43,7 +48,8 @@ export const Sidebar = () => {
             <div className="p-3 flex flex-1 justify-center">
                 <div className="space-y-2">
                     {routes.map((route) => (
-                        <div
+                        <button
+                            type = 'submit'
                             onClick={() => onNavigate(route.href)}
                             key={route.href}
                             className={cn("text-muted-foreground text-xs text-mnsu_gold group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-black/10 rounded-lg transition",
@@ -53,12 +59,8 @@ export const Sidebar = () => {
                             <div className="flex flex-col gap-y-2 items-center flex-1">
                                 <route.icon className="h-5 w-5" />
                                 {route.label}
-
                             </div>
-
-
-                        </div>
-
+                        </button>
                     ))}
                 </div>
 
