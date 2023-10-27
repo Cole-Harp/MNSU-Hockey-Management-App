@@ -101,5 +101,4 @@ export const getAdmin = async () => {
 
   };
 
-  });
 
