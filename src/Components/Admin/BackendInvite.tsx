@@ -3,6 +3,7 @@
 import { useOrganization, useUser } from '@clerk/nextjs';
 import { clerkClient } from '@clerk/nextjs';
 import { useState } from 'react';
+import { CreateOrganizationInvitationParams } from '@clerk/types';
 
 
 
@@ -25,21 +26,34 @@ const BackendInviteUser = () => {
     
     console.log('role: ' + role + ' organizationId: ' + organization?.id + ' user id: ' + user?.id + ' email address: ' + emailAddress)
     
-
-    const onSubmit = async b => {
+    const sendInvite = async b => {
         console.log('Organization to be created: ' + {organization})
-        b.preventDefault();
-        //setDisabled(true);
-        /* inviteMember is from Clerk - https://clerk.com/docs/organizations/inviting-users */
-        // await organization?.inviteMember({ emailAddress, role });
+        setDisabled(true)
         if(!user || !organization || !role || !emailAddress)
         {
             throw new Error('Cannot send new invite')
         }
-        const inviteNewUser = await clerkClient.organizations.createOrganizationInvitation({ organizationId: organization!.id, inviterUserId: user!.id, emailAddress: emailAddress, role: role})
+        await clerkClient.organizations.createOrganizationInvitation({ organizationId: organization!.id, inviterUserId: user!.id, emailAddress: emailAddress, role: role})
+        console.log('invitation sent to: ' + emailAddress)
         setEmailAddress('');
         setRole('basic_member');
         setDisabled(false);
+        
+      };
+
+    const onSubmit = async b => {
+        console.log('Organization to be created: ' + {organization})
+        setDisabled(true)
+        if(!user || !organization || !role || !emailAddress)
+        {
+            throw new Error('Cannot send new invite')
+        }
+        await clerkClient.organizations.createOrganizationInvitation({ organizationId: organization!.id, inviterUserId: user!.id, emailAddress: emailAddress, role: role})
+        console.log('invitation sent to: ' + emailAddress)
+        setEmailAddress('');
+        setRole('basic_member');
+        setDisabled(false);
+        
       };
 
     return (

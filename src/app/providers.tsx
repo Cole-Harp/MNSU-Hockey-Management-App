@@ -17,6 +17,6 @@ export default function Providers({ children }: { children: ReactNode }) {
       <body className={cn("bg-secondary", inter.className)}>
         {children}
       </body>
-      </LocalizationProvider>
+    </LocalizationProvider>
   );
 }

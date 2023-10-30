@@ -18,7 +18,7 @@ const InviteUser = () => {
     const [disabled, setDisabled] = useState(false);
 
 
-    console.log('Organization details: ' + JSON.stringify(organization))
+    console.log('role: ' + role + ' organizationId: ' + organization?.id + ' email address: ' + emailAddress)
 
     const onSubmit = async b => {
         console.log('Organization to be created: ' + {organization})

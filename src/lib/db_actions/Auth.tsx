@@ -1,6 +1,6 @@
 "use server"
 
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth, currentUser, useUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
@@ -29,10 +29,41 @@ export const getUser = async () => {
   });
 }
 
+export const checkUser = async () => {
+  
+  const user = await currentUser()
+  console.log('current user in checkUser: ' + JSON.stringify(user))
+  if(user?.id === null)
+  { 
+    throw new Error('Auth.tsx - checkUser: Invalid Id')
+  }
+
+  const checkPrismaUser = await prisma_db.user.upsert({
+    where: {
+      id: user?.id
+  },
+  update: {
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName + ' ' + user?.lastName
+  },
+  create: {
+        id: user!.id,
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName + ' ' + user?.lastName
+  }})
+  
+}
 
 
+export const createPrismaUser = async (user: any) => {
 
-export const createUser = async () => {
+    const newPrismaUser = await prisma_db.user.create({
+      data: {
+        id: user.id,
+        email: user.emailAddresses[0].emailAddress,
+        name: user.fullName
+      }
+    })
   
 }
 

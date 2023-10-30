@@ -5,7 +5,6 @@ import MessageList from "@/Components/Messaging/MessageList";
 import MessageInput from "@/Components/Messaging/MessageInput";
 import { getConversationById } from "@/lib/Messages/getConversationById";
 import { getMessagesByConvId } from "@/lib/Messages/getMessagesByConvId";
-import EmptyState from "@/Components/Messaging/EmptyState";
 import Header from "@/Components/Messaging/Header";
 
 
@@ -27,7 +26,6 @@ const ConversationId = async ({ params }: { params: IParams }) => {
     return (
       <div className = 'lg:h-full'>
         <div className = 'h-full flex flex-col'> 
-          <EmptyState/>
         </div>
       </div>
     )
