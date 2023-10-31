@@ -1,8 +1,8 @@
 'use client'
 
-import CreateOrganization from "@/Components/Admin/CreateOrganization";
-import InviteUser from "@/Components/Admin/InviteUser";
-import OrganizationList from "@/Components/Admin/OrganizationList";
+import CreateOrganization from "@/Components/Organizations/CreateOrganization";
+import InviteUser from "@/Components/Organizations/InviteUser";
+import OrganizationList from "@/Components/Organizations/OrganizationList";
 import WelcomePage from "@/Components/Welcome/WelcomePage";
 import { ClerkLoaded, OrganizationProfile, useOrganizationList } from "@clerk/nextjs";
 
