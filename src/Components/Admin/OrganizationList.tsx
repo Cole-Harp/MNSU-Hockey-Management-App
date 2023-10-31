@@ -2,7 +2,7 @@
 
 import { useOrganizationList } from "@clerk/nextjs";
 import React from "react";
-
+import { Building } from 'lucide-react'
 
 
 const OrganizationList  = () => {
@@ -16,19 +16,25 @@ const OrganizationList  = () => {
  
     
   return (
-    <ul>
+    <div className = ' w-1/3'>
+      <ul>
         {userMemberships.data?.map((mem) => (
             <li key = {mem.id}> 
-                <span> {mem.organization.name}
-                </span>
-                <button className = 'border-2 border-slate-800 px-4 m-2'
+                <div className = 'flex flex-row'>
+                  <div className = 'flex w-10 items-center justify-center'>
+                    <Building className = ''/>
+                  </div>
+                <div className = 'flex w-1/3 text-center items-center px-2'> {mem.organization.name}</div>
+                <button className = 'border-2 border-slate-800 px-4 m-2 bg-green-400 hover:bg-green-600 rounded-full shadow-md shadow-slate-600 active:translate-y-1'
               onClick={() => setActive({ organization: mem.organization.id })}
             >
               Select
             </button>
+            </div>
             </li>
         ))}
-    </ul>
+      </ul>
+    </div>
   )
 }
 

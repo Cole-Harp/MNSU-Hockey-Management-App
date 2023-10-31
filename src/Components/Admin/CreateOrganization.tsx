@@ -12,8 +12,14 @@ const CreateOrganization = () => {
     
     const handleSubmit: FormEventHandler<HTMLFormElement> = (c) => {
         c.preventDefault();
-        console.log('Organization to be created: ' + {organizationName})
-        createOrganization({ name: organizationName });
+        if(organizationName == '')
+        {
+          throw new Error('cant be empty dawg')
+        }
+        if(organizationName != '')
+        {
+          createOrganization({ name: organizationName });
+        }
         setOrganizationName("");
       };
 
@@ -21,7 +27,7 @@ const CreateOrganization = () => {
        
     <form onSubmit={handleSubmit} className = 'm-2'>
       <input
-        className = 'border-slate-800 border-2 p-2'
+        className = 'border-slate-800 border-2 p-2 focus:border-blue-500 focus:outline-none'
         placeholder = 'Organization Name'
         type="text"
         name="organizationName"

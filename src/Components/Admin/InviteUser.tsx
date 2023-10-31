@@ -34,22 +34,22 @@ const InviteUser = () => {
     return (
        
       
-        <form onSubmit={onSubmit} className = 'flex flex-col m-2 border-2 border-black rounded'>
+        <form onSubmit={onSubmit} className = 'flex flex-col m-2 border-2 border-black px-2'>
             Enter Email to Invite
             <input type = 'text' placeholder = 'Email Address' value = {emailAddress} 
                    onChange = {b => setEmailAddress(b.target.value)}
-                   className = 'border-2 border-slate-400 m-4'/>
-            <label>
-        <input
-          type="radio"
-          checked={role === 'admin'}
-          onChange={() => {
-            setRole('admin');
-          }}
-        />{' '}
-        Admin
-      </label>
-      <label>
+                   className = 'ring-2 ring-slate-400 rounded-full my-4 px-2 focus:ring-2 focus:ring-blue-500 focus:outline-none'/>
+        <label className = 'mx-2'>
+          <input
+           type="radio"
+            checked={role === 'admin'}
+            onChange={() => {
+              setRole('admin');
+            }}
+          />{' '}
+          Admin
+        </label>
+      <label className = 'mx-2'>
         <input
           type="radio"
           checked={role === 'basic_member'}
@@ -59,9 +59,9 @@ const InviteUser = () => {
         />{' '}
         Member
       </label>{' '}
-      <button type="submit" disabled={disabled}>
-        Invite
-      </button>
+        <button type="submit" disabled={disabled} className = 'w-16 border-2 border-slate-800 m-2 bg-green-400 hover:bg-green-600 shadow-md shadow-slate-600 active:translate-y-1'>
+          Invite
+        </button>
         </form>
         
     )
