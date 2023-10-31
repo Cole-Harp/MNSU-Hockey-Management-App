@@ -34,7 +34,7 @@ const CreateOrganization = () => {
         value={organizationName}
         onChange={(c) => setOrganizationName(c.currentTarget.value)}
       />
-      <button className = 'border-slate-800 border-2 mx-4 p-2' type="submit">Create organization</button>
+      <button className = 'border-slate-800 border-2 mx-4 p-2 active:scale-95' type="submit">Create organization</button>
     </form>
   );
     

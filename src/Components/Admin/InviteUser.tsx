@@ -59,7 +59,7 @@ const InviteUser = () => {
         />{' '}
         Member
       </label>{' '}
-        <button type="submit" disabled={disabled} className = 'w-16 border-2 border-slate-800 m-2 bg-green-400 hover:bg-green-600 shadow-md shadow-slate-600 active:translate-y-1'>
+        <button type="submit" disabled={disabled} className = 'w-16 border-2 border-slate-800 m-2  hover:bg-slate-200 shadow-md shadow-slate-600 active:scale-95'>
           Invite
         </button>
         </form>

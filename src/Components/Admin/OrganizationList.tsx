@@ -25,7 +25,7 @@ const OrganizationList  = () => {
                     <Building className = ''/>
                   </div>
                 <div className = 'flex w-1/3 text-center items-center px-2'> {mem.organization.name}</div>
-                <button className = 'border-2 border-slate-800 px-4 m-2 bg-green-400 hover:bg-green-600 rounded-full shadow-md shadow-slate-600 active:translate-y-1'
+                <button className = 'border-2 border-slate-800 px-4 m-2  hover:bg-slate-200 rounded-full shadow-md shadow-slate-600 active:scale-95'
               onClick={() => setActive({ organization: mem.organization.id })}
             >
               Select
