@@ -15,6 +15,7 @@ const MemberList  = () => {
     
   return (
     <div className = ' w-1/3 bg-red-500'>
+      Org Members
       <aside>
         {membershipList?.map((m) => (
             <li key = {m.id}> 

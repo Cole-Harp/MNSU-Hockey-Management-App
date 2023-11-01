@@ -17,6 +17,7 @@ const InvitationList  = () => {
     
   return (
     <div className = ' w-1/3 bg-red-400'>
+      Pending Invitations
       <ul>
         {invitationList?.map((inv) => (
             <li key = {inv.id}> 
