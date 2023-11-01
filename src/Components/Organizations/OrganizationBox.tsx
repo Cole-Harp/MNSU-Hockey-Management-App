@@ -6,7 +6,8 @@ import { format } from 'date-fns'
 import clsx from 'clsx'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
-import { clerkClient, useSession, useUser} from '@clerk/nextjs'
+import { clerkClient, useOrganizationList, useSession, useUser} from '@clerk/nextjs'
+
 
 
 
@@ -36,15 +37,20 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
     router.push(`/Messaging/${data.id}`)
   }, [data.id, router])
 
+  const { isLoaded, setActive, userMemberships } = useOrganizationList({
+    userMemberships: {
+      infinite: false,
+    },
+  });
   
-
-
-
-
   return (
     
-    <div className = 'flex p-2 border-2 border-black items-center space-x-3 bg-white hover:bg-neutral-100 rounded-lg transition cursor-pointer'> 
-        {data.organization.name}
+    <div onClick={() => setActive({ organization: data.organization.id })} 
+         className = 'flex p-1 m-4 shadow-md shadow-neutral-400 hover:scale-105 basis-1/6 h-1/3 bg-gradient-to-b  from-mnsu_purple to-mnsu_gold items-center justify-center space-x-3 bg-red-400 rounded-lg transition cursor-pointer active:scale-95'> 
+        <div className = 'flex text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
+          {data.organization.name}
+        </div>
+        
     </div>
     
 

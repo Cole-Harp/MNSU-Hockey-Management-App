@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Poppins } from "next/font/google"
 import { CalendarDays, Home, LayoutDashboard, MessageSquare } from "lucide-react";
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, useOrganization } from '@clerk/nextjs'
 
 const font = Poppins({
     weight: "600",
@@ -18,6 +18,7 @@ export const Navbar = () => {
 
     const pathName = usePathname();
     const router = useRouter();
+    const currentOrganization = useOrganization()
     const routes = [
         {
             icon: Home,
@@ -49,7 +50,7 @@ export const Navbar = () => {
                     <h1 className={cn("pl-3 hidden md:block text-xl md:text-3xl font-bold text-mnsu_gold",
                     font.className
                     )}>
-                        MNSU Hockey
+                        {currentOrganization?.organization?.name}
                     </h1>
                 </Link>
             </div>
