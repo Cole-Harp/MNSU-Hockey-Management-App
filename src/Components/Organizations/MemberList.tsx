@@ -20,10 +20,10 @@ const MemberList  = () => {
     <div className = ' w-1/3 bg-red-500'>
       <aside>
         {membershipList?.map((m) => (
-            <li key = {m.id}> 
+            <div key = {m.id}> 
                 <div className = 'flex flex-row'>
-                  <div className = 'flex w-10 items-center justify-center'>
-                    <Building className = ''/>
+                  <div className = 'flex w-14 items-center justify-center'>
+                    <div className = 'bg-green-400 w-12 h-12 rounded-full'/>
                   </div>
                 <div className = 'flex w-1/3 text-center items-center px-2'> 
                     {m.publicUserData.firstName} {m.publicUserData.lastName} :: {m.role}
@@ -36,7 +36,7 @@ const MemberList  = () => {
                     Remove {/* Updated button text */}
                 </button>
             </div>
-            </li>
+            </div>
         ))}
       </aside>
     </div>
