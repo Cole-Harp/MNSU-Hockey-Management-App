@@ -15,7 +15,7 @@ const MemberList  = () => {
     
   return (
     <div className = ' w-1/3 bg-red-500'>
-      <ul>
+      <aside>
         {membershipList?.map((m) => (
             <li key = {m.id}> 
                 <div className = 'flex flex-row'>
@@ -31,7 +31,7 @@ const MemberList  = () => {
             </div>
             </li>
         ))}
-      </ul>
+      </aside>
     </div>
   )
 }

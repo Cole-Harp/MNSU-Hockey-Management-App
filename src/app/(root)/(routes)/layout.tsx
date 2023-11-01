@@ -15,7 +15,7 @@ const RootLayout = ({
   children: React.ReactNode
 }) => {
   return (
-    <div className = "h-full">
+    <div className = "h-full bg-blue-400">
       <Navbar/>
       <main className = "md:pl-0 pt-16 h-full">
         {children}

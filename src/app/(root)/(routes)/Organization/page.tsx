@@ -9,8 +9,6 @@ const Organization = () => {
     return (
       <div>
         <OrganizationList />
-        <InvitationList />
-        <MemberList />
       </div>
     );
   };
