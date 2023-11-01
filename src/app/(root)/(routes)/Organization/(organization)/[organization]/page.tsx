@@ -5,15 +5,26 @@ import MemberList from "@/Components/Organizations/MemberList";
 import OrganizationList from "@/Components/Organizations/OrganizationList";
 import { ClerkLoaded, OrganizationSwitcher } from "@clerk/nextjs";
 
-const Organization = () => {
+
+interface IParams { 
+    organizationId: string
+  }
+
+
+const OrganizationPage = async ({ params }: { params: IParams }) => {
+    
+    
+    
     return (
       <div>
         <ClerkLoaded>
-          <OrganizationList />
+          <div>
+            Test
+          </div>
         </ClerkLoaded>
         
       </div>
     );
   };
   
-  export default Organization;
+  export default OrganizationPage;

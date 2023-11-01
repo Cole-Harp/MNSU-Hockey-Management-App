@@ -34,7 +34,7 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
   // When the box is clicked, the user is sent to the corresponding conversation
 
   const handleClick = useCallback(() => {
-    router.push(`/Messaging/${data.id}`)
+    router.push(`/Organization/${data.id}`)
   }, [data.id, router])
 
   const { isLoaded, setActive, userMemberships } = useOrganizationList({
@@ -45,7 +45,7 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
   
   return (
     
-    <div onClick={() => setActive({ organization: data.organization.id })} 
+    <div onClick={() => {setActive({ organization: data.organization.id }); handleClick()}} 
          className = 'flex p-1 m-4 shadow-md shadow-neutral-400 hover:scale-105 basis-1/6 h-1/3 bg-gradient-to-b  from-mnsu_purple to-mnsu_gold items-center justify-center space-x-3 bg-red-400 rounded-lg transition cursor-pointer active:scale-95'> 
         <div className = 'flex text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
           {data.organization.name}
