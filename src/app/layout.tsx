@@ -19,9 +19,9 @@ export default function RootLayout({
   return (
     
     <ClerkProvider>
-     <Providers>
-     <html lang="en">
-        <body>{children}</body> 
+      <Providers>
+        <html lang="en">
+          <body>{children}</body> 
         </html>
       </Providers>
     </ClerkProvider>
