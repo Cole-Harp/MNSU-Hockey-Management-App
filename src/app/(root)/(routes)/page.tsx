@@ -1,6 +1,7 @@
 import HomePageButton from '@/Components/ui/LandingPageButton';
+import handler from '@/lib/OurWebhook/webhook';
 
-
+const hook = handler
 
 const Home = async () => {
   
@@ -8,6 +9,10 @@ const Home = async () => {
 
   return (
     <div>
+      <div>
+      {JSON.stringify(hook)}
+      test
+    </div>
       <h1 className = 'h-14 flex items-center justify-center'>Hockey Team Management</h1>
       <div className = 'grid grid-rows-3 grid-cols-2 gap-4 px-4 h-3/4'>
           <HomePageButton buttonText = 'Organizations' url = '/Organization'></HomePageButton>
