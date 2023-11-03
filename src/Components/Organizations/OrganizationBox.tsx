@@ -22,7 +22,7 @@ interface ConversationBoxProps{
 }
 
 const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
- 
+  const [disabled, setDisabled] = useState(false);
   const session = useSession();
   const router = useRouter();
 
@@ -38,18 +38,32 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
     },
   });
   
+  const remove = async (membership: any) => {
+    setDisabled(true);
+    try {
+      await membership!.destroy();
+    } 
+    catch (error) {
+      // Handle any errors that occur during the deletion process
+      console.error('Error removing member:', error);
+    } finally {
+      setDisabled(false);
+    }
+  };
   return (
-    
-    <div onClick={() => {setActive({ organization: data.organization.id }); handleClick()}} 
-         className = 'flex p-1 m-4 shadow-md shadow-neutral-400 hover:scale-105 basis-1/6 h-1/3 bg-gradient-to-b  from-mnsu_purple to-mnsu_gold items-center justify-center space-x-3 bg-red-400 rounded-lg transition cursor-pointer active:scale-95'> 
-        <div className = 'flex rounded text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
-          {data.organization.name}
+    <div
+        onClick={() => { setActive({ organization: data.organization.id }); handleClick() }}
+        className='flex p-1 m-4 shadow-md shadow-neutral-400 hover:scale-105 basis-1/6 h-1/3 bg-gradient-to-b  from-mnsu_purple to-mnsu_gold items-center justify-center space-x-3 bg-red-400 rounded-lg transition cursor-pointer active:scale-95'
+    >
+        <div className='flex rounded text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
+            {data.organization.name}
         </div>
         
+        <button onClick={() => remove(data.organization)} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
+            Delete
+        </button>
     </div>
-    
-
-)
+  )
 }
 
 export default OrganizationBox
