@@ -30,7 +30,13 @@ model Event {
   title           String
   description     String?
   start           DateTime?
+  startTime       String?
   end             DateTime?
+  endTime         String?
+  startRecur      DateTime?
+  endRecur        DateTime?
+  daysOfWeek      String?
+  editable        Boolean?
   role            UserRole
   authorId        String
   allDay          Boolean?

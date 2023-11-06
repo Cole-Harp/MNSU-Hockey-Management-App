@@ -1,9 +1,10 @@
 "use server"
 
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
+
 
 
 
@@ -14,19 +15,20 @@ export const getAllUsers = async () => {
 
 
 export const getUser = async () => {
+  const user = await currentUser();
 
-  const { userId }: { userId: string | null } = auth();
   
 
-  if (!userId) {
+  if (!user?.id) {
     throw new Error("Something went wrong authenticating");
   }
 
   const existingUser = await prisma_db.user.findFirst({
     where: {
-      id: userId,
+      id: user?.id,
     },
   });
+  return existingUser;
 }
 
 
