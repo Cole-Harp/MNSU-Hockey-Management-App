@@ -67,3 +67,22 @@
 body {
   background-color: var(--white);
 }
+
+@media (max-width: 767px) {
+  .fc-toolbar.fc-header-toolbar {
+    flex-direction: column;
+  }
+  .fc-toolbar.fc-header-toolbar .fc-left {
+    order: 3;
+  }
+  .fc-toolbar.fc-header-toolbar .fc-center {
+    order: 1;
+  }
+  .fc-toolbar.fc-header-toolbar .fc-right {
+    order: 3;
+  }
+  .fc-toolbar.fc-header-toolbar button {
+    padding: 0.25rem;
+    font-size: 0.75rem;
+  }
+}

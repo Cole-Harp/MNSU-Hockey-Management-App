@@ -67,15 +67,9 @@ export function AdminUserEditor() {
                 </div>
                 <div className="flex flex-col">
                   <label className="text-gray-700 font-bold mb-2" htmlFor="email">
-                    Email:
+                    Email: {selectedUser.email}
                   </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={selectedUser.email ?? undefined}
-                    onChange={handleInputChange}
-                    className="border rounded-lg py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full"
-                  />
+                  
                 </div>
                 <div className="flex flex-col">
                   <label className="text-gray-700 font-bold mb-2" htmlFor="name">
