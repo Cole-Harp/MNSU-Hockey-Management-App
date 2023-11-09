@@ -1,12 +1,13 @@
+'use client'
+
 import { useOrganization } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { Building } from 'lucide-react'
 import { OrganizationMembershipResource } from "@clerk/types";
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { confirmAlert } from 'react-confirm-alert';
-
+import InviteUser from "./InviteUser";
 
 const MemberList  = () => {
+  
   const [disabled, setDisabled] = useState(false);
   const { membershipList, membership } = useOrganization({
       membershipList: {},
@@ -24,6 +25,7 @@ const MemberList  = () => {
       setDisabled(false);
     }
   };
+
 
   const submit = (membership: OrganizationMembershipResource | null | undefined) => {
     confirmAlert({
@@ -44,14 +46,17 @@ const MemberList  = () => {
 
     
   return (
-    <div className='w-1/3 border-2 border-black h-full mx-1'>
+    <div className = 'flex w-full h-full '>
+      
+    <div className='w-1/3 border-2 border-black h-full m-1 px-2 rounded-lg'>
       <div className='flex justify-center items-end text-3xl font-bold my-1 border-b-2 h-16 border-neutral-400'>
         Team Members
       </div>
+      <InviteUser />
       <aside>
         {membershipList?.map((m) => (
           <div key={m.id}> 
-            <div className='flex flex-row my-1 m-2 border-2 border-neutral-400 rounded hover:bg-neutral-100 hover:border-neutral-600'>
+            <div className='flex flex-row my-1 border-2 border-neutral-400 rounded hover:bg-neutral-100 hover:border-neutral-600'>
               <div className='flex px-2 items-center justify-center'>
                 <img className='bg-green-400 m-2 w-16 h-16 rounded-full' src={m.publicUserData.imageUrl} alt={`${m.publicUserData.firstName} ${m.publicUserData.lastName}`}/>
               </div>
@@ -71,13 +76,7 @@ const MemberList  = () => {
           </div>
         ))}
       </aside>
-      <div className='flex h-20 flex-row my-1 m-2 border-2 border-neutral-400 rounded items-center justify-center'>
-        <button 
-          className='flex w-12 h-12 shadow-md shadow-neutral-400 bg-gradient-to-br from-mnsu_purple to-purple-800 text-white text-xl font-bold rounded-full items-center justify-center active:scale-95 ' 
-        >
-          +
-        </button>
-      </div>
+    </div>
     </div>
   )
 }

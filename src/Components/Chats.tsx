@@ -24,7 +24,7 @@ interface ChatProps{
 const Chats = ({user}: ChatProps) => {
   const didMountRef = useRef(false);
   const [loading, setLoading] = useState(true);
- 
+  console.log(user.id)
  
   const history = useRouter();
   //console.log(user);

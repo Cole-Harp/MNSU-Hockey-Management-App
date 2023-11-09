@@ -27,6 +27,11 @@ export const getUser = async () => {
       id: userId,
     },
   });
+
+  return(
+    existingUser
+  )
+
 }
 
 export const checkUser = async () => {
