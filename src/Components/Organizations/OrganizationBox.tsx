@@ -7,6 +7,9 @@ import clsx from 'clsx'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
 import { clerkClient, useOrganizationList, useSession, useUser} from '@clerk/nextjs'
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+
 
 
 
@@ -50,6 +53,24 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
       setDisabled(false);
     }
   };
+
+  const submit = () => {
+    confirmAlert({
+        title: 'Confirm to submit',
+        message: 'Are you sure you want to delete this organization?',
+        buttons: [
+            {
+                label: 'Yes',
+                onClick: () => remove(data.organization)
+            },
+            {
+                label: 'No',
+                onClick: () => {}
+            }
+        ]
+    });
+};
+
   return (
     <div
         onClick={() => { setActive({ organization: data.organization.id }); handleClick() }}
@@ -59,7 +80,7 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
             {data.organization.name}
         </div>
         
-        <button onClick={() => remove(data.organization)} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
+        <button onClick={submit} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
             Delete
         </button>
     </div>

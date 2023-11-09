@@ -2,6 +2,9 @@ import { useOrganization } from "@clerk/nextjs";
 import React, { useState } from "react";
 import { Building } from 'lucide-react'
 import { OrganizationMembershipResource } from "@clerk/types";
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+
 
 const MemberList  = () => {
   const [disabled, setDisabled] = useState(false);
@@ -21,6 +24,24 @@ const MemberList  = () => {
       setDisabled(false);
     }
   };
+
+  const submit = (membership: OrganizationMembershipResource | null | undefined) => {
+    confirmAlert({
+        title: 'Confirm to submit',
+        message: 'Are you sure you want to remove this member from this organization?',
+        buttons: [
+            {
+                label: 'Yes',
+                onClick: () => remove(membership)
+            },
+            {
+                label: 'No',
+                onClick: () => {}
+            }
+        ]
+    });
+};
+
     
   return (
     <div className='w-1/3 border-2 border-black h-full mx-1'>
@@ -40,7 +61,7 @@ const MemberList  = () => {
               <div className='flex basis-1/4 justify-end'>
                 <button 
                   className='border-2 border-red-800 bg-red-200 px-4 m-2 hover:bg-red-400 rounded-full shadow-md shadow-slate-600 active:scale-95'
-                  onClick={() => remove(m)}
+                  onClick={() => submit(m)}
                   disabled={disabled}
                 >
                   Remove
