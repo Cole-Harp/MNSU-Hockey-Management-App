@@ -1,25 +1,31 @@
 'use server'
 
-import ConversationList from "@/Components/Messaging/ConversationList";
-import { getAllConversations } from "@/lib/Messages/getAllConversations";
+import Conversations from "@/Components/MessageChat";
+import { getAllUsers, getUser } from "@/lib/db_actions/Auth";
+import Chats from "../../../../Components/Chats";
+import { auth, getAuth } from "@clerk/nextjs/server";
 
 import { useRouter } from 'next/navigation';
 //import React, { useRef, useEffect, useState } from 'react';
 
-// This page should display a list of conversations for the user to select from
-// TODO: Make a button to create a conversation
-
+import axios from 'axios';
 
 export default async function usersLayout({ children } :{ children : React.ReactNode })
 {
- 
-  const convos = await getAllConversations();
-  
+   const user  = await getUser();
+   if(user === null)
+   {
+    throw new Error('did not work')
+   }
+    //const user = auth();
+
 
     return (
-        <div className = 'h-full flex flex-row'>
-          <ConversationList convos = {convos} />
+        <div>
+          <Chats  user = {user}/>
+          {/* <GetChats user = {user/> */}
         </div>
+
     )
 }
   
