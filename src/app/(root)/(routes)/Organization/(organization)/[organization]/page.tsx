@@ -20,7 +20,6 @@ const OrganizationPage = async ({ params }: { params: IParams }) => {
       <div>
         <ClerkLoaded>
           <MemberList />
-          <InviteUser />
         </ClerkLoaded>
         
       </div>
