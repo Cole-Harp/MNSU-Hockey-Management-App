@@ -15,7 +15,7 @@ export default async function usersLayout({ children } :{ children : React.React
    const user  = await getUser();
    if(user === null)
    {
-    throw new Error('did not work')
+    throw new Error('did not work') 
    }
     //const user = auth();
 
