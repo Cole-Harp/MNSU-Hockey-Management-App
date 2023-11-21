@@ -51,7 +51,7 @@ export function AdminUserEditor() {
       {userEditorToggle ? (
         <div className='my-2 m-2 bg-gray-200 rounded-md p-2'>
           <div className="z-50 flex items-center pointer-events-auto">
-            <Select options={roleOptions} value={roleOptions.find((option) => option.value === selectedRole)} onChange={(option) => setSelectedRole(option?.value)} name = "select role" placeholder="Select Role" className="z-50 pointer-events-auto w-64 m-1" />
+            <Select options={roleOptions} value={roleOptions.find((option) => option.value === selectedRole)} onChange={(option) => setSelectedRole(option?.value)} data-testid="role-select" aria-label="Select Role" placeholder="Select Role" className="z-50 pointer-events-auto w-64 m-1" />
           
           <Select options={userOptions} value={userOptions.find((userOptions) => userOptions.value === selectedUser?.id)} onChange={(option) => setSelectedUser(users.find(user => user.id === option?.value))} placeholder={'Select Users'} className="z-40 w-64 pointer-events-auto m-1" />
           </div>

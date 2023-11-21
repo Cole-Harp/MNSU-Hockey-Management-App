@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 
-const Home = async () => {
+const Home = () => {
   //const user = await getUser()
   //const email = user.email;
   return (
