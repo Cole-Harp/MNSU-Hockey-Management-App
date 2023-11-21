@@ -1,8 +1,7 @@
 "use client";
 
-import { User, UserRole } from '@prisma/client';
-import { getAllUsers, updateUser } from "@/lib/db_actions/Auth";
-import { useState, useEffect } from "react";
+import { UserRole } from '@prisma/client';
+import { useState } from "react";
 import Select from 'react-select';
 
 interface RoleSelectorProps {
