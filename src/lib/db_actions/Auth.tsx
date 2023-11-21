@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { auth, currentUser, clerkClient } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
