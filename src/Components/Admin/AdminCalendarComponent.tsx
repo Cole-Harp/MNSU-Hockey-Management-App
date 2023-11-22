@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { adminGetEvents, createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
 import { UserRole } from '@prisma/client';
-import EventMenu from '../Schedule/EventMenu';
+import EventMenu from '../Schedule/CalendarEventMenu/EventMenu';
 import { FilterComponent } from '../Schedule/AdminFilter';
 
 type CalendarProps = {
@@ -48,7 +48,7 @@ const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarPr
           // If the event doesn't exist, add it to the calendar
           if (!existingEvent) {
             let inputEvent = toEvent(event);
-            calendar.addEvent(inputEvent);
+            calendar.addEvent(event);
           }
         });
         // Added filter to handle admin filter variable changes could probably be turned to conditional
@@ -69,7 +69,30 @@ const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarPr
       id: event.id,
       title: event.title,
       start: event.start,
+      startTime: event.startTime,
       end: event.end,
+      endTime: event.endTime,
+      allDay: event.allDay,
+      backgroundColor: event.backgroundColor,
+      extendedProps: {
+        where: event.where,
+        description: event.description,
+        role: event.role,
+        authorId: event.authorId,
+        announcement: event.announcement
+      }
+    };
+
+    return {
+      id: event.id,
+      start: event.start,
+      end: event.end,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      title: event.title,
+      startRecur: event.start,
+      endRecur: event.end,
+      daysOfWeek: daysOfWeek,
       allDay: event.allDay,
       backgroundColor: event.backgroundColor,
       extendedProps: {
@@ -262,3 +285,58 @@ const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarPr
 };
 
 export default AdminCalendarComponent;
+
+  // const handleDatesSet = async () => {
+  //   if (calendar) {
+  //     const start = calendar.view.activeStart;
+  //     const end = calendar.view.activeEnd;
+  
+  //     const events = await userGetEvents(start, end);
+  //     const currentEvents = calendar.getEvents();
+  
+  //     if (events) {
+  //       events.forEach((event: { id: string; }) => {
+  //         // Check if the event already exists in the calendar
+  //         const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
+  
+  //         // If the event doesn't exist, add it to the calendar
+  //         if (!existingEvent) {
+  //           let inputEvent = toEvent(event);
+  //           calendar.addEvent(inputEvent);
+  //         }
+  //       });
+  //     }
+  //   }
+  // };
+  
+  // function toEvent(event: any) {
+  //   const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
+  //   const currEvent: any = {
+  //     id: event.id,
+  //     title: event.title,
+  //     allDay: event.allDay,
+  //     backgroundColor: event.backgroundColor,
+  //     extendedProps: {
+  //       where: event.where,
+  //       description: event.description,
+  //       role: event.role,
+  //       authorId: event.authorId,
+  //       announcement: event.announcement
+  //     }
+  //   };
+  
+  //   if (daysOfWeek && daysOfWeek.length > 2) {
+  //     // Recurring event
+  //     currEvent.startRecur = event.startRecur;
+  //     currEvent.endRecur = event.endRecur;
+  //     currEvent.startTime = event.startTime;
+  //     currEvent.endTime = event.endTime;
+  //     currEvent.daysOfWeek = daysOfWeek;
+  //   } else {
+  //     // Non-recurring event
+  //     currEvent.start = event.start;
+  //     currEvent.end = event.end;
+  //   }
+  
+  //   return currEvent;
+  // }

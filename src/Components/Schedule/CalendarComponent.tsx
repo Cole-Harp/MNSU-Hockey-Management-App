@@ -4,45 +4,65 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { UserRole } from '@prisma/client';
-import EventMenu from './EventMenu';
+import { User, UserRole } from '@prisma/client';
+import EventMenu from './CalendarEventMenu/EventMenu';
 import { createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
+import EventMenu2 from './CalendarEventMenu/EventEditor';
+import iCalendarPlugin from '@fullcalendar/icalendar'
+import { tr } from 'date-fns/locale';
+import EventEditor from './CalendarEventMenu/EventEditor';
 
 
 type CalendarProps = {
-  options: any;
+  isAdmin: boolean;
+  events: any[];
+  currUser: User;
 };
 
-const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
+const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events }) => {
   const calendarRef = useRef<FullCalendar>(null);
   const [calendar, setCalendar] = useState<any>(null)
-  const [annoncments, setAnnoncments] = useState<boolean>(false)
   const [clickInfo, setClickInfo] = useState<any>(null);
-  const [eventState, setEventState] = useState({ isEditing: false, isNewEvent: false });
+  const [eventState, setEventState] = useState({ 
+    isEditing: false, 
+    isNewEvent: false,
+    isLooking: false });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (calendarRef.current) {
+        if (window.innerWidth >= 768) {
+          calendarRef.current.getApi().changeView('timeGridWeek');
+        } else {
+          calendarRef.current.getApi().changeView('dayGridDay');
+        }
+      }
+    };
+  
+    window.addEventListener('resize', handleResize);
+  
+    // Clean up event listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (calendarRef.current && calendarRef.current.getApi) {
       const calendarApi = calendarRef.current.getApi()
       setCalendar(calendarApi)
-      // handleDatesSet();
     }
   }, [calendarRef, calendarRef.current]);
 
-  const handleDatesSet = async () => {
+    const handleDatesSet = async () => {
     if (calendar) {
-      const start = calendar.view.activeStart;
-      const end = calendar.view.activeEnd;
 
-
-
-      const events = await userGetEvents(start, end);
+  
       const currentEvents = calendar.getEvents();
-
+  
       if (events) {
         events.forEach((event: { id: string; }) => {
           // Check if the event already exists in the calendar
           const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-
+  
           // If the event doesn't exist, add it to the calendar
           if (!existingEvent) {
             let inputEvent = toEvent(event);
@@ -52,13 +72,12 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
       }
     }
   };
-
+  
   function toEvent(event: any) {
-    return {
+    const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
+    const currEvent: any = {
       id: event.id,
       title: event.title,
-      start: event.start,
-      end: event.end,
       allDay: event.allDay,
       backgroundColor: event.backgroundColor,
       extendedProps: {
@@ -69,25 +88,40 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
         announcement: event.announcement
       }
     };
-  };
+  
+    if (daysOfWeek && daysOfWeek.length > 2) {
+      // Recurring event
+      currEvent.startRecur = event.startRecur;
+      currEvent.endRecur = event.endRecur;
+      currEvent.startTime = event.startTime;
+      currEvent.endTime = event.endTime;
+      currEvent.daysOfWeek = daysOfWeek;
+      currEvent.editable = false
+    } else {
+      // Non-recurring event
+      currEvent.start = event.start;
+      currEvent.end = event.end;
+    }
+  
+    return currEvent;
+  }
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
     setClickInfo(selectInfo);
-    setEventState({ isNewEvent: true, isEditing: true });
+    setEventState({...eventState, isNewEvent: true, isEditing: true });
 
   };
 
   const handleEventClick = async (clickInfo: any) => {
     setClickInfo(clickInfo);
-    setEventState({ isNewEvent: false, isEditing: true });
+    setEventState({ isNewEvent: false, isEditing: false, isLooking: true });
   };
 
 
-  const handleMove = async (changeInfo: any) => {
+  const handleMove = async (changeInfo: { event: any; }) => {
     const event = changeInfo.event;
     const start = new Date(event.startStr);
     const end = new Date(event.endStr);
-    const role = UserRole.Player;
     const allDay = event.allDay;
 
     if (allDay) {
@@ -106,28 +140,6 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
     await updateEvent(event.id, newEvent);
   };
 
-  const handleSave = async (data: { title: any; where: any; desc: any; backgroundColor: any }) => {
-    if (clickInfo && clickInfo.event) {
-      const eventId = clickInfo.event.id;
-      const updatedEvent = {
-        title: data.title,
-        where: data.where,
-        description: data.desc,
-        start: clickInfo.start,
-        end: clickInfo.end,
-        allDay: clickInfo.allDay,
-        role: clickInfo.role,
-        backgroundColor: data.backgroundColor,
-      };
-
-      await updateEvent(eventId, updatedEvent);
-      clickInfo.event.setProp('title', data.title,);
-      clickInfo.event.setProp('backgroundColor', data.backgroundColor,);
-      clickInfo.event.setExtendedProp('where', data.where)
-      clickInfo.event.setExtendedProp('description', data.desc)
-    }
-  }
-
   const handleDelete = async () => {
 
     const eventId = clickInfo.event.id;
@@ -136,57 +148,13 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
   };
 
-  const handleCreate = async (data: {
-    startRecur: any;
-    endRecur: any;
-    daysOfWeek: any; title: any; where: any; desc: any; backgroundColor: any 
-}) => {
-    const title = data.title;
-    const where = data.where
-    const bgColor = data.backgroundColor
-    const description = data.desc;
-    const start = new Date(clickInfo.startStr);
-    const end = new Date(clickInfo.endStr);
-    const role = UserRole.Player;
-    const allDay = clickInfo.allDay;
-    const daysOfWeek = data.daysOfWeek
-    const startRecur = data.startRecur
-    const endRecur = data.endRecur
-    const calendar = clickInfo.view.calendar;
-    console.log(daysOfWeek, " HERE#")
-
-    if (allDay) {
-      start.setDate(start.getDate() + 1); // Add 1 day to the start date not sure why
-    }
-
-    const newEvent = {
-      title: title,
-      start: start,
-      end: end,
-      allDay: allDay,
-      backgroundColor: bgColor,
-      daysOfWeek: daysOfWeek,
-      startRecur: startRecur,
-      endRecur: endRecur, 
-      where: where,
-      role: role,
-      description: description,
-    };
-
-    if (title) {
-      // const calEvent = await createEvent(newEvent);
-      calendar.addEvent(newEvent);
-    }
-  };
-
-
   function handleClose(): any {
-    setEventState({ ...eventState, isEditing: false });
+    setEventState({ ...eventState, isEditing: false, isLooking: false });
   }
 
-  const handleAnnouncements = () => {
-    setAnnoncments(!annoncments)
-  };
+  function handleEdit(): any {
+    setEventState({ ...eventState, isEditing: true, isLooking: false });
+  }
 
   function renderEventContent(clickInfo: any) {
 
@@ -202,24 +170,20 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
 
   return (
     <div className='m-3 w-full'>
-
-      <div>
+      
+   <div>
+   <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+   {eventState.isEditing && <EventEditor calendar={calendar} event={clickInfo?.event || undefined} clickInfo={clickInfo} currUserRole={currUser.role} isNewEvent={eventState.isNewEvent} isAdmin={isAdmin} onClose={handleClose} />}
+   </div>
+   <button onClick={() => setEventState({...eventState, isEditing: true })}>Create Event</button>
         <FullCalendar ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          views={{
-            dayGridWeek: {
-              buttonText: 'Team Schedule only',
-              click: handleAnnouncements,
-              eventContent: renderEventContent,
-              datesSet: handleDatesSet,
-            },
-          }}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
           headerToolbar={{
-            left: 'prev,next today dayGridWeek myCustomButton',
+            left: 'prev,next today dayGridWeek',
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
           }}
-          initialView="timeGridWeek"
+          initialView="dayGridWeek"
           editable={true}
           selectable={true}
           selectMirror={true}
@@ -228,21 +192,23 @@ const CalendarComponent: React.FC<CalendarProps> = ({ options }) => {
           eventContent={renderEventContent}
           eventClick={handleEventClick}
           datesSet={handleDatesSet}
+          // events = {events}
+
           selectOverlap={true}
           eventChange={handleMove}
+          firstDay={1}
           rerenderDelay={50}
 
-          scrollTime="00:06:00"
         />
       </div>
       <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-        {eventState.isEditing && <EventMenu
+        {(eventState.isLooking) && <EventMenu
           onDelete={handleDelete}
-          onSave={handleSave}
+          onEdit={handleEdit}
           onClose={handleClose}
-          onCreate={handleCreate}
-          start={clickInfo.startStr}
-          event={clickInfo.event}
+
+          start={clickInfo?.startStr || ""}
+          event={clickInfo?.event || undefined}
           isNewEvent={eventState.isNewEvent}
           admin={false}
 

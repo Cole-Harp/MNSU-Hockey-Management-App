@@ -1,8 +1,9 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { auth } from "@clerk/nextjs";
+import { auth, currentUser } from "@clerk/nextjs";
 import { getUser } from "./Auth";
+import { clerkClient } from "@clerk/nextjs/server";
 const prisma = new PrismaClient();
 
 export const userConvos = async () => {
@@ -13,7 +14,7 @@ export const userConvos = async () => {
     }
     const userConversations = await prisma.conversation.findMany({
         where: {
-            Users: {
+            users: {
                 some: {
                     id: userId
                 }
@@ -34,7 +35,7 @@ export const createConvo = async (groupName: any, selectedUsers: any[]) => {
         data: {
             name: groupName,
 
-            Users: {
+            users: {
                 connect: [
                     { id: userId },
                     ...selectedUsers.map(id => ({ id }))
@@ -49,26 +50,31 @@ export const getConversationWithMessages = async (conversationId: string) => {
     
     const conversationWithMessages = await prisma.conversation.findUnique({
         where: { id: conversationId },
-        include: { messages: true }
+        include: { 
+            messages: true,
+            users: true,
+         }
     });
 
     if (!conversationWithMessages || !conversationWithMessages.messages) {
         return null
     }
 
-    return conversationWithMessages.messages;
+    return conversationWithMessages;
 }
 
 export const createMessage = async (messageContent: any, conversationId: string) => {
-    const user = await getUser()
-    if (!user || !user.name) {
+    const  userId = auth().userId!;
+    const user = (await clerkClient.users.getUser(userId));
+    if (!user || !user.firstName || !user.lastName || !user.username) {
         throw new Error('Failed to get user info');
     }
+    console.log(user, "TEST")
     const newMessage = await prisma.message.create({
         data: {
             body: messageContent,
             userId: user.id,
-            userName:  user.name,
+            userName:  user.lastName,
             conversation: {
                 connect: { id: conversationId }
             }
