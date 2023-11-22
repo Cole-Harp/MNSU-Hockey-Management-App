@@ -31,8 +31,8 @@ const ConversationId = async ({ params }: { params: IParams }) => {
   if(!data) {
     return (
       <div className = 'lg:h-full'>
-        <div className = 'h-full flex '> 
-          Loading{/* <EmptyState/> */}
+        <div className = 'h-full flex flex-col'> 
+
         </div>
       </div>
     )

@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, currentUser, clerkClient } from "@clerk/nextjs";
+import { auth, currentUser, useOrganization, useUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
@@ -28,13 +28,52 @@ export const getUser = async () => {
       id: user?.id,
     },
   });
+  return(
+    existingUser
+  ) //Not sure why theres 2 returns
   return existingUser;
 }
 
+export const checkUser = async (metaData:UserRole) => {
+  
+  const user = await currentUser()
+  console.log('current user in checkUser: ' + JSON.stringify(user))
+  
+  
+  if(user?.id === null)
+  { 
+    throw new Error('Auth.tsx - checkUser: Invalid Id')
+  }
 
 
+  const checkPrismaUser = await prisma_db.user.upsert({
+    where: {
+      id: user?.id
+  },
+  update: {
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName + ' ' + user?.lastName, 
+        role: metaData
+  },
+  create: {
+        id: user!.id,
+        email: user?.emailAddresses[0].emailAddress,
+        name: user?.firstName + ' ' + user?.lastName,
+        role: metaData
+  }})
+  
+}
 
-export const createUser = async () => {
+
+export const createPrismaUser = async (user: any) => {
+
+    const newPrismaUser = await prisma_db.user.create({
+      data: {
+        id: user.id,
+        email: user.emailAddresses[0].emailAddress,
+        name: user.fullName
+      }
+    })
   
 }
 

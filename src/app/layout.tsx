@@ -1,4 +1,4 @@
-import { ClerkProvider } from '@clerk/nextjs'
+import { ClerkLoaded, ClerkProvider, RedirectToSignIn, SignIn, SignedIn, SignedOut } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Providers from './providers'
@@ -17,12 +17,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
+    
     <ClerkProvider>
       <Providers>
         <html lang="en">
-          <body>{children}</body>
+          <body>{children}</body> 
         </html>
       </Providers>
     </ClerkProvider>
+    
   )
 }

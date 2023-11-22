@@ -1,26 +1,29 @@
+'use client'
 
-import CreateOrganization from "@/Components/Organizations/CreateOrganization";
 import InvitationList from "@/Components/Organizations/InvitationList";
 import InviteUser from "@/Components/Organizations/InviteUser";
 import MemberList from "@/Components/Organizations/MemberList";
 import OrganizationList from "@/Components/Organizations/OrganizationList";
-import { ClerkLoaded } from "@clerk/nextjs";
+import { ClerkLoaded, OrganizationSwitcher } from "@clerk/nextjs";
 
 
+interface IParams { 
+    organizationId: string
+  }
 
-export default async function Page() {
 
+const OrganizationPage = async ({ params }: { params: IParams }) => {
     
-  
+    
+    
     return (
       <div>
         <ClerkLoaded>
-          <OrganizationList />
-          <CreateOrganization />
-          <InviteUser />
-          <InvitationList />
           <MemberList />
         </ClerkLoaded>
+        
       </div>
     );
-  }
+  };
+  
+  export default OrganizationPage;

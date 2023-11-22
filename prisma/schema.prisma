@@ -27,6 +27,7 @@ model Conversation {
 
 model Event {
   id              String    @id @default(uuid())
+  orgId           String?
   title           String
   description     String?
   start           DateTime?
@@ -43,6 +44,7 @@ model Event {
   backgroundColor String?
   where           String?
   announcement    Boolean?
+  updatedAt       DateTime? @default(now())
   author          User      @relation(fields: [authorId], references: [id])
 
   @@index([authorId])
@@ -66,4 +68,6 @@ enum UserRole {
   Coach
   Faculty
   Player
+  Guardian
+  Alumni
 }

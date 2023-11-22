@@ -8,5 +8,6 @@ export default authMiddleware({publicRoutes: ["/sign-in", "/:locale/sign-in"]});
  
 export const config = {
       matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+      debug: true,
 };
  

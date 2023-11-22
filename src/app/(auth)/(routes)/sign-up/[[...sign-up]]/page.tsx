@@ -1,3 +1,4 @@
+import InviteUser from "@/Components/Organizations/InviteUser";
 import { SignUp } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { table } from "console";
