@@ -1,8 +1,8 @@
 "use server"
 
 import { clerkClient } from "@clerk/nextjs";
-import prisma_db from "../../../prisma/db";
-import getCurrentUserId from "../db_actions/getCurrentUserId";
+import prisma_db from "../../../../../prisma/db";
+import getCurrentUserId from "../../../../lib/db_actions/getCurrentUserId";
 
 
 // This function creates a new message given the body of the message, and the conversation to add it to. It then updates the

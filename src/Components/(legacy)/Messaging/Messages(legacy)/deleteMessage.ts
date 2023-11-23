@@ -1,6 +1,6 @@
 'use server'
 
-import prisma_db from "../../../prisma/db";
+import prisma_db from "../../../../../prisma/db";
 
 export async function deleteMessage(messageId: string) {
 

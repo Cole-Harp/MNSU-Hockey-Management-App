@@ -1,9 +1,9 @@
 "use server"
 
 import { currentUser } from "@clerk/nextjs";
-import prisma_db from "../../../prisma/db";
-import getCurrentUserId from "../db_actions/getCurrentUserId";
-import getCurrentPrismaUser from "../db_actions/getCurrentPrismaUser";
+import prisma_db from "../../../../../prisma/db";
+import getCurrentUserId from "../../../../lib/db_actions/getCurrentUserId";
+import getCurrentPrismaUser from "../../../../lib/db_actions/getCurrentPrismaUser";
 
 export async function createConversation(userIds: string[]) {
     try {

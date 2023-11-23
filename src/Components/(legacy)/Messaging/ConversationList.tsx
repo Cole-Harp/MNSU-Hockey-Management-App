@@ -8,7 +8,7 @@ import CreateConvo from './CreateConvo';
 import { createConvo } from '@/lib/db_actions/Message';
 import ConversationBox from './ConversationBox';
 import { useEffect, useState } from 'react';
-import { getAllConversations } from '@/lib/Messages/getAllConversations';
+import { getAllConversations } from '@/Components/(legacy)/Messaging/Messages(legacy)/getAllConversations';
 
 
 // This component renders a list of all conversations that the current user has, using the UserBox component

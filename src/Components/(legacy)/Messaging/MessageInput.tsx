@@ -2,7 +2,7 @@
 
 
 import useConversation from "@/app/hooks/useConversation";
-import { createMessage } from "@/lib/Messages/createMessage";
+import { createMessage } from "@/Components/(legacy)/Messaging/Messages(legacy)/createMessage";
 import { auth } from "@clerk/nextjs";
 import React, { useState } from "react";
 

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Providers from './providers'
 import "./globals.css"
+import { SocketProvider } from '@/lib/socker-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,11 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <Providers>
+
         <html lang="en">
-          <body>{children}</body>
+          <body>                <SocketProvider>{children}        </SocketProvider></body>
+
         </html>
-      </Providers>
+
     </ClerkProvider>
   )
 }

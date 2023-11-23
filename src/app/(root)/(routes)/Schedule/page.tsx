@@ -5,13 +5,13 @@ import { userGetEvents } from "@/lib/db_actions/Event";
 export default async function Page() {
   const admin = await isAdmin();
   const user = await getUser();
-  const events = await userGetEvents()
-  console.log(admin, "HERE")
+  const events = await userGetEvents();
 
   return (
     <div className="m-2 flex justify-center align-middle">
-      <Calendar isAdmin={admin} events={events} currUser = {user!} />
+      <Calendar isAdmin={admin} events={events} currUser={user} />
     </div>
   );
 }
+
 

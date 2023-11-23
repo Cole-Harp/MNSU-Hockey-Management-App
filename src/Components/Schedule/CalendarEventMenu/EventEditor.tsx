@@ -4,6 +4,7 @@ import { $Enums, User, UserRole } from '@prisma/client';
 import { createEvent, deleteEvent, updateEvent } from '@/lib/db_actions/Event';
 import ColorSelect from './ColorPicker';
 import AdminRoleSelector from '@/Components/Admin/AdminRoleSelector';
+import { useSocket } from '@/lib/socker-provider';
 
 // Assuming UserRole is defined in another file
 interface EventMenuProps {
@@ -14,7 +15,6 @@ interface EventMenuProps {
     isAdmin: boolean;
     currUserRole: string;
     onClose: () => void;
-    // createEvent: (event: any) => Promise<void>;
 }
 
 function getISOString(dateString: string | number | Date, timeString?: undefined) {
@@ -57,6 +57,7 @@ const EventEditor: React.FC<EventMenuProps> = ({ calendar, event, isNewEvent, is
     //Admin States
     const [announcement, setAnnoncment] = useState<boolean>(false)
     const [role, setRole] = useState<UserRole | string | undefined>(currUserRole);
+    const socket = useSocket();
 
     console.log(date, start, end)
 
@@ -102,6 +103,7 @@ const EventEditor: React.FC<EventMenuProps> = ({ calendar, event, isNewEvent, is
             currEvent.role = role
             currEvent.editable = false
             console.log(role, "HERE")
+            socket.socket.emit("announcement")
         }
 
         if (isNewEvent) {

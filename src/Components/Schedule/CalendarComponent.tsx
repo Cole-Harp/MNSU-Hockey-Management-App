@@ -6,11 +6,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { User, UserRole } from '@prisma/client';
 import EventMenu from './CalendarEventMenu/EventMenu';
-import { createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
+import { createEvent, deleteEvent, updateEvent, userGetEvents } from '../../lib/db_actions/Event';
 import EventMenu2 from './CalendarEventMenu/EventEditor';
 import iCalendarPlugin from '@fullcalendar/icalendar'
-import { tr } from 'date-fns/locale';
 import EventEditor from './CalendarEventMenu/EventEditor';
+import { useSocket } from '@/lib/socker-provider';
+import { SocketIndicator } from '@/lib/socket/socket-indicator';
+
 
 
 type CalendarProps = {
@@ -20,13 +22,16 @@ type CalendarProps = {
 };
 
 const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events }) => {
+
+  const { isConnected, socket } = useSocket();
   const calendarRef = useRef<FullCalendar>(null);
   const [calendar, setCalendar] = useState<any>(null)
   const [clickInfo, setClickInfo] = useState<any>(null);
-  const [eventState, setEventState] = useState({ 
-    isEditing: false, 
+  const [eventState, setEventState] = useState({
+    isEditing: false,
     isNewEvent: false,
-    isLooking: false });
+    isLooking: false
+  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,12 +43,24 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
         }
       }
     };
-  
+
     window.addEventListener('resize', handleResize);
-  
-    // Clean up event listener on component unmount
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  
+  useEffect(() => {
+    if (socket) {
+    socket.on("connect", () => {
+      socket.on("update-calendar", () => {
+        console.log("update-DogF");
+      });
+    });}
+  },  [socket]);
+  /*
+    This useEffect is used to update the calendar when the events prop changes.
+  */
 
   useEffect(() => {
     if (calendarRef.current && calendarRef.current.getApi) {
@@ -52,17 +69,18 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
     }
   }, [calendarRef, calendarRef.current]);
 
-    const handleDatesSet = async () => {
+
+  const handleDatesSet = async () => {
     if (calendar) {
 
-  
+
       const currentEvents = calendar.getEvents();
-  
+
       if (events) {
         events.forEach((event: { id: string; }) => {
           // Check if the event already exists in the calendar
           const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-  
+
           // If the event doesn't exist, add it to the calendar
           if (!existingEvent) {
             let inputEvent = toEvent(event);
@@ -72,7 +90,7 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
       }
     }
   };
-  
+
   function toEvent(event: any) {
     const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
     const currEvent: any = {
@@ -88,9 +106,10 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
         announcement: event.announcement
       }
     };
-  
+
+    // Recurring event or non recurring data
+
     if (daysOfWeek && daysOfWeek.length > 2) {
-      // Recurring event
       currEvent.startRecur = event.startRecur;
       currEvent.endRecur = event.endRecur;
       currEvent.startTime = event.startTime;
@@ -98,17 +117,16 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
       currEvent.daysOfWeek = daysOfWeek;
       currEvent.editable = false
     } else {
-      // Non-recurring event
       currEvent.start = event.start;
       currEvent.end = event.end;
     }
-  
+
     return currEvent;
   }
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
     setClickInfo(selectInfo);
-    setEventState({...eventState, isNewEvent: true, isEditing: true });
+    setEventState({ ...eventState, isNewEvent: true, isEditing: true });
 
   };
 
@@ -170,12 +188,13 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
 
   return (
     <div className='m-3 w-full'>
-      
-   <div>
-   <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-   {eventState.isEditing && <EventEditor calendar={calendar} event={clickInfo?.event || undefined} clickInfo={clickInfo} currUserRole={currUser.role} isNewEvent={eventState.isNewEvent} isAdmin={isAdmin} onClose={handleClose} />}
-   </div>
-   <button onClick={() => setEventState({...eventState, isEditing: true })}>Create Event</button>
+
+      <div>
+        <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
+        <SocketIndicator />
+          {eventState.isEditing && <EventEditor calendar={calendar} event={clickInfo?.event || undefined} clickInfo={clickInfo} currUserRole={currUser.role} isNewEvent={eventState.isNewEvent} isAdmin={isAdmin} onClose={handleClose} />}
+        </div>
+        <button onClick={() => setEventState({ ...eventState, isEditing: true })}>Create Event</button>
         <FullCalendar ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
           headerToolbar={{

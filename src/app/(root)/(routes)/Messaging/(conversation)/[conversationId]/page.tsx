@@ -1,16 +1,16 @@
 'use server'
 
 
-import MessageList from "@/Components/Messaging/MessageList";
-import MessageInput from "@/Components/Messaging/MessageInput";
-import { getConversationById } from "@/lib/Messages/getConversationById";
-import { getMessagesByConvId } from "@/lib/Messages/getMessagesByConvId";
+import MessageList from "@/Components/(legacy)/Messaging/MessageList";
+import MessageInput from "@/Components/(legacy)/Messaging/MessageInput";
+import { getConversationById } from "@/Components/(legacy)/Messaging/Messages(legacy)/getConversationById";
+import { getMessagesByConvId } from "@/Components/(legacy)/Messaging/Messages(legacy)/getMessagesByConvId";
 
-import Header from "@/Components/Messaging/Header";
+import Header from "@/Components/(legacy)/Messaging/Header";
 import { getConversationWithMessages } from "@/lib/db_actions/Message";
 import { auth } from "@clerk/nextjs";
-import ConversationList from "@/Components/Messaging/ConversationList";
-import { getAllConversations } from "@/lib/Messages/getAllConversations";
+import ConversationList from "@/Components/(legacy)/Messaging/ConversationList";
+import { getAllConversations } from "@/Components/(legacy)/Messaging/Messages(legacy)/getAllConversations";
 
 
 // This page should display the conversation that was clicked on by the user from the messaging dashboard

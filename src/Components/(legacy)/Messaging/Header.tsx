@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { HiEllipsisHorizontal, HiEllipsisHorizontalCircle } from 'react-icons/hi2'
 import ConversationList from './ConversationList'
-import { getAllConversations } from '@/lib/Messages/getAllConversations'
+import { getAllConversations } from '@/Components/(legacy)/Messaging/Messages(legacy)/getAllConversations'
 
 interface HeaderProps {
     conversation: Conversation;

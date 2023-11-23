@@ -1,7 +1,7 @@
 'use server'
 
-import ConversationList from "@/Components/Messaging/ConversationList";
-import { getAllConversations } from "@/lib/Messages/getAllConversations";
+import ConversationList from "@/Components/(legacy)/Messaging/ConversationList";
+import { getAllConversations } from "@/Components/(legacy)/Messaging/Messages(legacy)/getAllConversations";
 
 import { useRouter } from 'next/navigation';
 //import React, { useRef, useEffect, useState } from 'react';

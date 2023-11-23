@@ -1,14 +1,10 @@
 'use client'
 
-import { Message, Conversation, User } from '@prisma/client'
 import { useMemo, useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { FullConversation, FullUser } from '@/app/types'
 import { format } from 'date-fns'
-import clsx from 'clsx'
-import useOtherUser from '@/app/hooks/useOtherUser'
-import { Session } from '@clerk/nextjs/server'
+import useOtherUser from '../../../app/hooks/useOtherUser'
 import { clerkClient, useSession, useUser} from '@clerk/nextjs'
 
 
