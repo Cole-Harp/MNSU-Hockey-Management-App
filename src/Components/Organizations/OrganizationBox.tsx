@@ -1,14 +1,16 @@
 'use client'
 
-import { useMemo, useCallback, useState } from 'react'
+import { FaTrash } from 'react-icons/fa';
+import { useMemo, useCallback, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import clsx from 'clsx'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
-import { clerkClient, useOrganizationList, useSession, useUser} from '@clerk/nextjs'
+import { clerkClient, useOrganization, useOrganizationList, useSession, useUser} from '@clerk/nextjs'
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { confirmAlert } from 'react-confirm-alert';
+import { isAdmin } from '@/lib/db_actions/Auth'
 
 
 
@@ -28,7 +30,7 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
   const [disabled, setDisabled] = useState(false);
   const session = useSession();
   const router = useRouter();
-
+  const [isAdmin, setIsAdmin] = useState(false);
   // When the box is clicked, the user is sent to the corresponding conversation
 
   const handleClick = useCallback(() => {
@@ -40,36 +42,14 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
       infinite: false,
     },
   });
-  
-  const remove = async (membership: any) => {
-    setDisabled(true);
-    try {
-      await membership!.destroy();
-    } 
-    catch (error) {
-      // Handle any errors that occur during the deletion process
-      console.error('Error removing member:', error);
-    } finally {
-      setDisabled(false);
-    }
-  };
+  const { membershipList, membership } = useOrganization({
+    membershipList: {},
+  });
 
-  const submit = () => {
-    confirmAlert({
-        title: 'Confirm to submit',
-        message: 'Are you sure you want to delete this organization?',
-        buttons: [
-            {
-                label: 'Yes',
-                onClick: () => remove(data.organization)
-            },
-            {
-                label: 'No',
-                onClick: () => {}
-            }
-        ]
-    });
-};
+  
+  
+  
+  
 
   return (
     <div
@@ -79,10 +59,6 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
         <div className='flex rounded text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
             {data.organization.name}
         </div>
-        
-        <button onClick={submit} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
-            Delete
-        </button>
     </div>
   )
 }
