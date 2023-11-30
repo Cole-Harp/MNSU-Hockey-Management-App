@@ -1,9 +1,10 @@
-"use server"
+"use server";
 
-import { auth, currentUser, useUser } from "@clerk/nextjs";
+import { auth, currentUser, useOrganization, useUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
 import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
+
 
 
 
@@ -14,34 +15,36 @@ export const getAllUsers = async () => {
 
 
 export const getUser = async () => {
+  const user = await currentUser();
 
-  const { userId }: { userId: string | null } = auth();
   
 
-  if (!userId) {
+  if (!user?.id) {
     throw new Error("Something went wrong authenticating");
   }
 
   const existingUser = await prisma_db.user.findFirst({
     where: {
-      id: userId,
+      id: user?.id,
     },
   });
-
   return(
     existingUser
-  )
-
+  ) //Not sure why theres 2 returns
+  return existingUser;
 }
 
-export const checkUser = async () => {
+export const checkUser = async (metaData:UserRole) => {
   
   const user = await currentUser()
   console.log('current user in checkUser: ' + JSON.stringify(user))
+  
+  
   if(user?.id === null)
   { 
     throw new Error('Auth.tsx - checkUser: Invalid Id')
   }
+
 
   const checkPrismaUser = await prisma_db.user.upsert({
     where: {
@@ -49,12 +52,14 @@ export const checkUser = async () => {
   },
   update: {
         email: user?.emailAddresses[0].emailAddress,
-        name: user?.firstName + ' ' + user?.lastName
+        name: user?.firstName + ' ' + user?.lastName, 
+        role: metaData
   },
   create: {
         id: user!.id,
         email: user?.emailAddresses[0].emailAddress,
-        name: user?.firstName + ' ' + user?.lastName
+        name: user?.firstName + ' ' + user?.lastName,
+        role: metaData
   }})
   
 }

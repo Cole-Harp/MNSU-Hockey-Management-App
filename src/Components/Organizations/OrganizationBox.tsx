@@ -58,7 +58,11 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
     >
         <div className='flex rounded text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
             {data.organization.name}
-        </div>
+            
+      </div>
+        <button onClick={() => remove(data.organization)} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
+                Delete
+              </button>
     </div>
   )
 }
