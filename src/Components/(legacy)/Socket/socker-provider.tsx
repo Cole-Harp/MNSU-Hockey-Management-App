@@ -1,5 +1,10 @@
 "use client";
 
+/* 
+  This is for node socket server local to the app
+  Pusher is more robust and can be used for production
+*/
+
 import { 
   createContext,
   useContext,
@@ -38,9 +43,9 @@ export const SocketProvider = ({
 
     socketInstance.on("connect", () => {
       setIsConnected(true);
-      // socketInstance.on("update-calendar", () => {
-      //   console.log("update-calendarHEREERDSDFSDFSDF");
-      // });
+      socketInstance.on("update-calendar", () => {
+        console.log("update-calendarHEREERDSDFSDFSDF");
+      });
     }, [socketInstance]);
 
     socketInstance.on("disconnect", () => {

@@ -11,10 +11,10 @@ import {
 const Home = () => {
 
   return (
-    
     <div>
       <SignedOut>
-        <RedirectToSignIn /> // Could be turned into a sign in page button
+      {/* Could be turned into unsigned in landing page */}
+        <RedirectToSignIn />
       </SignedOut>
       <SignedIn>
       <h1 className = 'h-14 flex items-center justify-center'>Hockey Team Management</h1>

@@ -3,6 +3,13 @@ import { NextApiRequest } from "next";
 import { Server as ServerIO } from "socket.io";
 import { NextApiResponseServerIo } from "@/app/types";
 
+/* 
+  Pages is the other older router next uses and can host node servers
+  move to src/ to use, to test connection wrap root layout with socket provider and
+  implment the socket-indicator component
+  This is for node socket server local to the app
+  Pusher is more robust and can be used for production
+*/
 
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {

@@ -1,6 +1,5 @@
 
 import { getAllUsers } from "@/lib/db_actions/Auth";
-import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import Select  from "react-select";
 

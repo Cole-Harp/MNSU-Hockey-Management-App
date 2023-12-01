@@ -3,7 +3,7 @@
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../../../prisma/db";
 import { Conversation } from "@prisma/client";
-import getCurrentPrismaUser from "../../../../lib/db_actions/getCurrentPrismaUser";
+import getCurrentPrismaUser from "./getCurrentPrismaUser";
 
 
 // This function returns all conversations that are associated with the current user

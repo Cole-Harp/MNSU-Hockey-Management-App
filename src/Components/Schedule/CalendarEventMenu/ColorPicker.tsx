@@ -10,7 +10,6 @@ type ColorOption = {
 interface ColorSelectProps {
     admin: boolean,
     announcement: boolean,
-
     color?: string,
     setColor: (color: string) => void,
 
@@ -30,7 +29,7 @@ const announcementColorOptions: ColorOption[] = [
 ];
 
 const ColorSelect = ({ admin, announcement, color, setColor }: ColorSelectProps) => {
-    const [selectedColor, setSelectedColor] = useState<ColorOption | null>(null);
+    const [selectedColor, setSelectedColor] = useState<ColorOption | null>(color ? { value: color, label: color } : null);
 
     const handleColorChange = (color: ColorOption | null) => {
         setSelectedColor(color);
@@ -39,31 +38,20 @@ const ColorSelect = ({ admin, announcement, color, setColor }: ColorSelectProps)
 
     return (
         <>
-            {admin && announcement ? (
-                <>
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bgColor">
-                        Announcement Color
-                    </label>
-                    <Select
-                        className="p-1 absolute  text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4 bottom-3"
-                        options={announcementColorOptions}
-                        value={selectedColor}
-                        onChange={handleColorChange}
-                    />
-                </>
-            ) :
+
                 <>
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bgColor">
                         Background Color
                     </label>
                     <Select
                         className="p-1 absolute  text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4 bottom-3"
-                        options={admin ? [...colorOptions, ...announcementColorOptions] : colorOptions}
+                        options={admin && announcement ? [...announcementColorOptions] : colorOptions}
                         value={selectedColor}
+                        placeholder="Default"
                         onChange={handleColorChange}
                     />
                 </>
-            }
+
         </>
     );
 };

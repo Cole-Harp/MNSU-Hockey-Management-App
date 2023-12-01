@@ -3,7 +3,7 @@
 import { auth } from "@clerk/nextjs";
 import prisma_db from "../../../../../prisma/db";
 import { Conversation } from "@prisma/client";
-import getCurrentPrismaUser from "../../../../lib/db_actions/getCurrentPrismaUser";
+import getCurrentPrismaUser from "./getCurrentPrismaUser";
 
 // This function returns an entire conversation object, given the conversationId. Useful for getting the connected users and messages
 // when you only have the ID of the conversation

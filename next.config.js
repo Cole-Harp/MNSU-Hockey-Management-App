@@ -2,9 +2,12 @@
 const nextConfig = {}
 
 module.exports = {
-  webpack: (config, { isServer }) => {
-    isServer && (config.externals = [...config.externals,  'socket.io-client']);
-    return config;
+  webpack: (
+    config,
+    { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
+  ) => {
+    // Important: return the modified config
+    return config
   },
 
   }

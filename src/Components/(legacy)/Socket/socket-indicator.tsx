@@ -1,6 +1,12 @@
 "use client";
 
-import { useSocket } from "../socker-provider";
+/* 
+  This is for node socket server local to the app
+  Can be used to see connection status
+  Pusher is more robust and can be used for production
+*/
+
+import { useSocket } from "./socker-provider";
 import { Badge } from "@/Components/ui/badge";
 
 export const SocketIndicator = () => {

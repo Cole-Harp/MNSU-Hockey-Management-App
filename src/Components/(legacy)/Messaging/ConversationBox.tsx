@@ -6,7 +6,7 @@ import { FullConversation, FullUser } from '@/app/types'
 import { format } from 'date-fns'
 import useOtherUser from '../../../app/hooks/useOtherUser'
 import { clerkClient, useSession, useUser} from '@clerk/nextjs'
-
+import Image from 'next/image'
 
 
 
@@ -44,7 +44,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
   return (
   <div   onClick = {handleClick}
          className = 'w-full relative flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer'> 
-    <img className = 'w-12 h-12 rounded-full' src = 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' />
+    <Image className = 'w-12 h-12 rounded-full' src = 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' alt = "Missing"/>
       <div className = 'focus:outline-none'>
         {data.name}
         <div className = 'truncate text-black text-sm font-medium'>  {lastMessage?.body}</div>

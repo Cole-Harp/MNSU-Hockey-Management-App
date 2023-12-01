@@ -2,10 +2,11 @@
 
 import prisma_db from "../../../prisma/db";
 import { cache } from 'react';
-import { getAdmin, getUser, isAdmin } from './Auth';
+import { getAdmin, getAllUsers, getUser, isAdmin } from './Auth';
 import { Event, UserRole } from "@prisma/client";
+import { pusher } from "../socket/pusher";
 
-export const userGetEvents = cache(async (): Promise<Event[]> => {
+export const userGetEvents = async (): Promise<Event[]> => {
   try {
     const user = await getUser();
     if (!user) {
@@ -14,28 +15,9 @@ export const userGetEvents = cache(async (): Promise<Event[]> => {
     const events: Event[] = await prisma_db.event.findMany({
       where: {
         OR: [
-          {
-            AND: [
-              // { start: { gte: new Date(start) } },
-              // { end: { lte: new Date(end) } },
-              { authorId: user.id },
-            ],
-          },
-          {
-            AND: [
-              // { startRecur: { gte: new Date(start) } },
-              // { endRecur: { lte: new Date(end) } },
-              { authorId: user.id },
-            ]
-          },
-          {
-            AND: [
-              { role: user.role },
-              { announcement: true },
-
-            ]
-          }
-        ]
+          { authorId: user.id },
+          { role: user.role, announcement: true },
+        ],
       },
     });
     return events;
@@ -43,43 +25,56 @@ export const userGetEvents = cache(async (): Promise<Event[]> => {
     console.error(error);
     throw new Error('Failed to get events');
   }              
-});
+};
 
 export const adminGetEvents = async (
-  start: string,
-  end: string,
-  authorId?: string,
-  role?: UserRole,
+  authorIds: string[],
+  role?: UserRole
 ): Promise<Event[]> => {
   const { isAdmin: adminStatus, user } = await getAdmin();
+  
   try {
-    if (authorId == "me") {
-      authorId = user?.id;
+    if (!authorIds || !Array.isArray(authorIds) || !user) {
+      return [];
     }
+
+    if (authorIds.some(value => value === 'all')) {
+      const users = await getAllUsers(); // Make sure to await the getAllUsers function
+      const userIds = users.map(user => user.id);
+      authorIds = authorIds.concat(userIds);
+    }
+    
+    if (authorIds.some(value => value === 'me')) {
+      authorIds = authorIds.concat(user!.id);
+    }
+
     if (adminStatus) {
-      const events: Event[] = await prisma_db.event.findMany({
+      return await prisma_db.event.findMany({
         where: {
-          AND: [
-            { start: { gte: new Date(start) } },
-            { end: { lte: new Date(end) } },
-            authorId ? { authorId } : {},
-            role ? { author: { role } } : {},
-          ],
+          // start: {
+          //   gte: new Date(start).toISOString(),
+          // },
+          // end: {
+          //   lte: new Date(end).toISOString(),
+          // },
+          authorId: {
+            in: authorIds,
+          },
+          ...(role && { role }),
         },
       });
-
-      return events;
     }
-    // Return an empty array if the user is not an admin
+
     return [];
   } catch (error) {
     console.error('Error fetching events:', error);
     throw error;
   }
-}
+};
 
-export const createEvent = cache(async (data: any) => {
+export const createEvent = async (data: any) => {
   const user = await getUser();
+
   try {
     const newEvent = await prisma_db.event.create({
       data: {
@@ -88,14 +83,18 @@ export const createEvent = cache(async (data: any) => {
         authorId: user?.id
       },
     });
+
+  if (data.announcement) {
+    pusher.trigger('announcements', `new-${data.role}`, newEvent);
+  }
     return newEvent;
   } catch (error) {
     console.error(error);
     throw new Error("An error occurred while creating the event.");
   }
-});
+};
 
-export const deleteEvent = cache(async (id: string) => {
+export const deleteEvent = async (id: string) => {
   const { isAdmin: adminStatus, user } = await getAdmin();
   try {
     if (adminStatus) {
@@ -118,9 +117,9 @@ export const deleteEvent = cache(async (id: string) => {
     console.error(error);
     throw new Error("An error occurred while deleting the event.");
   }
-});
+};
 
-export const updateEvent = cache(async (id: string, data: any) => {
+export const updateEvent = async (id: string, data: any) => {
   const { isAdmin: adminStatus, user } = await getAdmin();
   try {
     if (adminStatus) {
@@ -142,8 +141,9 @@ export const updateEvent = cache(async (id: string, data: any) => {
 
           },
         });
-      } catch {
+      } catch (error) {
         //TODO ADD TOASTS
+        console.error(error);
         throw new Error("User is not authorized to update this event.");
       }
     }
@@ -151,4 +151,4 @@ export const updateEvent = cache(async (id: string, data: any) => {
     console.error(error);
     throw new Error("An error occurred while updating the event.");
   }
-});
+};

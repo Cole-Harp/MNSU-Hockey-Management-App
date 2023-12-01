@@ -1,9 +1,9 @@
 import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Providers from './providers'
 import "./globals.css"
-import { SocketProvider } from '@/lib/socker-provider'
+import { PusherProvider } from '@/Components/pusherContextProvider'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,12 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-
-        <html lang="en">
-          <body>                <SocketProvider>{children}        </SocketProvider></body>
-
-        </html>
-
+      <html lang="en">
+        <body className={cn("bg-secondary", inter.className)}>
+          <PusherProvider>
+            {children}
+          </PusherProvider>
+        </body>
+      </html>
     </ClerkProvider>
   )
 }

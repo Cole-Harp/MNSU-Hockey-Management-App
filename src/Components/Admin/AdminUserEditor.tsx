@@ -1,23 +1,19 @@
 "use client";
 
 import { User, UserRole } from '@prisma/client';
-import { getAllUsers, updateUser } from "@/lib/db_actions/Auth";
-import { useState, useEffect } from "react";
+import { updateUser } from "@/lib/db_actions/Auth";
+import { useState } from "react";
 import Select from 'react-select';
 
-export function AdminUserEditor() {
+type AdminUserEditorProps = {
+  user_list: User[];
+};
+
+export function AdminUserEditor({user_list}: AdminUserEditorProps) {
   const [selectedRole, setSelectedRole] = useState<string>();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users] = useState<User[]>(user_list);
   const [selectedUser, setSelectedUser] = useState<User>();
   const [userEditorToggle, setUserEditorToggle] = useState<boolean>(false)
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const fetchedUsers = await getAllUsers();
-      setUsers(fetchedUsers);
-    };
-    fetchUsers();
-  }, []);
 
 
   const handleInputChange = (event: { target: { name: any; value: any; }; }) => {
@@ -50,10 +46,13 @@ export function AdminUserEditor() {
       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 ml-3 rounded mt-4" onClick={() => setUserEditorToggle(!userEditorToggle)}>Toggle User Editor</button>
       {userEditorToggle ? (
         <div className='my-2 m-2 bg-gray-200 rounded-md p-2'>
-          <div className="z-50 flex items-center pointer-events-auto">
+          <div className="z-40 flex items-center pointer-events-auto">
+          <div data-testid="role-selector">
             <Select options={roleOptions} value={roleOptions.find((option) => option.value === selectedRole)} onChange={(option) => setSelectedRole(option?.value)} data-testid="role-select" aria-label="Select Role" placeholder="Select Role" className="z-50 pointer-events-auto w-64 m-1" />
-          
-          <Select options={userOptions} value={userOptions.find((userOptions) => userOptions.value === selectedUser?.id)} onChange={(option) => setSelectedUser(users.find(user => user.id === option?.value))} placeholder={'Select Users'} className="z-40 w-64 pointer-events-auto m-1" />
+          </div>
+          <div data-testid="user-selector">
+          <Select options={userOptions} value={userOptions.find((userOptions) => userOptions.value === selectedUser?.id)} onChange={(option) => setSelectedUser(users.find(user => user.id === option?.value))} placeholder={'Select Users'} className="z-50 w-64 pointer-events-auto m-1" />
+          </div>
           </div>
           {selectedUser && (
             <div className='w-auto m-1 border '>
@@ -88,6 +87,7 @@ export function AdminUserEditor() {
                     Role:
                   </label>
                   <Select
+                    classNamePrefix='role-change'
                     options={roleOptions}
                     value={roleOptions.find((option) => option.value === selectedUser.role)}
                     onChange={(option) => setSelectedUser({ ...selectedUser, role: option?.value ?? "Player" })}

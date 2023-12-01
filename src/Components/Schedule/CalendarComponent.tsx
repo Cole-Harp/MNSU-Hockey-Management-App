@@ -7,11 +7,11 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { User, UserRole } from '@prisma/client';
 import EventMenu from './CalendarEventMenu/EventMenu';
 import { createEvent, deleteEvent, updateEvent, userGetEvents } from '../../lib/db_actions/Event';
-import EventMenu2 from './CalendarEventMenu/EventEditor';
 import iCalendarPlugin from '@fullcalendar/icalendar'
 import EventEditor from './CalendarEventMenu/EventEditor';
-import { useSocket } from '@/lib/socker-provider';
-import { SocketIndicator } from '@/lib/socket/socket-indicator';
+import { usePusher } from '@/Components/pusherContextProvider';
+import listPlugin from '@fullcalendar/list';
+
 
 
 
@@ -21,10 +21,12 @@ type CalendarProps = {
   currUser: User;
 };
 
-const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events }) => {
-
-  const { isConnected, socket } = useSocket();
+function CalendarComponent({ isAdmin, currUser, events }: CalendarProps) {
+  const { pusher } = usePusher();
   const calendarRef = useRef<FullCalendar>(null);
+  const [eventsState, setEventsState] = useState<any[]>(events);
+  const [showAnnouncementsOnly, setShowAnnouncementsOnly] = useState(false);
+  const [showAgendaOnly, setShowAgendaOnly] = useState(false);
   const [calendar, setCalendar] = useState<any>(null)
   const [clickInfo, setClickInfo] = useState<any>(null);
   const [eventState, setEventState] = useState({
@@ -33,13 +35,16 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
     isLooking: false
   });
 
+
+
+
   useEffect(() => {
     const handleResize = () => {
       if (calendarRef.current) {
         if (window.innerWidth >= 768) {
           calendarRef.current.getApi().changeView('timeGridWeek');
         } else {
-          calendarRef.current.getApi().changeView('dayGridDay');
+          calendarRef.current.getApi().changeView('listWeek');
         }
       }
     };
@@ -47,20 +52,35 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
     window.addEventListener('resize', handleResize);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [calendarRef]);
 
+  const addEvent = (event: any) => {
   
+    const existingEventIndex = eventsState.findIndex((e) => e.id === event.id);
+    if (existingEventIndex !== -1) {
+      const updatedEvents = [...eventsState];
+      updatedEvents.splice(existingEventIndex, 1);
+      updatedEvents.push(event);
+      setEventsState(updatedEvents);
+    } else {
+      setEventsState([...eventsState, event]);
+    }
+  }
+
+
   useEffect(() => {
-    if (socket) {
-    socket.on("connect", () => {
-      socket.on("update-calendar", () => {
-        console.log("update-DogF");
+    if (pusher) {
+      var channel = pusher.subscribe('announcements');
+      channel.bind(`new-${currUser.role}`, function(data: any) {
+        alert(JSON.stringify(data));
+        console.log("New announcement event received");
+        addEvent(data);
       });
-    });}
-  },  [socket]);
-  /*
-    This useEffect is used to update the calendar when the events prop changes.
-  */
+      
+    }
+  }, [pusher, addEvent, currUser.role]);
+
+
 
   useEffect(() => {
     if (calendarRef.current && calendarRef.current.getApi) {
@@ -68,82 +88,31 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
       setCalendar(calendarApi)
     }
   }, [calendarRef, calendarRef.current]);
-
-
-  const handleDatesSet = async () => {
-    if (calendar) {
-
-
-      const currentEvents = calendar.getEvents();
-
-      if (events) {
-        events.forEach((event: { id: string; }) => {
-          // Check if the event already exists in the calendar
-          const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-
-          // If the event doesn't exist, add it to the calendar
-          if (!existingEvent) {
-            let inputEvent = toEvent(event);
-            calendar.addEvent(inputEvent);
-          }
-        });
-      }
-    }
-  };
-
-  function toEvent(event: any) {
-    const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
-    const currEvent: any = {
-      id: event.id,
-      title: event.title,
-      allDay: event.allDay,
-      backgroundColor: event.backgroundColor,
-      extendedProps: {
-        where: event.where,
-        description: event.description,
-        role: event.role,
-        authorId: event.authorId,
-        announcement: event.announcement
-      }
-    };
-
-    // Recurring event or non recurring data
-
-    if (daysOfWeek && daysOfWeek.length > 2) {
-      currEvent.startRecur = event.startRecur;
-      currEvent.endRecur = event.endRecur;
-      currEvent.startTime = event.startTime;
-      currEvent.endTime = event.endTime;
-      currEvent.daysOfWeek = daysOfWeek;
-      currEvent.editable = false
-    } else {
-      currEvent.start = event.start;
-      currEvent.end = event.end;
-    }
-
-    return currEvent;
-  }
+   
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
+    if (!eventState.isEditing && !eventState.isLooking) {
     setClickInfo(selectInfo);
     setEventState({ ...eventState, isNewEvent: true, isEditing: true });
+  }
 
   };
 
   const handleEventClick = async (clickInfo: any) => {
     setClickInfo(clickInfo);
     setEventState({ isNewEvent: false, isEditing: false, isLooking: true });
+  
   };
 
 
-  const handleMove = async (changeInfo: { event: any; }) => {
+  const handleChange = async (changeInfo: { event: any; }) => {
     const event = changeInfo.event;
     const start = new Date(event.startStr);
     const end = new Date(event.endStr);
     const allDay = event.allDay;
 
     if (allDay) {
-      // Add 1 day to the start and end if its all day date not sure why
+      // Docs say add 1 day to the start and end
       start.setDate(start.getDate() + 1);
       end.setDate(end.getDate() + 1)
     }
@@ -158,65 +127,115 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
     await updateEvent(event.id, newEvent);
   };
 
-  const handleDelete = async () => {
-
-    const eventId = clickInfo.event.id;
-    await deleteEvent(eventId);
-    clickInfo.event.remove();
-
-  };
-
-  function handleClose(): any {
-    setEventState({ ...eventState, isEditing: false, isLooking: false });
+  const handleCreate = () => {
+    setEventState({ ...eventState, isNewEvent: true, isEditing: true })
   }
 
   function handleEdit(): any {
     setEventState({ ...eventState, isEditing: true, isLooking: false });
   }
 
-  function renderEventContent(clickInfo: any) {
+  const handleDelete = async () => {
+    const eventId = clickInfo.event.id;
+    await deleteEvent(eventId);
+    setEventsState(prevState => prevState.filter(event => event.id !== eventId));
+    clickInfo.event.remove();
 
-    return (
-      <>
-        <div className="m-0 border-2 w-full h-full p-1">
-          <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
-          <div className="text-sm font-medium text">{clickInfo.timeText}</div>
-        </div>
-      </>
-    );
+  };
+
+  function handleClose(): any {
+    setEventState({ ...eventState, isEditing: false, isLooking: false });
+    setClickInfo(null);
   }
+
+
+  const toggleAnnouncementsView = () => {
+    setShowAnnouncementsOnly(false);
+    setShowAgendaOnly(false)
+    setShowAnnouncementsOnly(!showAnnouncementsOnly);
+  };
+
+  const toggleAgendaView = () => {
+    setShowAnnouncementsOnly(false);
+    calendar.changeView('listWeek');
+    setShowAgendaOnly(!showAgendaOnly);
+  };
+  
+  function getEventById(id?: string) {
+      const event = eventsState.find((event) => event.id === clickInfo?.event?.id) ?? clickInfo;
+      return event;
+  }
+
+function eventFilter() {
+  if (showAnnouncementsOnly) {
+    return eventsState.filter(event => event.announcement)
+  }
+  else if (showAgendaOnly) {
+    return eventsState.filter(event => event.announcement) // Change to Agenda view no time
+  } 
+  else {
+    return eventsState
+  }
+}
+
+
+
+
 
   return (
     <div className='m-3 w-full'>
-
       <div>
+        <>
         <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-        <SocketIndicator />
-          {eventState.isEditing && <EventEditor calendar={calendar} event={clickInfo?.event || undefined} clickInfo={clickInfo} currUserRole={currUser.role} isNewEvent={eventState.isNewEvent} isAdmin={isAdmin} onClose={handleClose} />}
+          {eventState.isEditing && <EventEditor calendar={calendar} event={getEventById() || undefined} clickInfo={clickInfo} currUserRole={currUser.role} isNewEvent={eventState.isNewEvent} isAdmin={isAdmin} onClose={handleClose} addEvent={addEvent} removeEvent={handleDelete} />}
         </div>
-        <button onClick={() => setEventState({ ...eventState, isEditing: true })}>Create Event</button>
+        </>
+
+
+
         <FullCalendar ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, iCalendarPlugin]}
-          headerToolbar={{
-            left: 'prev,next today dayGridWeek',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, iCalendarPlugin]}
+          customButtons={{
+            toggleAnnouncements: {
+              text: "Team Schedule",
+              click: toggleAnnouncementsView,
+            },
+            toggleAgenda: {
+              text: "Agenda",
+              click: toggleAgendaView,
+              hint: "Agenda View",
+
+            },
+            createEvent: {
+              text: "+",
+              click: handleCreate,
+
+            },
           }}
+          headerToolbar={{
+            left: "dayGridMonth,timeGridWeek,timeGridDay,listWeek,createEvent",
+            center: "title",
+            right: "prev,next today toggleAnnouncements toggleAgenda",
+          }}
+
           initialView="dayGridWeek"
           editable={true}
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
           select={handleDateClick}
-          eventContent={renderEventContent}
           eventClick={handleEventClick}
-          datesSet={handleDatesSet}
-          // events = {events}
-
           selectOverlap={true}
-          eventChange={handleMove}
+          // events={eventFilter()}
+          events = {{
+            url: 'https://calendar.google.com/calendar/ical/colerharp%40gmail.com/public/basic.ics',
+            format: 'ics' // important!
+          }}
+          
+          
+          eventChange={handleChange}
           firstDay={1}
-          rerenderDelay={50}
+
 
         />
       </div>
@@ -225,7 +244,6 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
           onDelete={handleDelete}
           onEdit={handleEdit}
           onClose={handleClose}
-
           start={clickInfo?.startStr || ""}
           event={clickInfo?.event || undefined}
           isNewEvent={eventState.isNewEvent}
@@ -238,3 +256,51 @@ const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events 
 };
 
 export default CalendarComponent;
+
+// function toEvents(events: any[]) {
+//   // Filter events if 'showAnnouncementsOnly' is true
+//   // Default to false for initial render
+//   let filteredEvents = showAnnouncementsOnly ?? false  // Default to false for initial render
+//     ? events.filter(event => event.announcement)
+//     : events;
+
+//   // Transform the filtered events to the format expected by FullCalendar
+//   return filteredEvents.map(event => {
+//     const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
+//     var currEvent: any = {
+//       id: event.id,
+//       title: event.title,
+//       allDay: event.allDay,
+//       backgroundColor: event.backgroundColor,
+//       extendedProps: {
+//         where: event.where,
+//         description: event.description,
+//         role: event.role,
+//         authorId: event.authorId,
+//         announcement: event.announcement
+//         // For some reason cant acess recur data in event editor
+
+
+//       }
+//     };
+
+//     // Handling for recurring events
+//     if (daysOfWeek && daysOfWeek.length > 0) {
+//       currEvent = {...currEvent,
+//         daysOfWeek: daysOfWeek,
+//         startTime: event.startTime,
+      
+//         endTime: event.endTime,
+//         startRecur: event.startRecur,
+//         endRecur: event.endRecur,
+//         editable: false,}
+
+//     } else {
+//       // Non-recurring event dates
+//       currEvent.start = event.start;
+//       currEvent.end = event.end;
+//     }
+
+//     return currEvent;
+//   });
+// }

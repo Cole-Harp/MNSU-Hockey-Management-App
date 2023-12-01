@@ -1,131 +1,164 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { adminGetEvents, createEvent, deleteEvent, updateEvent, userGetEvents } from '@/lib/db_actions/Event';
-import { UserRole } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import EventMenu from '../Schedule/CalendarEventMenu/EventMenu';
-import { FilterComponent } from '../Schedule/AdminFilter';
+import { adminGetEvents, createEvent, deleteEvent, updateEvent, userGetEvents } from '../../lib/db_actions/Event';
+import iCalendarPlugin from '@fullcalendar/icalendar'
+import EventEditor from '../Schedule/CalendarEventMenu/EventEditor';
+import { usePusher } from '@/Components/pusherContextProvider';
+import listPlugin from '@fullcalendar/list';
+import { FilterComponent } from './AdminFilter';
+import { event } from 'cypress/types/jquery';
+
+
+
 
 type CalendarProps = {
   isAdmin: boolean;
+  events: any[];
+  currUser: User;
+  user_list: User[];
 };
 
-const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarProps) => {
+const CalendarComponent: React.FC<CalendarProps> = ({ isAdmin, currUser, events, user_list }) => {
 
+  const { pusher } = usePusher();
   const calendarRef = useRef<FullCalendar>(null);
+  const [eventsState, setEventsState] = useState<any[]>(events);
+  const [showAnnouncementsOnly, setShowAnnouncementsOnly] = useState(false);
+  const [showAgendaOnly, setShowAgendaOnly] = useState(false);
   const [calendar, setCalendar] = useState<any>(null)
-  const [annoncments, setAnnoncments] = useState<boolean>(false)
   const [clickInfo, setClickInfo] = useState<any>(null);
-  const [eventState, setEventState] = useState({ isEditing: false, isNewEvent: false });
   const [selectedRole, setSelectedRole] = useState<UserRole>();
   const [selectedPerson, setSelectedPerson] = useState<any>("me");
-  const [admin] = useState<boolean>(isAdmin);
+  const [eventState, setEventState] = useState({
+    isEditing: false,
+    isNewEvent: false,
+    isLooking: false
+  });
+
+
+
+  const handleDatesSet = useCallback(async () => {
+    if (calendar) {
+      const start = calendar.view.activeStart;
+      const end = calendar.view.activeEnd;
+  
+      if (isAdmin) {
+        const fetchedEvents = await adminGetEvents(selectedPerson, selectedRole);
+        let updatedEventsState = [...eventsState];
+  
+        // Add new events to the calendar and state
+        fetchedEvents.forEach((fetchedEvent) => {
+          const existsInState = updatedEventsState.find(event => event.id === fetchedEvent.id);
+          if (!existsInState) {
+            calendar.addEvent(fetchedEvent);
+            updatedEventsState.push(fetchedEvent);
+          }
+        });
+  
+        // Remove events that are no longer present
+        updatedEventsState = updatedEventsState.filter((currentStateEvent) => {
+          const existsInFetched = fetchedEvents.find(fetchedEvent => fetchedEvent.id === currentStateEvent.id);
+          if (!existsInFetched) {
+            let calendarEvent = calendar.getEventById(currentStateEvent.id);
+            if (calendarEvent) {
+              calendarEvent.remove();
+            }
+            return false;
+          }
+          return true;
+        });
+  
+        setEventsState(updatedEventsState);
+      }
+    }
+  }, [calendar, selectedPerson, selectedRole]);
+
+  useEffect(() => {
+    handleDatesSet();
+  }, [selectedRole, selectedPerson, handleDatesSet]);
+
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (calendarRef.current) {
+        if (window.innerWidth >= 768) {
+          calendarRef.current.getApi().changeView('timeGridWeek');
+        } else {
+          calendarRef.current.getApi().changeView('dayGridDay');
+        }
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const addEvent = (event: any) => {
+  
+    const existingEventIndex = eventsState.findIndex((e) => e.id === event.id);
+    if (existingEventIndex !== -1) {
+      const updatedEvents = [...eventsState];
+      updatedEvents.splice(existingEventIndex, 1);
+      updatedEvents.push(event);
+      setEventsState(updatedEvents);
+    } else {
+      setEventsState([...eventsState, event]);
+    }
+  }
+
+  useEffect(() => {
+    if (pusher) {
+      var channel = pusher.subscribe('announcements');
+      channel.bind(`new-${currUser.role}`, function(data: any) {
+        alert(JSON.stringify(data));
+        console.log("New announcement event received");
+        addEvent(data);
+      });
+    }
+  }, [pusher, addEvent, currUser.role]);
+  
+
+
+
 
   useEffect(() => {
     if (calendarRef.current && calendarRef.current.getApi) {
       const calendarApi = calendarRef.current.getApi()
       setCalendar(calendarApi)
-      handleDatesSet();
     }
-  }, [selectedRole, selectedPerson, calendarRef.current, admin]);
-
-  const handleDatesSet = async () => {
-    if (calendar) {
-      const start = calendar.view.activeStart;
-      const end = calendar.view.activeEnd;
-
-      if (admin) {
-        const events = await adminGetEvents(start, end, selectedPerson, selectedRole);
-        const currentEvents = calendar.getEvents();
-
-        events.forEach((event) => {
-          // Check if the event already exists in the calendar
-          const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-
-          // If the event doesn't exist, add it to the calendar
-          if (!existingEvent) {
-            let inputEvent = toEvent(event);
-            calendar.addEvent(event);
-          }
-        });
-        // Added filter to handle admin filter variable changes could probably be turned to conditional
-        currentEvents.forEach((event: { id: string; remove: () => void; }) => {
-          if (!events.find((e) => e.id === event.id)) {
-            event.remove();
-          }
-        });
-      }
-    }
-  };
-
-  function toEvent(event: any) {
-
-    console.log("TEST", event.description, event.id)
-
-    return {
-      id: event.id,
-      title: event.title,
-      start: event.start,
-      startTime: event.startTime,
-      end: event.end,
-      endTime: event.endTime,
-      allDay: event.allDay,
-      backgroundColor: event.backgroundColor,
-      extendedProps: {
-        where: event.where,
-        description: event.description,
-        role: event.role,
-        authorId: event.authorId,
-        announcement: event.announcement
-      }
-    };
-
-    return {
-      id: event.id,
-      start: event.start,
-      end: event.end,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      title: event.title,
-      startRecur: event.start,
-      endRecur: event.end,
-      daysOfWeek: daysOfWeek,
-      allDay: event.allDay,
-      backgroundColor: event.backgroundColor,
-      extendedProps: {
-        where: event.where,
-        description: event.description,
-        role: event.role,
-        authorId: event.authorId,
-        announcement: event.announcement
-      }
-    };
-  };
+  }, [calendarRef, calendarRef.current]);
+   
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
+    if (!eventState.isEditing && !eventState.isLooking) {
     setClickInfo(selectInfo);
-    setEventState({ isNewEvent: true, isEditing: true });
+    setEventState({ ...eventState, isNewEvent: true, isEditing: true });
+  }
 
   };
 
   const handleEventClick = async (clickInfo: any) => {
     setClickInfo(clickInfo);
-    setEventState({ isNewEvent: false, isEditing: true });
+    setEventState({ isNewEvent: false, isEditing: false, isLooking: true });
+  
   };
 
 
-  const handleMove = async (changeInfo: any) => {
+  const handleChange = async (changeInfo: { event: any; }) => {
     const event = changeInfo.event;
     const start = new Date(event.startStr);
     const end = new Date(event.endStr);
-    const role = UserRole.Player;
     const allDay = event.allDay;
 
     if (allDay) {
-      // Add 1 day to the start and end if its all day date not sure why
+      // Docs say add 1 day to the start and endy
       start.setDate(start.getDate() + 1);
       end.setDate(end.getDate() + 1)
     }
@@ -140,143 +173,124 @@ const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarPr
     await updateEvent(event.id, newEvent);
   };
 
-  const handleSave = async (data: { title: any; where: any; desc: any; backgroundColor: any }) => {
-    if (clickInfo && clickInfo.event) {
-      const eventId = clickInfo.event.id;
-      const updatedEvent = {
-        title: data.title,
-        where: data.where,
-        description: data.desc,
-        start: clickInfo.start,
-        end: clickInfo.end,
-        allDay: clickInfo.allDay,
-        role: clickInfo.role,
-        backgroundColor: data.backgroundColor,
-      };
-
-      await updateEvent(eventId, updatedEvent);
-      clickInfo.event.setProp('title', data.title,);
-      clickInfo.event.setProp('backgroundColor', data.backgroundColor,);
-      clickInfo.event.setExtendedProp('where', data.where)
-      clickInfo.event.setExtendedProp('description', data.desc)
-    }
-  }
-
   const handleDelete = async () => {
-
     const eventId = clickInfo.event.id;
     await deleteEvent(eventId);
+    setEventsState(prevState => prevState.filter(event => event.id !== eventId));
     clickInfo.event.remove();
 
   };
 
-  const handleCreate = async (data: { title: any; where: any; desc: any; backgroundColor: any }) => {
-    const title = data.title;
-    const where = data.where
-    const bgColor = data.backgroundColor
-    const description = data.desc;
-    const start = new Date(clickInfo.startStr);
-    const end = new Date(clickInfo.endStr);
-    const role = UserRole.Player;
-    const allDay = clickInfo.allDay;
-    const calendar = clickInfo.view.calendar;
-
-    if (allDay) {
-      start.setDate(start.getDate() + 1); // Add 1 day to the start date not sure why
-    }
-
-    const newEvent = {
-      title: title,
-      start: start,
-      end: end,
-      allDay: allDay,
-      backgroundColor: bgColor,
-      where: where,
-      role: role,
-      description: description,
-    };
-
-    if (title) {
-      const calEvent = await createEvent(newEvent);
-      calendar.addEvent(calEvent);
-    }
-  };
-
   function handleClose(): any {
-    setEventState({ ...eventState, isEditing: false });
+    setEventState({ ...eventState, isEditing: false, isLooking: false });
+    setClickInfo(null);
   }
 
-  const handleAnnouncements = () => {
-    setAnnoncments(!annoncments)
+  function handleEdit(): any {
+    setEventState({ ...eventState, isEditing: true, isLooking: false });
+  }
+
+
+  const toggleAnnouncementsView = () => {
+    setShowAgendaOnly(false)
+    setShowAnnouncementsOnly(!showAnnouncementsOnly);
   };
 
+  const toggleAgendaView = () => {
+    setShowAnnouncementsOnly(false);
+    calendar.changeView('listWeek');
+    setShowAgendaOnly(!showAgendaOnly);
+  };
+  
   const handleFilter = (role: any, selectedPerson: any) => {
     setSelectedRole(role);
     setSelectedPerson(selectedPerson);
   };
 
-  function renderEventContent(clickInfo: any) {
 
-    return (
-      <>
-        <div className="m-0 border-2 w-full h-full p-1">
-          <div className="text-lg sm:text-sm font-bold truncate">{clickInfo.event.title}</div>
-          <div className="text-sm font-medium text">{clickInfo.timeText}</div>
-
-        </div>
-      </>
-    );
+function eventFilter() {
+  if (showAnnouncementsOnly) {
+    return eventsState.filter(event => event.announcement)
   }
+  if (showAgendaOnly) {
+    calendar.changeView('listWeek');
+    return eventsState.filter(event => event.announcement) // Change to Agenda view no time
+  } else {
+    return eventsState
+  }
+}
+
+
+
+
 
   return (
     <div className='m-3 w-full'>
-
       <div>
+        <>
         <FilterComponent
-          onFilter={handleFilter} />
+            onFilter={handleFilter} user_list={user_list} />
+
+        </>
+        <button
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+          onClick={toggleAnnouncementsView}
+        >
+          {showAnnouncementsOnly ? 'Show All Events' : 'Show Announcements'}
+        </button>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setEventState({ ...eventState, isNewEvent: true, isEditing: true })}
+        >
+          Create Event
+        </button>
+
 
         <FullCalendar ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          views={{
-            dayGridWeek: {
-              buttonText: 'Team Schedule only',
-              click: handleAnnouncements,
-              eventContent: renderEventContent,
-              datesSet: handleDatesSet,
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, iCalendarPlugin]}
+          customButtons={{
+            toggleAnnouncements: {
+              text: "Team Schedule",
+              click: toggleAnnouncementsView,
+            },
+            toggleAgenda: {
+              text: "Agenda",
+              click: toggleAgendaView,
+
             },
           }}
           headerToolbar={{
-            left: 'prev,next today dayGridWeek myCustomButton',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            left: "dayGridMonth,timeGridWeek,timeGridDay",
+            center: "title",
+            right: "prev,next today toggleAnnouncements toggleAgenda",
           }}
-          initialView="timeGridWeek"
+
+          initialView="dayGridWeek"
           editable={true}
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
           select={handleDateClick}
-          eventContent={renderEventContent}
+          // eventContent={renderEventContent}
           eventClick={handleEventClick}
           datesSet={handleDatesSet}
           selectOverlap={true}
-          eventChange={handleMove}
-          rerenderDelay={50}
+          events={eventFilter()}
+          eventChange={handleChange}
+          firstDay={1}
 
-          scrollTime="00:06:00"
+
         />
       </div>
       <div className='fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-        {eventState.isEditing && <EventMenu
+        {(eventState.isLooking) && <EventMenu
           onDelete={handleDelete}
-          onSave={handleSave}
+          onEdit={handleEdit}
           onClose={handleClose}
-          onCreate={handleCreate}
-          start={clickInfo.startStr}
-          event={clickInfo.event}
+          start={clickInfo?.startStr || ""}
+          event={clickInfo?.event || undefined}
           isNewEvent={eventState.isNewEvent}
-          admin={admin}
-
+          admin={false}
 
         />}
       </div>
@@ -284,59 +298,52 @@ const AdminCalendarComponent: React.FC<CalendarProps> = ({ isAdmin }: CalendarPr
   );
 };
 
-export default AdminCalendarComponent;
+export default CalendarComponent;
 
-  // const handleDatesSet = async () => {
-  //   if (calendar) {
-  //     const start = calendar.view.activeStart;
-  //     const end = calendar.view.activeEnd;
-  
-  //     const events = await userGetEvents(start, end);
-  //     const currentEvents = calendar.getEvents();
-  
-  //     if (events) {
-  //       events.forEach((event: { id: string; }) => {
-  //         // Check if the event already exists in the calendar
-  //         const existingEvent = currentEvents.find((e: { id: string; }) => e.id === event.id);
-  
-  //         // If the event doesn't exist, add it to the calendar
-  //         if (!existingEvent) {
-  //           let inputEvent = toEvent(event);
-  //           calendar.addEvent(inputEvent);
-  //         }
-  //       });
-  //     }
-  //   }
-  // };
-  
-  // function toEvent(event: any) {
-  //   const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
-  //   const currEvent: any = {
-  //     id: event.id,
-  //     title: event.title,
-  //     allDay: event.allDay,
-  //     backgroundColor: event.backgroundColor,
-  //     extendedProps: {
-  //       where: event.where,
-  //       description: event.description,
-  //       role: event.role,
-  //       authorId: event.authorId,
-  //       announcement: event.announcement
-  //     }
-  //   };
-  
-  //   if (daysOfWeek && daysOfWeek.length > 2) {
-  //     // Recurring event
-  //     currEvent.startRecur = event.startRecur;
-  //     currEvent.endRecur = event.endRecur;
-  //     currEvent.startTime = event.startTime;
-  //     currEvent.endTime = event.endTime;
-  //     currEvent.daysOfWeek = daysOfWeek;
-  //   } else {
-  //     // Non-recurring event
-  //     currEvent.start = event.start;
-  //     currEvent.end = event.end;
-  //   }
-  
-  //   return currEvent;
-  // }
+// function toEvents(events: any[]) {
+//   // Filter events if 'showAnnouncementsOnly' is true
+//   // Default to false for initial render
+//   let filteredEvents = showAnnouncementsOnly ?? false  // Default to false for initial render
+//     ? events.filter(event => event.announcement)
+//     : events;
+
+//   // Transform the filtered events to the format expected by FullCalendar
+//   return filteredEvents.map(event => {
+//     const daysOfWeek = event.daysOfWeek ? JSON.parse(event.daysOfWeek) as string[] : undefined;
+//     var currEvent: any = {
+//       id: event.id,
+//       title: event.title,
+//       allDay: event.allDay,
+//       backgroundColor: event.backgroundColor,
+//       extendedProps: {
+//         where: event.where,
+//         description: event.description,
+//         role: event.role,
+//         authorId: event.authorId,
+//         announcement: event.announcement
+//         // For some reason cant acess recur data in event editor
+
+
+//       }
+//     };
+
+//     // Handling for recurring events
+//     if (daysOfWeek && daysOfWeek.length > 0) {
+//       currEvent = {...currEvent,
+//         daysOfWeek: daysOfWeek,
+//         startTime: event.startTime,
+      
+//         endTime: event.endTime,
+//         startRecur: event.startRecur,
+//         endRecur: event.endRecur,
+//         editable: false,}
+
+//     } else {
+//       // Non-recurring event dates
+//       currEvent.start = event.start;
+//       currEvent.end = event.end;
+//     }
+
+//     return currEvent;
+//   });
+// }

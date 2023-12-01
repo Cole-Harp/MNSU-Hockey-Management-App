@@ -3,9 +3,6 @@
 import { auth, currentUser, clerkClient } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
-import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
-
-
 
 
 export const getAllUsers = async () => {

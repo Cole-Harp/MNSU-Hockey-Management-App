@@ -47,11 +47,12 @@ const ConversationList: React.FC = () => {
             Messages
             </div>
         </div>
-        {conversations.map((item: FullConversation) => ( 
-            <div>
-            <ConversationBox data={item}/>
-            </div>
-            ))}
+        {/*  Needs key for map
+          {conversations.map((item: FullConversation) => ( 
+              <div>
+              <ConversationBox data={item}/>
+              </div>
+              ))} */}
             
         
     </div>

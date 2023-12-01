@@ -10,8 +10,7 @@ import { useRouter } from 'next/navigation';
 // TODO: Make a button to create a conversation
 
 
-export default async function usersLayout({ children } :{ children : React.ReactNode })
-{
+export default async function usersLayout(){
  
   const convos = await getAllConversations();
   

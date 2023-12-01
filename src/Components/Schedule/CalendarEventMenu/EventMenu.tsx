@@ -18,7 +18,7 @@ interface EventMenuProps {
 
 const formatEventDate = (event: any, start: string) => {
   if (!event && !event?.start) {
-    return new Date(start).toLocaleDateString();
+    return new Date(start).toLocaleString();
   }
   if (event.allDay) {
     return event.start.toLocaleDateString();
@@ -26,7 +26,7 @@ const formatEventDate = (event: any, start: string) => {
   return event.start.toLocaleString([], { dateStyle: "short", timeStyle: "short" });
 };
 
-export default function EventMenu({ onDelete, onClose, onEdit, event, start, isNewEvent = false, admin = false }: EventMenuProps) {
+export default function EventMenu({ onDelete, onClose, onEdit, event, start }: EventMenuProps) {
   const [eventDetails, setEventDetails] = useState({
     title: event && event.title ? event.title : "",
     when: formatEventDate(event, start),
@@ -44,10 +44,7 @@ export default function EventMenu({ onDelete, onClose, onEdit, event, start, isN
 
 // Some type of useEffect
 
-  const handleDeleteClick = () => {
-    onDelete();
-    onClose();
-  };
+
 
   const handleClose = () => {
     onClose()
@@ -70,25 +67,24 @@ export default function EventMenu({ onDelete, onClose, onEdit, event, start, isN
             <div className="flex items-center justify-center">x</div>
           </button>
         </div>
-        <div className="m-2 text-2xl font-bold">
-          
+          <div className="m-2 text-2xl font-bold">
             <div className="flex items-center">
               <span>{eventDetails.title}</span>
             </div>
-
-
-        </div>
-        <div className="bg-gray-100 rounded-lg shadow-lg p-4 w-full grid grid-cols-3 gap-4">
-          <div className="text-sm font-medium text-gray-500">When</div>
-          <div className="col-span-2">
-           
-              <span>{eventDetails.when}</span>
-      
           </div>
-
-
-            <><div className="text-sm font-medium text-gray-500">Where</div><div className="col-span-2">
-
+        <div className="bg-gray-100 rounded-lg shadow-lg p-4 w-full grid grid-cols-3 gap-4">
+          {eventDetails.when && (
+            <>
+              <div className="text-sm font-medium text-gray-500">When</div>
+              <div className="col-span-2">
+                <span>{eventDetails.when}</span>
+              </div>
+            </>
+          )}
+          {eventDetails.where && (
+            <>
+              <div className="text-sm font-medium text-gray-500">Where</div>
+              <div className="col-span-2">
                 <div className="flex z-50">
                   <Link href={mapUrl(eventDetails.where, isIOS, isAndroid)} target="_blank">
                     <span className="flex">
@@ -97,42 +93,30 @@ export default function EventMenu({ onDelete, onClose, onEdit, event, start, isN
                     </span>
                   </Link>
                 </div>
-           
-
-            </div></>
-        
-
-         
-            <><div className="text-sm font-medium text-gray-500">Desc</div>
+              </div>
+            </>
+          )}
+          {eventDetails.desc && (
+            <>
+              <div className="text-sm font-medium text-gray-500">Desc</div>
               <div className="col-span-2">
-
-               
-                  <span>{eventDetails.desc}</span>
-               
-              </div></>
-
+                <span>{eventDetails.desc}</span>
+              </div>
+            </>
+          )}
           <div className="flex justify-left">
-            
-              <button
-                className=" bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded"
-                onClick={handleEdit}
-              >
-                Edit
-              </button>
-
-
             <button
-               className="hover:bg-red-700 text-white font-bold py-2 px-2 rounded mx-1"
-              onClick={handleDeleteClick}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded"
+              onClick={handleEdit}
             >
-              <Icon icon="uil:trash" width="28" height="28" />
+              Edit
             </button>
-
           </div>
         </div>
       </div>
     </div>
   );
+  
 }
 
 

@@ -13,7 +13,7 @@ interface HeaderProps {
     users: User[] | null;
 }
 
-const Header: React.FC<HeaderProps> = async ({ conversation, users }) => {
+const Header: React.FC<HeaderProps> = ({ conversation, users }) => {
     const [isOpen, setIsOpen] = useState(false);
 
 

@@ -5,7 +5,7 @@ import { FC, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactN
 import UserBox from './ConversationBox'
 import { Message, User } from '@prisma/client'
 import { auth } from '@clerk/nextjs'
-import getCurrentUser from '@/lib/db_actions/getCurrentUserId'
+import getCurrentUser from '@/Components/(legacy)/Messaging/getCurrentUserId'
 import { getConversationWithMessages } from '@/lib/db_actions/Message'
 
 
@@ -46,7 +46,7 @@ const MessageList: React.FC<MessageListProps> = ({items, convoId, userId}) => {
                   </div>
               </div>
               <div className=' overflow-y-auto'>
-                {messages.map((item: { userId: string; userName: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; body: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; createdAt: { toLocaleString: () => string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => ( 
+                {/* Needs key: {messages.map((item: { userId: string; userName: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; body: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; createdAt: { toLocaleString: () => string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => ( 
                 <div className = 'w-full px-5 flex flex-col justify-between'>
                     <div className = 'flex flex-col mt-3'>
                         <div className = {item.userId === userId ? 'flex justify-end mb-4' : 'flex justify-start mb-4'}>
@@ -67,7 +67,7 @@ const MessageList: React.FC<MessageListProps> = ({items, convoId, userId}) => {
                 </div>
                   ))
                 
-                  }
+                  } */}
                   </div>
             
           </div>

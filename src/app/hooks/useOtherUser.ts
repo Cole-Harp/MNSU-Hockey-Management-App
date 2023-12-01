@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { FullConversation } from '../types'
 import { User } from '@prisma/client'
-import getCurrentUserId from '@/lib/db_actions/getCurrentUserId'
+import getCurrentUserId from '@/Components/(legacy)/Messaging/getCurrentUserId'
 import { Session, clerkClient } from '@clerk/nextjs/server'
 import { useSession } from '@clerk/nextjs'
 

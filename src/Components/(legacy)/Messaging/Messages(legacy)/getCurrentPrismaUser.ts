@@ -1,7 +1,7 @@
 "use server"
 
 import { NextResponse } from 'next/server'
-import prisma_db from '../../../prisma/db'
+import prisma_db from '../../../../../prisma/db'
 import { currentUser, useUser } from '@clerk/nextjs';
 
 
