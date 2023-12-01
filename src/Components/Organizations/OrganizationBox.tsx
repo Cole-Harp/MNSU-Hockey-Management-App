@@ -7,6 +7,7 @@ import clsx from 'clsx'
 import useOtherUser from '@/app/hooks/useOtherUser'
 import { Session } from '@clerk/nextjs/server'
 import { clerkClient, useOrganizationList, useSession, useUser} from '@clerk/nextjs'
+import { Conversation } from '@prisma/client'
 
 
 
@@ -17,8 +18,6 @@ import { clerkClient, useOrganizationList, useSession, useUser} from '@clerk/nex
 
 interface ConversationBoxProps{
     data: any
-    
-    
 }
 
 const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {

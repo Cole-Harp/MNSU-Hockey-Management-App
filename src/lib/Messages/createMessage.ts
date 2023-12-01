@@ -19,17 +19,14 @@ export async function createMessage(message: string, conversationId: string) {
         }
 
         const testUser = await clerkClient.users.getUser(userId)
-        if(testUser === null)
-        {
-            throw new Error('createMessage: invalid Clerk user')
-        }
+        
         const testName = testUser.emailAddresses[0].emailAddress
 
 
         const newMessage = await prisma_db.message.create({
             data: {
                body: message,
-               userName: testName!,
+               userName: testName,
                userId: userId,
                conversation: {
                 connect: {

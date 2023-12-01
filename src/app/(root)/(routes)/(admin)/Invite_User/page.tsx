@@ -1,3 +1,4 @@
+'use server'
 
 import CreateOrganization from "@/Components/Organizations/CreateOrganization";
 import InvitationList from "@/Components/Organizations/InvitationList";
