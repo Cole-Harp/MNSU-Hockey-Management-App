@@ -5,7 +5,7 @@ import { cache } from 'react';
 import { getAdmin, getUser, isAdmin } from './Auth';
 import { Event, UserRole } from "@prisma/client";
 
-export const userGetEvents = cache(async (start: string, end: string): Promise<Event[]> => {
+export const userGetEvents = cache(async (): Promise<Event[]> => {
   try {
     const user = await getUser();
     if (!user) {
@@ -16,10 +16,17 @@ export const userGetEvents = cache(async (start: string, end: string): Promise<E
         OR: [
           {
             AND: [
-              { start: { gte: new Date(start) } },
-              { end: { lte: new Date(end) } },
+              // { start: { gte: new Date(start) } },
+              // { end: { lte: new Date(end) } },
               { authorId: user.id },
             ],
+          },
+          {
+            AND: [
+              // { startRecur: { gte: new Date(start) } },
+              // { endRecur: { lte: new Date(end) } },
+              { authorId: user.id },
+            ]
           },
           {
             AND: [
@@ -35,7 +42,7 @@ export const userGetEvents = cache(async (start: string, end: string): Promise<E
   } catch (error) {
     console.error(error);
     throw new Error('Failed to get events');
-  }
+  }              
 });
 
 export const adminGetEvents = async (
@@ -77,6 +84,7 @@ export const createEvent = cache(async (data: any) => {
     const newEvent = await prisma_db.event.create({
       data: {
         ...data,
+        daysOfWeek: data.daysOfWeek ? JSON.stringify(data.daysOfWeek) : '',
         authorId: user?.id
       },
     });

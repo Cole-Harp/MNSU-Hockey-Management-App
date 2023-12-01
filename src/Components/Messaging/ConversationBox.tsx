@@ -44,29 +44,20 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({data, selected}) => {
     return messages[messages.length - 1]
   }, [data.messages])
 
-  const userName = useMemo(() => {
-    return session.session?.user?.firstName
-  }, [session.session?.user?.firstName])
-
-
-
 
   return (
   <div   onClick = {handleClick}
          className = 'w-full relative flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer'> 
     <img className = 'w-12 h-12 rounded-full' src = 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' />
       <div className = 'focus:outline-none'>
+        {data.name}
+        <div className = 'truncate text-black text-sm font-medium'>  {lastMessage?.body}</div>
         <div className = 'flex justify-between items-center mb-1'>
-          <p  className = 'text-sm font-medium text-gray-900'>{otherUser.name}</p>
+          {/* <p  className = 'text-sm font-medium text-gray-900'>{otherUser.name}</p> */}
           {lastMessage?.createdAt && ( <p className = 'text-xs text-gray-400 font-light'> {format(new Date(lastMessage.createdAt),'p')}</p>)}
         </div>
-        <p className = 'truncate text-sm text-black font-medium'> {lastMessage?.body}</p>
       </div>
   </div>)
 }
 
 export default ConversationBox
-
-function getUser() {
-  throw new Error('Function not implemented.')
-}

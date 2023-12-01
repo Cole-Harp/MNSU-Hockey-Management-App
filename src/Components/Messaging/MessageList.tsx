@@ -1,11 +1,12 @@
+"use client";
 
 
-
-import { FC } from 'react'
+import { FC, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from 'react'
 import UserBox from './ConversationBox'
 import { Message, User } from '@prisma/client'
 import { auth } from '@clerk/nextjs'
 import getCurrentUser from '@/lib/db_actions/getCurrentUserId'
+import { getConversationWithMessages } from '@/lib/db_actions/Message'
 
 
 // This component renders messages. Messages from the current user will show on the right of the screen, all other messages
@@ -13,16 +14,27 @@ import getCurrentUser from '@/lib/db_actions/getCurrentUserId'
 // TODO: Have user's name display by message
 // TODO: Format DateTime to show just time, not the date and the time
 
-interface MessageListProps { items: Message[]}
+interface MessageListProps { items: Message[], convoId: string, userId: string}
 
-const MessageList: React.FC<MessageListProps> = ({items}) => {
+const MessageList: React.FC<MessageListProps> = ({items, convoId, userId}) => {
+    const [messages, setMessages] = useState<any>(items)
 
-    const { userId }: { userId: string | null } = auth();
-        if (userId === null) {
-            throw new Error("Something went wrong authenticating");
-          }
    
-         
+    
+    useEffect(() => {
+        const fetchMessages = async () => {
+          const convo_messages = await getConversationWithMessages(convoId);
+          setMessages(convo_messages?.messages);
+        };
+      
+        fetchMessages(); // Fetch messages initially
+      
+        const intervalId = setInterval(() => {
+          fetchMessages(); // Fetch messages every 1 second
+        }, 1000);
+      
+        return () => clearInterval(intervalId); // Cleanup function
+      }, [convoId]);
 
     
     return( 
@@ -33,7 +45,8 @@ const MessageList: React.FC<MessageListProps> = ({items}) => {
                   Current Conversation
                   </div>
               </div>
-              {items.map((item) => ( 
+              <div className=' overflow-y-auto'>
+                {messages.map((item: { userId: string; userName: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; body: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; createdAt: { toLocaleString: () => string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => ( 
                 <div className = 'w-full px-5 flex flex-col justify-between'>
                     <div className = 'flex flex-col mt-3'>
                         <div className = {item.userId === userId ? 'flex justify-end mb-4' : 'flex justify-start mb-4'}>
@@ -55,6 +68,7 @@ const MessageList: React.FC<MessageListProps> = ({items}) => {
                   ))
                 
                   }
+                  </div>
             
           </div>
       </aside>
