@@ -1,8 +1,7 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { auth, currentUser } from "@clerk/nextjs";
-import { getUser } from "./Auth";
+import { auth } from "@clerk/nextjs";
 import { clerkClient } from "@clerk/nextjs/server";
 const prisma = new PrismaClient();
 

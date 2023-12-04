@@ -43,7 +43,7 @@ export const MobileNavbar = () => {
 
     
     return (
-        <div className="sm:flex-col sticky bottom-0 w-full rounded bg-mnsu_purple md:hidden">
+        <div className="absolute sm:flex-col bottom-0 w-full rounded bg-mnsu_purple md:hidden">
             <div className="flex justify-between">
                     {routes.map((route) => (
                         <div
