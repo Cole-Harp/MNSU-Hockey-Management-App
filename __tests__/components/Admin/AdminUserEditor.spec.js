@@ -3,59 +3,37 @@ import { AdminUserEditor } from "@/Components/Admin/AdminUserEditor";
 import { render, screen, fireEvent, getByLabelText, within, act, waitForElement, queryByTestId, find } from "@testing-library/react";
 
 
-
-
-
-// Mock the external dependencies
-
-
-
-// Mock the entire authActions module
-
-const user_list =         [{ id: '1', name: 'John Doe', role: 'Admin' },
-{ id: '2', name: 'John Doge', role: "Player" }];
+const user_list = [
+  { id: '1', name: 'John Doe', role: 'Admin' },
+  { id: '2', name: 'John Doge', role: "Player" }
+];
 
 describe('AdminUserEditor Component', () => {
+
   beforeEach(() => {
-    
+    render(<AdminUserEditor user_list={user_list}/>);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders AdminUserEditor without crashing', () => {
-    render(<AdminUserEditor user_list={user_list}/>);
+  test('renders AdminUserEditor without crashing', () => {
     const toggleButton = screen.getByText('Toggle User Editor');
     expect(toggleButton).toBeInTheDocument();
   });
-  
-  // Test 2: Check if the "Toggle User Editor" button works as expected
-  it('Toggle User Editor button works correctly', () => {
-    render(<AdminUserEditor user_list={user_list}/>);
-    const toggleButton = screen.getByText('Toggle User Editor');
-    fireEvent.click(toggleButton);
-    const selectRole = screen.getByText('Select Role');
-    expect(selectRole).toBeInTheDocument();
-  });
 
-  it('Select Users dropdown appears after clicking Toggle User Editor button', () => {
-    render(<AdminUserEditor user_list={user_list}/>);
+  test('renders users dropdown appears after clicking Toggle User Editor button', () => {
     const toggleButton = screen.getByText('Toggle User Editor');
     fireEvent.click(toggleButton);
-    const selectUsers = screen.getByText('Select Users');
+    const selectUsers = screen.getByText('Select User');
     expect(selectUsers).toBeInTheDocument();
   });
-
-
-
   
-  // Test 4: Check if the "Edit User" section appears after a user is selected
-  it('Edit User section appears after a user is selected', async () => {
-    render(<AdminUserEditor user_list={user_list} />);
+  test('Edit User section appears after a user is selected using arrows', async () => {
     const toggleButton = screen.getByText('Toggle User Editor');
     fireEvent.click(toggleButton);
-    const selectUsers = await screen.getByText("Select Users");
+    const selectUsers = await screen.getByText("Select User");
     fireEvent.keyDown(selectUsers, { key: "ArrowDown" });
     const existingItem = await screen.findByText('John Doe')
     fireEvent.click(existingItem);
@@ -65,12 +43,23 @@ describe('AdminUserEditor Component', () => {
     expect(name).toBeInTheDocument();
   });
 
-  // Test 5: Check if the "Edit User" section disappears after the "Toggle User Editor" button is clicked
-  it('Edit User section disappears after the "Toggle User Editor" button is clicked', async () => {
-    render(<AdminUserEditor user_list={user_list} />);
+  test('Edit User section appears after a user is selected', async () => {
     const toggleButton = screen.getByText('Toggle User Editor');
     fireEvent.click(toggleButton);
-    const selectUsers = screen.getByText('Select Users');
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    const option = await screen.findByText('John Doe');
+    fireEvent.click(option);
+ 
+    const editUser = screen.queryByText('Edit User');
+    const name = screen.queryByText('Name:');
+    expect(editUser).toBeInTheDocument();
+    expect(name).toBeInTheDocument();
+  });
+
+  test('Toggles the user editor on then off', async () => {
+    const toggleButton = screen.getByText('Toggle User Editor');
+    fireEvent.click(toggleButton);
+    const selectUsers = screen.getByText('Select User');
     fireEvent.keyDown(selectUsers, { key: "ArrowDown" });
     const existingItem = await screen.findByText('John Doe')
     fireEvent.click(existingItem);

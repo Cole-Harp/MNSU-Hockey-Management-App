@@ -8,6 +8,7 @@
   --black: rgb(0 0 0);
   --white: rgb(255 255 255);
   --primary-team-color: #480059;
+  --primary-team-color-accent: bg-purple-700
   --secondary-team-color: #F7E400;
   --stone-50: rgb(250 250 249);
   --stone-100: rgb(245 245 244);
@@ -59,93 +60,51 @@
   --ring: 0 0% 63.9%;
 
   --radius: 0.5rem;
+  }
 }
-}
-
-
 
 body {
   background-color: var(--white);
 }
 
+.fc-toolbar.fc-header-toolbar .fc-button-group {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.fc-button {
+  @apply bg-purple-700 text-white rounded-lg shadow hover:bg-purple-400 !important;
+  @apply px-4 py-2 m-1 !important;
+}
+
+.fc-button-next-button {
+  @apply mr-8 !important;
+}
+
+
+.fc-scroller {
+  overflow-y: hidden;
+}
+
+.fc-toolbar-title {
+  @apply text-2xl font-bold;
+  @apply pb-2
+}
+
 @media (max-width: 767px) {
+  /* Styles specific to max-width: 767px */
   .fc-toolbar.fc-header-toolbar {
     flex-direction: column;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-left {
-    order: 3;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-center {
-    order: 1;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-right {
-    order: 3;
-  }
-  .fc-toolbar.fc-header-toolbar button {
-    padding: 0.25rem;
-    font-size: 0.75rem;
-  }
-  .fc-button {
-    @apply bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 !important;
-    @apply px-4 py-2 m-1 !important;
-  }
-  
-  .fc-button-primary {
-    @apply bg-green-500 hover:bg-green-600;
-  }
-  
-  .fc-button-active {
-    @apply bg-blue-700 hover:bg-blue-800;
-  }
-  .fc-createEvent-button {
-    @apply text-7xl;
   }
 }
 
 @media (min-width: 767px) {
-  .fc-toolbar.fc-header-toolbar {
-    flex-direction: column;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-left {
-    order: 3;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-center {
-    order: 1;
-  }
-  .fc-toolbar.fc-header-toolbar .fc-right {
-    order: 3;
-  }
-  .fc-toolbar.fc-header-toolbar button {
-    padding: 0.25rem;
-    font-size: 0.75rem;
-  }
-  .fc-button {
-    @apply bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 !important;
-    @apply px-4 py-2 m-1 !important;
-  }
-  
-  .fc-button-primary {
-    @apply bg-green-500 hover:bg-green-600;
-  }
-  
-  .fc-button-active {
-    @apply bg-blue-700 hover:bg-blue-800;
-  }
 
-  .fc-dayGridMonth-button.fc-button.fc-button-primary.fc-button-active {
-    @apply bg-green-500 hover:bg-green-600;
-  }
-  
-  
-
-  .fc-timegrid-slot-label-frame .fc-scrollgrid-shrink-frame {
-
-    @apply text-center;
-  }
 
   .fc-view-harness .fc-view-harness-active {
     @apply rounded;
   }
 }
-
-

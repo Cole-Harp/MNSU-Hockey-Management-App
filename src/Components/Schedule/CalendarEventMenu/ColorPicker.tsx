@@ -15,10 +15,10 @@ interface ColorSelectProps {
 
 };
 
+// Can be RGB Values
 const colorOptions: ColorOption[] = [
     { value: "Blue", label: "Blue" },
     { value: "Gray", label: "Gray" },
-    { value: "Gold", label: "Gold" },
     { value: "Red", label: "Red" },
     { value: "Pink", label: "Pink" },
     { value: "Green", label: "Green" },
@@ -26,6 +26,7 @@ const colorOptions: ColorOption[] = [
 
 const announcementColorOptions: ColorOption[] = [
     { value: "Purple", label: "Purple" },
+    { value: "Gold", label: "Gold" },
 ];
 
 const ColorSelect = ({ admin, announcement, color, setColor }: ColorSelectProps) => {
@@ -38,20 +39,16 @@ const ColorSelect = ({ admin, announcement, color, setColor }: ColorSelectProps)
 
     return (
         <>
-
-                <>
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bgColor">
-                        Background Color
-                    </label>
-                    <Select
-                        className="p-1 absolute  text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4 bottom-3"
-                        options={admin && announcement ? [...announcementColorOptions] : colorOptions}
-                        value={selectedColor}
-                        placeholder="Default"
-                        onChange={handleColorChange}
-                    />
-                </>
-
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="bgColor">
+                Background Color
+            </label>
+            <Select
+                className="p-1 absolute  text-gray-800 font-bold py-2 px-1 rounded ml-2 right-4 bottom-3"
+                options={admin && announcement ? [...announcementColorOptions] : colorOptions}
+                value={selectedColor}
+                placeholder="Default"
+                onChange={handleColorChange}
+            />
         </>
     );
 };

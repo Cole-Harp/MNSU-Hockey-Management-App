@@ -1,8 +1,7 @@
 "use client";
 
 import { User, UserRole } from '@prisma/client';
-import { getAllUsers } from "@/lib/db_actions/Auth";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Select from 'react-select';
 
 
@@ -12,56 +11,53 @@ interface FilterProps {
 }
 
 export function FilterComponent({ user_list, onFilter }: FilterProps) {
-  const [selectedRole, setSelectedRole] = useState<string>();
-  const [selectedPerson, setSelectedPerson] = useState<string[]>([]);
-  const [users, setUsers] = useState<User[]>(user_list);
-
-
-
+  const [selectedRole, setSelectedRole] = useState<UserRole[]>([]);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
 
   const userOptions = [
     { value: 'all', label: 'All Users' },
     { value: "me", label: 'Me' },
-    ...users.map((user) => ({
+    ...user_list.map((user) => ({
       value: user.id,
       label: user.name,
     })),
   ];
 
   const roleOptions = [
-    { value: undefined, label: 'All Roles' },
     { value: UserRole.Faculty, label: 'Faculty' },
     { value: UserRole.Coach, label: 'Coaches' },
     { value: UserRole.Admin, label: 'Admin' },
     { value: UserRole.Player, label: 'Player' },
   ];
 
-
   return (
     <div className='my-2 z-40 flex'>
       <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => onFilter(selectedRole, selectedPerson)}
+        className="bg-purple-500 hover:bg-purple-400 text-white font-bold py-2 px-4 ml-3 rounded"
+        onClick={() => onFilter(selectedRole, selectedPersons)}
       >
         Apply filters
       </button>
       <div className="z-40 flex items-center pointer-events-auto mx-2">
         <Select
           options={roleOptions}
-          value={roleOptions.find((option) => option.value === selectedRole)}
-          onChange={(option) => setSelectedRole(option?.value)}
-          placeholder="Select Role"
+          value={selectedRole.map((role) => roleOptions.find((option) => option.value === role))}
+          onChange={(options) => setSelectedRole(options?.map((option) => option?.value as UserRole) || [])}
+          placeholder={UserRole.Admin}
           className="z-40 w-64"
+          isMulti
         />
       </div>
-      <Select
-      options={userOptions}
-      value={selectedPerson.map((person) => userOptions.find((userOption) => userOption.value === person))}
-      onChange={(options) => setSelectedPerson(options?.map((option) => option?.value as string) || [])}
-      placeholder={selectedPerson.length > 0 ? selectedPerson.map((person) => userOptions.find((userOption) => userOption.value === person)?.label).join(', ') : 'Select User'}
-      className="z-40 w-64 pointer-events-auto"
-      isMulti // Add this prop to allow multiple selections
-    />
+      <div className="z-40 flex items-center pointer-events-auto mx-2">
+        <Select
+          options={userOptions}
+          value={selectedPersons.map((person) => userOptions.find((userOption) => userOption.value === person))}
+          onChange={(options) => setSelectedPersons(options?.map((option) => option?.value as string) || [])}
+          placeholder={selectedPersons.length > 0 ? selectedPersons.map((person) => userOptions.find((userOption) => userOption.value === person)?.label).join(', ') : 'Select User'}
+          className="z-40 w-64 pointer-events-auto"
+          isMulti
+        />
+      </div>
     </div>
   );
 }

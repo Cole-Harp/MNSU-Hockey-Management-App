@@ -1,7 +1,6 @@
 "use server";
 
 import prisma_db from "../../../prisma/db";
-import { cache } from 'react';
 import { getAdmin, getAllUsers, getUser, isAdmin } from './Auth';
 import { Event, UserRole } from "@prisma/client";
 import { pusher } from "../socket/pusher";
@@ -28,44 +27,48 @@ export const userGetEvents = async (): Promise<Event[]> => {
 };
 
 export const adminGetEvents = async (
-  authorIds: string[],
-  role?: UserRole
+  authorIds?: string[],
+  roles?: UserRole[],
 ): Promise<Event[]> => {
   const { isAdmin: adminStatus, user } = await getAdmin();
   
   try {
-    if (!authorIds || !Array.isArray(authorIds) || !user) {
+    if (!Array.isArray(authorIds) || !user) {
       return [];
     }
 
     if (authorIds.some(value => value === 'all')) {
-      const users = await getAllUsers(); // Make sure to await the getAllUsers function
+      const users = await getAllUsers();
       const userIds = users.map(user => user.id);
       authorIds = authorIds.concat(userIds);
     }
     
     if (authorIds.some(value => value === 'me')) {
-      authorIds = authorIds.concat(user!.id);
+      authorIds = authorIds.concat(user.id);
     }
 
     if (adminStatus) {
+      let whereClause: { authorId?: { in: string[] }; role?: { in: UserRole[] } } = {};
+
+      if (authorIds && authorIds.length > 0) {
+        whereClause.authorId = {
+          in: authorIds,
+        };
+      }
+
+      if (roles && roles.length > 0) {
+        whereClause.role = {
+          in: roles,
+        };
+      }
+
       return await prisma_db.event.findMany({
-        where: {
-          // start: {
-          //   gte: new Date(start).toISOString(),
-          // },
-          // end: {
-          //   lte: new Date(end).toISOString(),
-          // },
-          authorId: {
-            in: authorIds,
-          },
-          ...(role && { role }),
-        },
+        where: whereClause,
       });
     }
 
     return [];
+    
   } catch (error) {
     console.error('Error fetching events:', error);
     throw error;
@@ -79,7 +82,7 @@ export const createEvent = async (data: any) => {
     const newEvent = await prisma_db.event.create({
       data: {
         ...data,
-        daysOfWeek: data.daysOfWeek ? JSON.stringify(data.daysOfWeek) : '',
+        daysOfWeek: data.daysOfWeek ? data.daysOfWeek : '',
         authorId: user?.id
       },
     });

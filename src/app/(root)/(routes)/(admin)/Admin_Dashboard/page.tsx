@@ -19,7 +19,7 @@ export default async function Page() {
         <div>
           <AdminUserEditor user_list = {fetchedUsers}/>
           <div className=" border-t-4 my-5">
-          <AdminCalendarComponent isAdmin={adminStatus} currUser={user!} events={[]} user_list={fetchedUsers}/>
+          <AdminCalendarComponent isAdmin={adminStatus} currUser={user!} user_list={fetchedUsers}/>
           </div>
           
         </div>
