@@ -75,13 +75,12 @@ function CalendarComponent({ isAdmin, currUser, events }: CalendarProps) {
     if (pusher) {
       var channel = pusher.subscribe('announcements');
       channel.bind(`new-${currUser.role}`, function (data: any) {
-        // alert(JSON.stringify(data));
+        alert(JSON.stringify(data));
         console.log("New announcement event received");
         addEvent(data);
       });
-
     }
-  }, [pusher, addEvent, currUser.role]);
+  }, [pusher]);
 
   const handleDateClick = async (selectInfo: { view: { calendar: any; }; startStr: any; endStr: any; allDay: any; }) => {
     if (!eventState.isEditing && !eventState.isLooking) {
