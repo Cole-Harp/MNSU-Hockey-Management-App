@@ -9,7 +9,7 @@ import EventMenu from './CalendarEventMenu/EventMenu';
 import { createEvent, deleteEvent, updateEvent } from '../../lib/db_actions/Event';
 import iCalendarPlugin from '@fullcalendar/icalendar'
 import EventEditor from './CalendarEventMenu/EventEditor';
-import { usePusher } from '@/Components/pusherContextProvider';
+import { usePusher } from '@/lib/socket/pusherContextProvider';
 import listPlugin from '@fullcalendar/list';
 import { vi } from 'date-fns/locale';
 

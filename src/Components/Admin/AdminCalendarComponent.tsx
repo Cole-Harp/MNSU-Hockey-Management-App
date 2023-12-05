@@ -5,8 +5,6 @@ import { adminGetEvents } from '../../lib/db_actions/Event';
 import { FilterComponent } from './AdminFilter';
 import CalendarComponent from '../Schedule/CalendarComponent';
 
-
-
 const MyContext = createContext([]);
 
 type AdminCalendarProps = {

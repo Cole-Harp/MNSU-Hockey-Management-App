@@ -1,9 +1,9 @@
 import { ClerkLoaded, ClerkProvider, RedirectToSignIn, SignIn, SignedIn, SignedOut } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Providers from './providers'
 import "./globals.css"
-import { PusherProvider } from '@/Components/pusherContextProvider'
-import { cn } from '@/lib/utils'
+import { PusherProvider } from '@/lib/socket/pusherContextProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,13 +20,13 @@ export default function RootLayout({
   return (
     
     <ClerkProvider>
-      <html lang="en">
-        <body className={cn("bg-secondary", inter.className)}>
-          <PusherProvider>
-            {children}
-          </PusherProvider>
-        </body>
-      </html>
+      <Providers>
+
+        <html lang="en">
+          <body>{children}</body> 
+        </html>
+
+      </Providers>
     </ClerkProvider>
     
   )
