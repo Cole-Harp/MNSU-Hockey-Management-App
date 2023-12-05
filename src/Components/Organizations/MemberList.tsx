@@ -89,7 +89,7 @@ const MemberList = ({ }: IParams) => {
         <div className='flex justify-center items-end text-3xl font-bold my-1 border-b-2 h-16 border-neutral-400'>
           Team Members
         </div>
-        <InviteUser />
+        {isAdmin && <InviteUser />}
         <aside>
           {membershipList?.map((m) => (
             <div key={m.id}>

@@ -63,11 +63,11 @@ const OrganizationList  = () => {
         </div>) }
       <div onClick={() => {handleNewOrg(); console.log('Clicked the button: ' + newOrg)}} 
          className = 'flex rounded p-1 m-4 shadow-md shadow-neutral-400 hover:scale-105 basis-1/6 h-1/3 bg-gradient-to-b  from-mnsu_purple to-mnsu_gold items-center justify-centerrounded-lg transition cursor-pointer active:scale-95'> 
-        <div className = 'flex-col text-xl pt-20 justify-center items-center text-center hover:text-white h-full w-full rounded hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
-         <div className = 'flex-row w-full items-center justify-center text-center'>
+        <div className = 'flex-col text-xl hover:text-white h-full w-full rounded hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold rounded bg-white transition-all ease-in duration-75 active:scale-95'>
+         <div className = 'flex-row text-center h-full'>
           Create New Organization
-         <div className = 'flex items-center justify-center'>
-          <button className = 'flex bg-gradient-to-br mt-6 from-mnsu_purple to-purple-600 text-3xl border-mnsu_gold border-2 font-bold w-16 h-16 rounded-full items-center justify-center text-white '>
+         <div className = 'flex justify-center'>
+          <button className = 'flex items-center justify-center bg-gradient-to-br from-mnsu_purple to-purple-600 text-3xl border-mnsu_gold border-2 font-bold w-16 h-16 rounded-full text-white '>
             +
           </button>
           </div>
