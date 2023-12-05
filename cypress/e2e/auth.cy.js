@@ -24,7 +24,6 @@ describe("Signed in", () => {
       // check if buttons are there
       cy.contains('Calendar')
       cy.contains('Organization') 
-      cy.contains('Drills') 
       cy.contains('Messaging')  
     });
   });

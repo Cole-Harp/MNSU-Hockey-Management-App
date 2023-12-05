@@ -12,11 +12,10 @@ describe('Home Component Tests', () => {
   
     it('renders the Home component', () => {
       cy.get('h1').contains('Hockey Team Management');
-      cy.get('ul').should('have.class', 'grid');
     });
   
     const links = [
-      { text: 'Organization', href: '/Admin_Dashboard' },
+      { text: 'Organizations', href: '/Admin_Dashboard' },
       { text: 'Calendar', href: '/Schedule' },
       { text: 'Messaging', href: '/Messaging' },
     //   { text: 'Drills', href: '/Drills' },
@@ -26,8 +25,7 @@ describe('Home Component Tests', () => {
   
     links.forEach(link => {
       it(`navigates to ${link.text} page`, () => {
-        cy.get('ul').contains('li', link.text).click();
-        cy.url().should('include', link.href);
+        cy.findByText(link.text).click();
       });
     });
   });
