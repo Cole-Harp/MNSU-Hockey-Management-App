@@ -3,9 +3,6 @@
 import { auth, currentUser, useOrganization, useUser } from "@clerk/nextjs";
 import prisma_db from "../../../prisma/db";
 import { UserRole, User } from "@prisma/client";
-import { cache } from "react"; // Cache to reduce query, Should also be changed to a Context Hook
-
-
 
 
 export const getAllUsers = async () => {
@@ -17,22 +14,49 @@ export const getAllUsers = async () => {
 export const getUser = async () => {
   const user = await currentUser();
 
-  
-
+ 
   if (!user?.id) {
     throw new Error("Something went wrong authenticating");
   }
+
+  console.log(user.id)
+  
+  axios.get('https://api.chatengine.io/users/me/', {
+  headers: {
+    "Project-ID": '61d8e5a6-da3c-403e-890f-3bb98e49b617',
+    "User-Name": user.firstName, 
+    "User-Secret": user.id,
+  },
+})
+.catch(e => {
+  console.log("GET request failed, attempting POST");
+
+  axios.post(
+    'https://api.chatengine.io/users/',
+    {
+      "username": user.firstName,
+      "secret": user.id,
+    },
+    {
+      headers: { "Private-Key": "4218d505-f3b6-4fed-8b5d-ef557be1c009" }
+    }
+  )
+  .catch(e => console.log('POST request failed:', e.response));
+});
 
   const existingUser = await prisma_db.user.findFirst({
     where: {
       id: user?.id,
     },
   });
+
+
   return(
     existingUser
   ) //Not sure why theres 2 returns
   return existingUser;
 }
+
 
 export const checkUser = async (metaData:UserRole) => {
   

@@ -1,7 +1,6 @@
 'use client'
 
 import { useSession, useUser } from "@clerk/nextjs"
-import { useState } from "react";
 
 const EditUserName = () => {    
 
