@@ -1,4 +1,4 @@
-import { getAdmin, isAdmin } from "@/lib/db_actions/Auth";
+import { getAdmin, getAllUsers, isAdmin } from "@/lib/db_actions/Auth";
 import { AdminUserEditor } from "@/Components/Admin/AdminUserEditor";
 import AdminCalendarComponent from "@/Components/Admin/AdminCalendarComponent";
 import { Link } from "lucide-react";
@@ -6,6 +6,7 @@ import { Link } from "lucide-react";
 export default async function Page() {
 
   const { isAdmin: adminStatus, user } = await getAdmin()
+  const fetchedUsers = await getAllUsers();
 
   return (
     <div>
@@ -16,10 +17,11 @@ export default async function Page() {
       </div>
       {adminStatus &&
         <div>
-          <AdminUserEditor/>
+          <AdminUserEditor user_list = {fetchedUsers}/>
           <div className=" border-t-4 my-5">
-          <AdminCalendarComponent isAdmin={adminStatus}/>
+          <AdminCalendarComponent isAdmin={adminStatus} currUser={user!} user_list={fetchedUsers}/>
           </div>
+          
         </div>
       }
     </div>

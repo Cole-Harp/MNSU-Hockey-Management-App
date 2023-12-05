@@ -1,4 +1,3 @@
-'use server'
 
 import { getUser } from "@/lib/db_actions/Auth";
 import Chats from "../../../../Components/Chats";

@@ -11,7 +11,12 @@ const InviteUser = () => {
   /* This state determines if the invite user form is shown or hidden */
     const [ inviteUser, setInviteUser ] = useState(false)
     const { organization } = useOrganization();
-    const orgId = organization!.id
+    const orgId = organization?.id
+
+    if (!orgId) {
+  
+      return (<div>Something went wrong</div>)
+    }
     const userId = useUser().user!.id
     /* emailAddress will be taken from user input. This is where the invitation email will be sent to */ 
     const [emailAddress, setEmailAddress] = useState('');

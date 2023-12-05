@@ -6,11 +6,12 @@ import Select from 'react-select';
 
 interface RoleSelectorProps {
     onSelect: (selectedRole: UserRole | undefined) => void;
+    role: UserRole | undefined;
 
 }
 //TODO Multi Select
-function AdminRoleSelector({onSelect}: RoleSelectorProps) {
-    const [selectedRole, setSelectedRole] = useState<UserRole | undefined>();
+function AdminRoleSelector({role, onSelect}: RoleSelectorProps) {
+    const [selectedRole, setSelectedRole] = useState<UserRole | undefined>(role);
 
     const handleSelectedRole = (role: any) => {
         setSelectedRole(role)
