@@ -13,7 +13,7 @@ const Home = async () => {
           <HomePageButton buttonText = 'Empty' url = '/'></HomePageButton>
           <HomePageButton buttonText = 'Messaging' url = '/Messaging'></HomePageButton>
           <HomePageButton buttonText = 'Profile' url = '/Profile'></HomePageButton>
-          <HomePageButton buttonText = 'Invite User' url = '/Invite_User'></HomePageButton>
+          <HomePageButton buttonText = 'Invitations' url = '/Invite_User'></HomePageButton>
       </div>
     </div>
   );

@@ -15,11 +15,7 @@ export default async function Page() {
     return (
       <div>
         <ClerkLoaded>
-          <OrganizationList />
-          <CreateOrganization />
-          <InviteUser />
           <InvitationList />
-          <MemberList />
         </ClerkLoaded>
       </div>
     );

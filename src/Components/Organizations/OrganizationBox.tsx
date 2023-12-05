@@ -22,8 +22,6 @@ import { isAdmin } from '@/lib/db_actions/Auth'
 
 interface ConversationBoxProps{
     data: any
-    
-    
 }
 
 const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
@@ -42,11 +40,32 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
       infinite: false,
     },
   });
+
+  const remove = async (membership: any) => {
+    setDisabled(true);
+    try {
+      await membership!.destroy();
+    } 
+    catch (error) {
+      // Handle any errors that occur during the deletion process
+      console.error('Error removing member:', error);
+    } finally {
+      setDisabled(false);
+    }
+  };
+
   const { membershipList, membership } = useOrganization({
     membershipList: {},
   });
+  useEffect(() => {
+    // Check if the user has an 'admin' role in the organization
+    const userIsAdmin = membership?.role === 'admin';
+    setIsAdmin(userIsAdmin);
+  }, [membership]);
 
+    const submit = () => {
   
+};
   
   
   
@@ -58,11 +77,8 @@ const OrganizationBox: React.FC<ConversationBoxProps> = ({data}) => {
     >
         <div className='flex rounded text-xl items-center justify-center h-full w-full hover:text-2xl hover:text-white hover:bg-gradient-to-b  from-mnsu_purple to-mnsu_gold hover:bg-blue-400rounded bg-white transition-all ease-in duration-75 active:scale-95'>
             {data.organization.name}
-            
       </div>
-        <button onClick={() => remove(data.organization)} className="text-white bg-blue-500 px-4 py-2 rounded-md ml-2 hover:bg-blue-700">
-                Delete
-              </button>
+                  
     </div>
   )
 }
